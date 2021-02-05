@@ -1,0 +1,28 @@
+plugins {
+  id 'application'
+  id 'java-library'
+}
+
+group = 'inf112.skeleton.app'
+version = '1.0-SNAPSHOT'
+
+description = """mvn-app"""
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+tasks.withType(JavaCompile) {
+	options.encoding = 'UTF-8'
+}
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    api "com.badlogicgames.gdx:gdx:$gdxVersion"
+    api "com.badlogicgames.gdx:gdx-backend-lwjgl3:$gdxVersion"
+    api "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-desktop"
+	testCompile group: 'junit', name: 'junit', version:'4.11'
+}
