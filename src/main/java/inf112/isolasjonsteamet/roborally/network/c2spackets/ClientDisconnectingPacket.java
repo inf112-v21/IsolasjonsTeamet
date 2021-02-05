@@ -2,6 +2,8 @@ package inf112.isolasjonsteamet.roborally.network.c2spackets;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import inf112.isolasjonsteamet.roborally.network.Codec;
+import io.netty.buffer.ByteBuf;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -44,5 +46,18 @@ public class ClientDisconnectingPacket implements Client2ServerPacket {
 		return MoreObjects.toStringHelper(this)
 				.add("reason", reason)
 				.toString();
+	}
+
+	public static class PacketCodec implements Codec<ClientDisconnectingPacket> {
+
+		@Override
+		public ClientDisconnectingPacket read(ByteBuf in) {
+			return null;
+		}
+
+		@Override
+		public void write(ClientDisconnectingPacket msg, ByteBuf buf) {
+
+		}
 	}
 }
