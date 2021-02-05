@@ -1,0 +1,31 @@
+name: Validate commit
+
+on:
+  - push
+  - pull_request
+
+jobs:
+#  gradle-checkstyle:
+#    name: Checkstyle
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - uses: actions/checkout@v2
+#      - uses: actions/setup-java@v1
+#        with:
+#          java-version: '15' # The JDK version to make available on the path.
+
+  gradle-test:
+    name: Run ${{ matrix.os }} tests
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '15' # The JDK version to make available on the path.
+      - name: Run tests
+        run: ./gradlew test
