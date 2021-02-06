@@ -8,6 +8,7 @@ version = '1.0-SNAPSHOT'
 
 description = """mvn-app"""
 
+
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
