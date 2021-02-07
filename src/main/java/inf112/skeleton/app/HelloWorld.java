@@ -54,13 +54,14 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
         Texture defTx = new Texture("tiles.png");
         TextureRegion[][] tReg2 = new TextureRegion().split(defTx,300,300);
 
+
         //Static tiles for playing, dead and winning player cells
-        StaticTiledMapTile staticDefTile = new StaticTiledMapTile(tReg2[0][4]);
+        StaticTiledMapTile defaultTileTexture = new StaticTiledMapTile(tReg2[15][4]);
         StaticTiledMapTile staticPlayTile = new StaticTiledMapTile(tReg[0][0]);
         StaticTiledMapTile staticWonTile = new StaticTiledMapTile(tReg[0][2]);
         StaticTiledMapTile staticDiedTile = new StaticTiledMapTile(tReg[0][1]);
 
-        defaultTileCell = new TiledMapTileLayer.Cell().setTile(staticDefTile);
+        defaultTileCell = new TiledMapTileLayer.Cell().setTile(defaultTileTexture);
         playerWonCell = new TiledMapTileLayer.Cell().setTile(staticWonTile);
         playerDiedCell = new TiledMapTileLayer.Cell().setTile(staticDiedTile);
         playerCell = new TiledMapTileLayer.Cell().setTile(staticPlayTile);
@@ -94,32 +95,59 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
         //playerLayer.setCell(0,2, playerWonCell);
         //playerLayer.setCell(0,4, playerDiedCell);
 
+        if(flagLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
+            playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerWonCell);
+
+        }
+        if(holeLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
+            playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerDiedCell);
+        }
+
         mapRenderer.render();
     }
 
+
     @Override
     public boolean keyUp(int keycode) {
-
         switch (keycode) {
             case Input.Keys.W:
-                playerLayer.setCell((int) playerVec.x, (int) playerVec.y+1, playerCell);
+                if(playerVec.y >= boardLayer.getHeight()-1){
+                    return true;
+                }
+                playerLayer.setCell((int) playerVec.x, (int) playerVec.y + 1, playerCell);
                 playerLayer.setCell((int) playerVec.x, (int) playerVec.y, defaultTileCell);
-                playerVec.set(playerVec.x,playerVec.y+1);
+                playerVec.set(playerVec.x, playerVec.y + 1);
+                System.out.println("W-Pressed; Player moved up");
                 return true;
+
             case Input.Keys.A:
+                if (playerVec.x < 1){
+                    return true;
+                }
                 playerLayer.setCell((int) playerVec.x-1, (int) playerVec.y, playerCell);
                 playerLayer.setCell((int) playerVec.x, (int) playerVec.y, defaultTileCell);
                 playerVec.set(playerVec.x-1,playerVec.y);
+                System.out.println("A-Pressed; Player moved left");
                 return true;
+
             case Input.Keys.S:
-                playerLayer.setCell((int) playerVec.x, (int) playerVec.y-1, playerCell);
+                if(playerVec.y < 1){
+                    return true;
+                }
+                playerLayer.setCell((int) playerVec.x, (int) playerVec.y - 1, playerCell);
                 playerLayer.setCell((int) playerVec.x, (int) playerVec.y, defaultTileCell);
-                playerVec.set(playerVec.x,playerVec.y-1);
+                playerVec.set(playerVec.x, playerVec.y -1);
+                System.out.println("S-Pressed; Player moved down");
                 return true;
+
             case Input.Keys.D:
+                if (playerVec.x >= boardLayer.getWidth()-1){
+                    return true;
+                }
                 playerLayer.setCell((int) playerVec.x+1, (int) playerVec.y, playerCell);
                 playerLayer.setCell((int) playerVec.x, (int) playerVec.y, defaultTileCell);
                 playerVec.set(playerVec.x+1,playerVec.y);
+                System.out.println("D-Pressed; Player moved right");
                 return true;
         }
         return false;
