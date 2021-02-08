@@ -16,7 +16,23 @@ Simple skeleton with libgdx.
    
    ![Gradle reload button](docs_images/gradle_reload_button.png)
 
-3. **Setting the formatting style**
+3. **Using JDK 15 or above**
+
+   This project requires Java 15 or above. While Gradle handles this automatically, 
+   IntelliJ sadly doesn't.
+   
+   First, open to project structure window using `Ctrl+Alt+Shift+S`. 
+   Select the `Project` tab under `Project Settings`. Under `Project SDK`, 
+   if it says 15 or above, you're set. Otherwise we need to set the JDK to use.
+   Click on the drop down, and select `Add JDK`. If you have Java 15 or above 
+   already installed on your system, you can select the `JDK` option here and 
+   navigate to it. Otherwise, select `Download JDK`, and choose an JDK to use. 
+   AdoptOpenJDK is fine for most stuff. IntelliJ will download and add it 
+   as an option for you.
+   
+   ![Add JDK](docs_images/intellij_add_jdk.png)
+
+4. **Setting the formatting style**
 
    Import and set the formatting style. Go to File -> Settings -> Editor -> Code style. 
    Click on the cog and select Import Scheme -> IntelliJ IDEA code style XML. 
@@ -29,7 +45,7 @@ Simple skeleton with libgdx.
 
    You can now format the code with `Ctrl+Alt+L`.
 
-4. **Setting up IntelliJ with Checkstyle**
+5. **Setting up IntelliJ with Checkstyle**
 
    Install the IntelliJ plugin "CheckStyle-IDEA". It's mostly the same as installing 
    the "Code with me" plugin.
@@ -47,7 +63,7 @@ Simple skeleton with libgdx.
    It should now be in the table you saw earlier, click on the checkbox to make sure it's active.
    Your code should now show yellow if there are any style issues.
 
-5. **Setting up the precommit script**
+6. **Setting up the precommit script**
 
    Sometimes you forget to check the formatting before you commit. 
    To prevent this, you can setup a precommit script that is always run before you commit.
