@@ -24,6 +24,7 @@ public class NettyServerImpl extends Thread implements Server {
 	private final String gameName;
 	private final ServerHandler serverHandler;
 
+	private final CompletableFuture<Void> readySignal = new CompletableFuture<>();
 	private Channel rootChannel;
 
 	public NettyServerImpl(String host, int port, String gameName) {
@@ -32,6 +33,10 @@ public class NettyServerImpl extends Thread implements Server {
 		this.gameName = gameName;
 
 		this.serverHandler = new ServerHandler(gameName);
+	}
+
+	public CompletableFuture<Void> ready() {
+		return readySignal;
 	}
 
 	@Override
@@ -56,6 +61,7 @@ public class NettyServerImpl extends Thread implements Server {
 
 			ChannelFuture f = b.bind(host, port).sync();
 			rootChannel = f.channel();
+			readySignal.complete(null);
 			f.channel().closeFuture().sync();
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);

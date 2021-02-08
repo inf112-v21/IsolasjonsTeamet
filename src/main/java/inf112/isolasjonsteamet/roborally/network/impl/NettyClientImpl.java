@@ -20,9 +20,15 @@ public class NettyClientImpl extends Thread implements Client {
 	private final int port;
 	private final ClientHandler clientHandler = new ClientHandler();
 
+	private final CompletableFuture<Void> readySignal = new CompletableFuture<>();
+
 	public NettyClientImpl(String host, int port) {
 		this.host = host;
 		this.port = port;
+	}
+
+	public CompletableFuture<Void> ready() {
+		return readySignal;
 	}
 
 	@Override
@@ -45,6 +51,7 @@ public class NettyClientImpl extends Thread implements Client {
 					});
 
 			ChannelFuture f = b.connect(host, port).sync();
+			readySignal.complete(null);
 			f.channel().closeFuture().sync();
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
