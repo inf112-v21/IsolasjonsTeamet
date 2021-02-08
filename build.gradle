@@ -24,6 +24,13 @@ checkstyle {
     toolVersion = "8.40"
 }
 
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+    }
+}
+
 repositories {
     mavenLocal()
     mavenCentral()

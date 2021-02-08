@@ -2,6 +2,7 @@ package inf112.isolasjonsteamet.roborally.network.s2cpackets;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
 import io.netty.buffer.ByteBuf;
 
@@ -45,16 +46,17 @@ public class GameJoinResultPacket implements Server2ClientPacket {
 		SUCCESS, DENIED, NAME_IN_USE
 	}
 
-	public static class PacketCodec implements Codec<GameJoinResultPacket> {
+	public enum PacketCodec implements Codec<GameJoinResultPacket> {
+		INSTANCE;
 
 		@Override
 		public GameJoinResultPacket read(ByteBuf in) {
-			return null;
+			return new GameJoinResultPacket(ByteBufHelper.readEnum(JoinResult.class, in));
 		}
 
 		@Override
 		public void write(GameJoinResultPacket msg, ByteBuf buf) {
-
+			ByteBufHelper.writeEnum(msg.result, buf);
 		}
 	}
 }

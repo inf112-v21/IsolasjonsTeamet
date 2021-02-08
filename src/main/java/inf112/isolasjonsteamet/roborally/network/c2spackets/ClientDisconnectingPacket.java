@@ -2,6 +2,7 @@ package inf112.isolasjonsteamet.roborally.network.c2spackets;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
 import io.netty.buffer.ByteBuf;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -48,16 +49,17 @@ public class ClientDisconnectingPacket implements Client2ServerPacket {
 				.toString();
 	}
 
-	public static class PacketCodec implements Codec<ClientDisconnectingPacket> {
+	public enum PacketCodec implements Codec<ClientDisconnectingPacket> {
+		INSTANCE;
 
 		@Override
 		public ClientDisconnectingPacket read(ByteBuf in) {
-			return null;
+			return new ClientDisconnectingPacket(ByteBufHelper.readString(in));
 		}
 
 		@Override
 		public void write(ClientDisconnectingPacket msg, ByteBuf buf) {
-
+			ByteBufHelper.writeString(msg.reason, buf);
 		}
 	}
 }

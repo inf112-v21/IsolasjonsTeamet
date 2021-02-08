@@ -2,8 +2,12 @@ package inf112.isolasjonsteamet.roborally.network.s2cpackets;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
+import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
+import inf112.isolasjonsteamet.roborally.network.impl.PacketProtocol;
 import io.netty.buffer.ByteBuf;
+import java.util.ArrayList;
 import java.util.List;
 
 public class GameInfoPacket implements Server2ClientPacket {
@@ -17,7 +21,11 @@ public class GameInfoPacket implements Server2ClientPacket {
 		this.protocol = protocol;
 		this.requiredVersion = requiredVersion;
 		this.gameName = gameName;
-		this.players = players;
+		this.players = ImmutableList.copyOf(players);
+	}
+
+	public static GameInfoPacket ofThisVersion(String gameName, List<String> players) {
+		return new GameInfoPacket(PacketProtocol.PROTOCOL, PacketProtocol.REQUIRED_VERSION, gameName, players);
 	}
 
 	public int getProtocol() {
@@ -66,16 +74,30 @@ public class GameInfoPacket implements Server2ClientPacket {
 				.toString();
 	}
 
-	public static class PacketCodec implements Codec<GameInfoPacket> {
+	public enum PacketCodec implements Codec<GameInfoPacket> {
+		INSTANCE;
 
 		@Override
 		public GameInfoPacket read(ByteBuf in) {
-			return null;
+			int protocol = in.readInt();
+			String requiredVersion = ByteBufHelper.readString(in);
+			String gameName = ByteBufHelper.readString(in);
+			int playerCount = in.readUnsignedByte();
+			var players = new ArrayList<String>(playerCount);
+			for (int i = 0; i < playerCount; i++) {
+				players.add(ByteBufHelper.readString(in, 1));
+			}
+
+			return new GameInfoPacket(protocol, requiredVersion, gameName, players);
 		}
 
 		@Override
 		public void write(GameInfoPacket msg, ByteBuf buf) {
-
+			buf.writeInt(msg.protocol);
+			ByteBufHelper.writeString(msg.requiredVersion, buf);
+			ByteBufHelper.writeString(msg.gameName, buf);
+			ByteBufHelper.writeUnsignedByte((short) msg.players.size(), buf);
+			msg.players.forEach(player -> ByteBufHelper.writeString(player, buf, 1));
 		}
 	}
 }

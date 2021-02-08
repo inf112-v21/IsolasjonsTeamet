@@ -1,7 +1,10 @@
 package inf112.isolasjonsteamet.roborally.network.c2spackets;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
 import io.netty.buffer.ByteBuf;
 
@@ -10,6 +13,8 @@ public class GameJoinPacket implements Client2ServerPacket {
 	private final String playerName;
 
 	public GameJoinPacket(String playerName) {
+		//TODO: Replace with proper player name validation elsewhere in time
+		checkArgument(playerName.length() <= 255, "Playername too long");
 		this.playerName = playerName;
 	}
 
@@ -41,16 +46,17 @@ public class GameJoinPacket implements Client2ServerPacket {
 				.toString();
 	}
 
-	public static class PacketCodec implements Codec<GameJoinPacket> {
+	public enum PacketCodec implements Codec<GameJoinPacket> {
+		INSTANCE;
 
 		@Override
 		public GameJoinPacket read(ByteBuf in) {
-			return null;
+			return new GameJoinPacket(java.util.Objects.requireNonNull(ByteBufHelper.readString(in, 1)));
 		}
 
 		@Override
 		public void write(GameJoinPacket msg, ByteBuf buf) {
-
+			ByteBufHelper.writeString(msg.playerName, buf, 1);
 		}
 	}
 }

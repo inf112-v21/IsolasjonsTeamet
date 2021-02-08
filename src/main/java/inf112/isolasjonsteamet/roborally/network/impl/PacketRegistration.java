@@ -5,6 +5,7 @@ import com.google.common.base.Objects;
 import inf112.isolasjonsteamet.roborally.network.Codec;
 import inf112.isolasjonsteamet.roborally.network.Packet;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
 
 public class PacketRegistration<T extends Packet> {
 
@@ -18,14 +19,31 @@ public class PacketRegistration<T extends Packet> {
 	public static <T extends Packet> PacketRegistration<T> makeCodec(
 			Class<T> clazz, Class<? extends Codec<T>> codecClass
 	) {
-		try {
-			return new PacketRegistration<>(clazz, codecClass.getDeclaredConstructor().newInstance());
-		} catch (InstantiationException
-				| IllegalAccessException
-				| InvocationTargetException
-				| NoSuchMethodException e) {
-			throw new RuntimeException(e);
+		if (codecClass.isEnum()) {
+			final Codec<T> codec = codecClass.getEnumConstants()[0];
+			return new PacketRegistration<>(clazz, codec);
+		} else {
+			try {
+				return new PacketRegistration<>(clazz, codecClass.getDeclaredConstructor().newInstance());
+			} catch (InstantiationException
+					| IllegalAccessException
+					| InvocationTargetException
+					| NoSuchMethodException e) {
+				throw new RuntimeException(e);
+			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public static <T extends Packet> PacketRegistration<T> findCodec(Class<T> clazz) {
+		Class<? extends Codec<T>> codecClass =
+				Arrays.stream(clazz.getClasses())
+						.filter(Codec.class::isAssignableFrom)
+						.map(c -> (Class<? extends Codec<T>>) c.asSubclass(Codec.class))
+						.findFirst()
+						.orElseThrow(() -> new RuntimeException("No codec found for class" + clazz));
+		
+		return makeCodec(clazz, codecClass);
 	}
 
 	public PacketRegistration(Class<T> clazz, Codec<T> codec) {

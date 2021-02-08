@@ -13,11 +13,11 @@ public class PacketProtocol {
 
 	public static final PacketRegistration<?>[] REGISTRATIONS = new PacketRegistration[]{
 			//Client -> Server packets
-			PacketRegistration.makeCodec(GameJoinPacket.class, GameJoinPacket.PacketCodec.class),
-			PacketRegistration.makeCodec(ClientDisconnectingPacket.class, ClientDisconnectingPacket.PacketCodec.class),
+			PacketRegistration.findCodec(GameJoinPacket.class),
+			PacketRegistration.findCodec(ClientDisconnectingPacket.class),
 			//Server -> Client packets
-			PacketRegistration.makeCodec(GameInfoPacket.class, GameInfoPacket.PacketCodec.class),
-			PacketRegistration.makeCodec(GameJoinResultPacket.class, GameJoinResultPacket.PacketCodec.class),
-			PacketRegistration.makeCodec(ServerClosingPacket.class, ServerClosingPacket.PacketCodec.class),
+			PacketRegistration.findCodec(GameInfoPacket.class),
+			PacketRegistration.findCodec(GameJoinResultPacket.class),
+			PacketRegistration.findCodec(ServerClosingPacket.class),
 	};
 }
