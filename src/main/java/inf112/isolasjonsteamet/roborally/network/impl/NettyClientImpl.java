@@ -14,6 +14,9 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import java.util.concurrent.CompletableFuture;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * An implementation of {@link Client} which uses TCP over Netty under the hood.
+ */
 public class NettyClientImpl extends Thread implements Client {
 
 	private final String host;

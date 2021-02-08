@@ -30,6 +30,10 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Server handler netty pipeline step. Sends packets received from the clients onto listeners, and keeps track of which
+ * connections are playing in the game.
+ */
 @Sharable
 public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 

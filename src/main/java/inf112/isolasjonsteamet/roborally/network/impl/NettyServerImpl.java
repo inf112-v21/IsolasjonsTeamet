@@ -17,6 +17,9 @@ import io.netty.handler.timeout.IdleStateHandler;
 import java.util.concurrent.CompletableFuture;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * An implementation of {@link Server} which uses TCP over Netty under the hood.
+ */
 public class NettyServerImpl extends Thread implements Server {
 
 	private final String host;
@@ -27,6 +30,9 @@ public class NettyServerImpl extends Thread implements Server {
 	private final CompletableFuture<Void> readySignal = new CompletableFuture<>();
 	private Channel rootChannel;
 
+	/**
+	 * Constucts a new netty server on the given host and port.
+	 */
 	public NettyServerImpl(String host, int port, String gameName) {
 		this.host = host;
 		this.port = port;

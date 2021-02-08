@@ -48,6 +48,7 @@ public class ServerClosingPacket implements Server2ClientPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<ServerClosingPacket> {
 		INSTANCE;
 

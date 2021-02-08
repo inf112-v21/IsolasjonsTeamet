@@ -6,6 +6,9 @@ import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
 import io.netty.buffer.ByteBuf;
 
+/**
+ * Sent to existing players of a game, when a new player joins the game.
+ */
 public class PlayerJoinedGamePacket implements Server2ClientPacket {
 
 	private final String playerName;
@@ -42,6 +45,7 @@ public class PlayerJoinedGamePacket implements Server2ClientPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<PlayerJoinedGamePacket> {
 		INSTANCE;
 

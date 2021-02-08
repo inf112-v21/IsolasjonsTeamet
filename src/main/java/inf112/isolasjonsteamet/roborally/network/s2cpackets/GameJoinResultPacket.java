@@ -6,6 +6,9 @@ import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
 import io.netty.buffer.ByteBuf;
 
+/**
+ * Sent to a player trying to join a game, indicating if it succeeded or not.
+ */
 public class GameJoinResultPacket implements Server2ClientPacket {
 
 	private final JoinResult result;
@@ -42,10 +45,12 @@ public class GameJoinResultPacket implements Server2ClientPacket {
 				.toString();
 	}
 
+	/** Indicates if joining the game succeeded, or if not, why. */
 	public enum JoinResult {
 		SUCCESS, DENIED, NAME_IN_USE
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<GameJoinResultPacket> {
 		INSTANCE;
 

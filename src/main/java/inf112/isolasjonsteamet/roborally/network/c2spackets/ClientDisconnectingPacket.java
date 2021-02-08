@@ -49,6 +49,7 @@ public class ClientDisconnectingPacket implements Client2ServerPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<ClientDisconnectingPacket> {
 		INSTANCE;
 

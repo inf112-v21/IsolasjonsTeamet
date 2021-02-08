@@ -10,6 +10,9 @@ import io.netty.buffer.ByteBuf;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Sent to a client whenever they connect to a server, or a new player joins the game.
+ */
 public class GameInfoPacket implements Server2ClientPacket {
 
 	private final int protocol;
@@ -74,6 +77,7 @@ public class GameInfoPacket implements Server2ClientPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<GameInfoPacket> {
 		INSTANCE;
 

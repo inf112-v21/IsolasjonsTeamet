@@ -8,10 +8,25 @@ import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
 import io.netty.buffer.ByteBuf;
 
+//@formatter:off
+/**
+ * Sent by a client to the server when it wants to join a game.
+ * A {@link inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket}
+ * is sent to the player in reply to this. If the player joins successfully, a {@link
+ * inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket} is sent to the existing players of the
+ * game, and an updated {@link inf112.isolasjonsteamet.roborally.network.s2cpackets.GameInfoPacket} is sent to non
+ * player connections.
+ */
+//@formatter:on
 public class GameJoinPacket implements Client2ServerPacket {
 
 	private final String playerName;
 
+	/**
+	 * Construct a new game join packet.
+	 *
+	 * @param playerName The username to use. Must be under 255 bytes.
+	 */
 	public GameJoinPacket(String playerName) {
 		//TODO: Replace with proper player name validation elsewhere in time
 		checkArgument(playerName.length() <= 255, "Playername too long");
@@ -46,6 +61,7 @@ public class GameJoinPacket implements Client2ServerPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<GameJoinPacket> {
 		INSTANCE;
 

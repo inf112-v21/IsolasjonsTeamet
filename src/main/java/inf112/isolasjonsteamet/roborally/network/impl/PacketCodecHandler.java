@@ -12,6 +12,9 @@ import io.netty.handler.codec.MessageToByteEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * A netty pipeline handler that decodes received bytes to our packet types, and encodes sent packets back into bytes.
+ */
 @Sharable
 public class PacketCodecHandler extends ChannelDuplexHandler {
 

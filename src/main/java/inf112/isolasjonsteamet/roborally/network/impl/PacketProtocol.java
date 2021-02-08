@@ -7,6 +7,14 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 
+/**
+ * Holds everything known about the wire protocol the game uses to communicate.
+ *
+ * <p>
+ * {@link #PROTOCOL} must be incremented any time an binary incompatible change is made to the wire protcol, which an
+ * previous version might not understand.
+ * </p>
+ */
 public class PacketProtocol {
 
 	public static final int PROTOCOL = 1;

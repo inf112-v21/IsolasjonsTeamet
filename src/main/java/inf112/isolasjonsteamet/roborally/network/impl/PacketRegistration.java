@@ -7,15 +7,32 @@ import inf112.isolasjonsteamet.roborally.network.Packet;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Arrays;
 
+/**
+ * Represents a binding between a packet type and it's codec.
+ *
+ * @param <T> The packet type this registration is for.
+ */
 public class PacketRegistration<T extends Packet> {
 
 	private final Class<T> clazz;
 	private final Codec<T> codec;
 
+	/** Make a packet registration from the class and codec directly. */
 	public static <T extends Packet> PacketRegistration<T> of(Class<T> clazz, Codec<T> codec) {
 		return new PacketRegistration<>(clazz, codec);
 	}
 
+	/**
+	 * Make a registration from the packet's class, and the class of it's codec.
+	 *
+	 * <p>
+	 * If the codec class is an enum, the first constant of the enum is grabbed as the codec. Otherwise this method will
+	 * try to call a no args constructor on the codec class.
+	 * </p>
+	 *
+	 * @param clazz The class of the packet being registered.
+	 * @param codecClass The class of the codec for the packet being registered.
+	 */
 	public static <T extends Packet> PacketRegistration<T> makeCodec(
 			Class<T> clazz, Class<? extends Codec<T>> codecClass
 	) {
@@ -34,6 +51,16 @@ public class PacketRegistration<T extends Packet> {
 		}
 	}
 
+	/**
+	 * Makes registration from the packet's class alone, trying instead to find the codec's class automatically.
+	 *
+	 * <p>
+	 * This method will grab the first inner class which extends {@link Codec} it finds, and call {@link
+	 * #makeCodec(Class, Class)} with it;
+	 * </p>
+	 *
+	 * @see #makeCodec(Class, Class)
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Packet> PacketRegistration<T> findCodec(Class<T> clazz) {
 		Class<? extends Codec<T>> codecClass =

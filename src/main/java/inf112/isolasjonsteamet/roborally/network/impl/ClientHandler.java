@@ -16,6 +16,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Client handler netty pipeline step. Sends packets received from the server onto listeners.
+ */
 @Sharable
 public class ClientHandler extends SimpleChannelInboundHandler<Packet> {
 

@@ -6,8 +6,16 @@ import io.netty.buffer.ByteBuf;
 import java.nio.charset.StandardCharsets;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * Misc helpers to work with {@link ByteBuf}s.
+ */
 public class ByteBufHelper {
 
+	/**
+	 * Read a nullable string from the given byte buffer with a limited about of bytes to read the length.
+	 *
+	 * @param maxSize How many bytes the length should use. Must be one of 1, 2, 3, 4, 8
+	 */
 	@SuppressWarnings("checkstyle:Indentation")
 	@Nullable
 	public static String readString(ByteBuf buf, int maxSize) {
@@ -22,11 +30,19 @@ public class ByteBufHelper {
 		return length == -1 ? null : buf.readCharSequence(length, StandardCharsets.UTF_8).toString();
 	}
 
+	/**
+	 * Read a nullable string from the given byte buffer.
+	 */
 	@Nullable
 	public static String readString(ByteBuf buf) {
 		return readString(buf, 4);
 	}
 
+	/**
+	 * Writes a nullable string to the given byte buffer with a limited about of bytes to write the length.
+	 *
+	 * @param maxSize How many bytes the length should use. Must be one of 1, 2, 3, 4, 8
+	 */
 	public static void writeString(@Nullable String string, ByteBuf buf, int maxSize) {
 		int toWrite = string == null ? -1 : string.length();
 
@@ -43,32 +59,52 @@ public class ByteBufHelper {
 		}
 	}
 
+	/**
+	 * Writes a nullable string to the given byte buffer.
+	 */
 	public static void writeString(@Nullable String string, ByteBuf buf) {
 		writeString(string, buf, 4);
 	}
 
+	/**
+	 * Write an unsigned byte to the given byte buffer.
+	 */
 	public static void writeUnsignedByte(short ubyte, ByteBuf buf) {
 		checkArgument(ubyte >= 0, "Tried to write negative ubyte");
 		buf.writeByte(ubyte);
 	}
 
+	/**
+	 * Write an unsigned short to the given byte buffer.
+	 */
 	public static void writeUnsignedShort(int ushort, ByteBuf buf) {
 		checkArgument(ushort >= 0, "Tried to write negative ushort");
 		//Yes, really, this is correct
 		buf.writeChar(ushort);
 	}
 
+	/**
+	 * Write an unsigned medium to the given byte buffer.
+	 */
 	public static void writeUnsignedMedium(int umedium, ByteBuf buf) {
 		checkArgument(umedium >= 0, "Tried to write negative umedium");
 		checkArgument(umedium <= 16_777_215, "Tried to write overflowing umedium");
 		buf.writeMedium(umedium);
 	}
 
+	/**
+	 * Write an unsigned int to the given byte buffer.
+	 */
 	public static void writeUnsignedInt(long uint, ByteBuf buf) {
 		checkArgument(uint >= 0, "Tried to write negative uint");
 		buf.writeInt((int) uint);
 	}
 
+	/**
+	 * Read an enum from the given byte buffer.
+	 *
+	 * @param enumClass The class of the enum to read.
+	 */
 	public static <T extends Enum<T>> T readEnum(Class<T> enumClass, ByteBuf buf) {
 		int size = enumClass.getEnumConstants().length;
 		int ordinal;
@@ -83,6 +119,9 @@ public class ByteBufHelper {
 		return enumClass.getEnumConstants()[ordinal];
 	}
 
+	/**
+	 * Writes an enum to the given byte buffer.
+	 */
 	public static <T extends Enum<T>> void writeEnum(T enumValue, ByteBuf buf) {
 		int ordinal = enumValue.ordinal();
 		int size = enumValue.getClass().getEnumConstants().length;
