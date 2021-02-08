@@ -43,7 +43,9 @@ public class PacketCodecHandler extends ChannelDuplexHandler {
 	};
 
 	//Max size 64kb
-	private final LengthFieldBasedFrameDecoder decoder = new LengthFieldBasedFrameDecoder(64 * 1024, 0, 3) {
+	private final LengthFieldBasedFrameDecoder decoder = new LengthFieldBasedFrameDecoder(
+			64 * 1024, 0, LENGTH_PLACEHOLDER.length, 0, LENGTH_PLACEHOLDER.length
+	) {
 		@Override
 		protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
 			ByteBuf buf = (ByteBuf) super.decode(ctx, in);
@@ -67,6 +69,7 @@ public class PacketCodecHandler extends ChannelDuplexHandler {
 		for (PacketRegistration<?> registration : PacketProtocol.REGISTRATIONS) {
 			discriminatorMap.put(registration.getClazz(), discriminator);
 			codecMap.put(discriminator, registration.getCodec());
+			discriminator++;
 		}
 	}
 
