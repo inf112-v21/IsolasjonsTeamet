@@ -3,7 +3,7 @@ Simple skeleton with libgdx.
 
 ## Project setup for development
 
-1. Clone the project
+1. **Clone the project**
 2. **Importing the project**
 
    Open the project in IntelliJ. IntelliJ will load the dependencies and other 
