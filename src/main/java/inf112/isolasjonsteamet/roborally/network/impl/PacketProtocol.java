@@ -4,6 +4,7 @@ import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingP
 import inf112.isolasjonsteamet.roborally.network.c2spackets.GameJoinPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameInfoPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 
 public class PacketProtocol {
@@ -18,6 +19,7 @@ public class PacketProtocol {
 			//Server -> Client packets
 			PacketRegistration.findCodec(GameInfoPacket.class),
 			PacketRegistration.findCodec(GameJoinResultPacket.class),
+			PacketRegistration.findCodec(PlayerJoinedGamePacket.class),
 			PacketRegistration.findCodec(ServerClosingPacket.class),
 	};
 }

@@ -7,6 +7,7 @@ import inf112.isolasjonsteamet.roborally.network.c2spackets.GameJoinPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameInfoPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket.JoinResult;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
@@ -56,10 +57,10 @@ public class CodecsSpec {
 	@DisplayName("GameJoinPacket" + SURVIVE_ENCODE_DECODE)
 	class GameJoin {
 
-		@DisplayName("when using string reason")
+		@DisplayName("when using normal name")
 		@Test
 		public void withReason() {
-			assertSurvivesRoundtrip(new GameJoinPacket("some reason"), GameJoinPacket.PacketCodec.INSTANCE);
+			assertSurvivesRoundtrip(new GameJoinPacket("foobar"), GameJoinPacket.PacketCodec.INSTANCE);
 		}
 	}
 
@@ -94,6 +95,17 @@ public class CodecsSpec {
 		@EnumSource
 		public void withResults(JoinResult result) {
 			assertSurvivesRoundtrip(new GameJoinResultPacket(result), GameJoinResultPacket.PacketCodec.INSTANCE);
+		}
+	}
+
+	@Nested
+	@DisplayName("PlayerJoinedGamePacket" + SURVIVE_ENCODE_DECODE)
+	class PlayerJoinedGame {
+
+		@DisplayName("when using normal name")
+		@Test
+		public void withName() {
+			assertSurvivesRoundtrip(new PlayerJoinedGamePacket("foobar"), PlayerJoinedGamePacket.PacketCodec.INSTANCE);
 		}
 	}
 

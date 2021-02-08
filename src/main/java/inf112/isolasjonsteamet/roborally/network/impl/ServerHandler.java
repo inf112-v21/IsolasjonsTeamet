@@ -8,6 +8,7 @@ import inf112.isolasjonsteamet.roborally.network.c2spackets.GameJoinPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameInfoPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket.JoinResult;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import io.netty.channel.Channel;
@@ -38,8 +39,15 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 	private final String gameName;
 
 	private final ChannelGroup gamePlayers = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
+	private final ChannelGroup nonGamePlayers = new DefaultChannelGroup(GlobalEventExecutor.INSTANCE);
 	private final Map<String, Channel> playersToChannel = new ConcurrentHashMap<>();
 	private final Map<Channel, String> channelToPlayers = new ConcurrentHashMap<>();
+
+	private static final ChannelGroupFutureListener GROUP_FIRE_EXCEPTION_ON_FAILURE = future -> {
+		if (!future.isSuccess()) {
+			future.cause().iterator().forEachRemaining(t -> t.getKey().pipeline().fireExceptionCaught(t.getValue()));
+		}
+	};
 
 	public ServerHandler(String gameName) {
 		this.gameName = gameName;
@@ -49,8 +57,12 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 		ctx.writeAndFlush(packet).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
 	}
 
+	public ChannelGroupFuture sendToAllNonPlayers(Server2ClientPacket packet) {
+		return nonGamePlayers.writeAndFlush(packet).addListener(GROUP_FIRE_EXCEPTION_ON_FAILURE);
+	}
+
 	public ChannelGroupFuture sendToAllPlayers(Server2ClientPacket packet) {
-		return gamePlayers.writeAndFlush(packet).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+		return gamePlayers.writeAndFlush(packet).addListener(GROUP_FIRE_EXCEPTION_ON_FAILURE);
 	}
 
 	public void sendToPlayer(String player, Server2ClientPacket packet) {
@@ -66,21 +78,30 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 	}
 
 	public ChannelGroupFuture disconnectAll(@Nullable String reason) {
+		final ChannelGroupFuture allClosedFuture = gamePlayers.newCloseFuture();
 		sendToAllPlayers(new ServerClosingPacket(reason))
 				.addListener((ChannelGroupFutureListener) future -> future.group().close());
-		return gamePlayers.newCloseFuture();
+		return allClosedFuture;
 	}
 
 	@Override
 	public void channelActive(ChannelHandlerContext ctx) throws Exception {
-		var players = ImmutableList.copyOf(playersToChannel.keySet());
-		sendPacket(ctx, new GameInfoPacket(PacketProtocol.PROTOCOL, PacketProtocol.REQUIRED_VERSION, gameName, players));
+		nonGamePlayers.add(ctx.channel());
+		sendPacket(ctx, createGameInfoPacket());
 	}
 
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		String player = channelToPlayers.remove(ctx.channel());
-		playersToChannel.remove(player);
+		if (player != null) {
+			playersToChannel.remove(player);
+		}
+		//TODO: Sent message to other clients
+	}
+
+	private GameInfoPacket createGameInfoPacket() {
+		var players = ImmutableList.copyOf(playersToChannel.keySet());
+		return new GameInfoPacket(PacketProtocol.PROTOCOL, PacketProtocol.REQUIRED_VERSION, gameName, players);
 	}
 
 	private void handleGameJoin(ChannelHandlerContext ctx, GameJoinPacket packet) {
@@ -94,15 +115,22 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 
 		JoinResult result;
 		if (!playersToChannel.containsKey(playerName)) {
-			gamePlayers.add(channel);
-			playersToChannel.put(playerName, channel);
-			channelToPlayers.put(channel, playerName);
 			result = JoinResult.SUCCESS;
 		} else {
 			result = JoinResult.NAME_IN_USE;
 		}
 
 		sendPacket(ctx, new GameJoinResultPacket(result));
+
+		if (result == JoinResult.SUCCESS) {
+			//We add and remove from the channel group in this order so that the new player won't receive either of these packets
+			playersToChannel.put(playerName, channel);
+			channelToPlayers.put(channel, playerName);
+			nonGamePlayers.remove(channel);
+			sendToAllNonPlayers(createGameInfoPacket());
+			sendToAllPlayers(new PlayerJoinedGamePacket(playerName));
+			gamePlayers.add(channel);
+		}
 	}
 
 	@Override

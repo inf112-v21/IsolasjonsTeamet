@@ -12,6 +12,7 @@ import io.netty.channel.ChannelOption;
 import io.netty.channel.group.ChannelGroupFutureListener;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import java.util.concurrent.CompletableFuture;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -43,6 +44,7 @@ public class NettyServerImpl extends Thread implements Server {
 			var codecHandler = new PacketCodecHandler();
 
 			b.group(bossGroup, workerGroup)
+					.channel(NioServerSocketChannel.class)
 					.childHandler(new ChannelInitializer<SocketChannel>() {
 						@Override
 						protected void initChannel(SocketChannel ch) throws Exception {
