@@ -19,9 +19,11 @@ import java.util.concurrent.TimeoutException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 public class NetworkSpec {
+
 	private final NettyServerImpl server = new NettyServerImpl("localhost", 8000, "testgame");
 
 	public <T> T await(CompletableFuture<T> future, int seconds) throws InterruptedException, ExecutionException, TimeoutException {
@@ -29,7 +31,7 @@ public class NetworkSpec {
 	}
 
 	public <T> T await(CompletableFuture<T> future) throws InterruptedException, ExecutionException, TimeoutException {
-		return await(future, 5);
+		return await(future, 10);
 	}
 
 	private <T extends Server2ClientPacket> CompletableFuture<T> nextClientPacket(Client client, Class<T> clazz) {
@@ -38,7 +40,7 @@ public class NetworkSpec {
 		return promise;
 	}
 
-	private <T extends Client2ServerPacket> CompletableFuture<T> nextServerPacket(Server server, Class<T> clazz) {
+	private <T extends Client2ServerPacket> CompletableFuture<T> nextServerPacket(Class<T> clazz) {
 		var promise = new CompletableFuture<T>();
 		server.addListener(ServerPacketListener.of(clazz, o -> promise.complete(o.getPacket())));
 		return promise;
@@ -48,98 +50,135 @@ public class NetworkSpec {
 		return await(nextClientPacket(client, clazz));
 	}
 
-	private <T extends Client2ServerPacket> T awaitNextServerPacket(Server server, Class<T> clazz) throws InterruptedException, ExecutionException, TimeoutException {
-		return await(nextServerPacket(server, clazz));
+	private <T extends Client2ServerPacket> T awaitNextServerPacket(Class<T> clazz) throws InterruptedException, ExecutionException, TimeoutException {
+		return await(nextServerPacket(clazz));
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends Client2ServerPacket> T awaitSendServerPacket(Client client, T packet) throws InterruptedException, ExecutionException, TimeoutException {
+		var promise = nextServerPacket((Class<T>) packet.getClass());
+		client.sendToServer(packet);
+		return await(promise);
+	}
+
+	private JoinResult awaitJoinGame(Client client, String username) throws InterruptedException, ExecutionException, TimeoutException {
+		var joinPacket = new GameJoinPacket(username);
+		var resultPromise = nextClientPacket(client, GameJoinResultPacket.class);
+		var receivedJoinPacket = awaitSendServerPacket(client, joinPacket);
+		assertEquals(joinPacket, receivedJoinPacket);
+		return await(resultPromise).getResult();
+	}
+
+	private void awaitJoinGameSuccessfull(Client client, String username) throws InterruptedException, ExecutionException, TimeoutException {
+		assertEquals(awaitJoinGame(client, username), JoinResult.SUCCESS);
 	}
 
 	@BeforeEach
 	public void startServer() throws InterruptedException, ExecutionException, TimeoutException {
 		server.start();
-		await(server.ready());
+		await(server.ready(), 15);
 	}
 
 	@AfterEach
 	public void stopServer() throws InterruptedException, ExecutionException, TimeoutException {
-		await(server.close(null));
+		await(server.close(null), 15);
+	}
+
+	public NettyClientImpl createClient() {
+		return new NettyClientImpl("localhost", 8000);
+	}
+
+	public void runClient(NettyClientImpl client) throws InterruptedException, ExecutionException, TimeoutException {
+		client.start();
+		await(client.ready(), 15);
 	}
 
 	public Client startClient() throws InterruptedException, ExecutionException, TimeoutException {
-		var client = new NettyClientImpl("localhost", 8000);
-		client.start();
-		await(client.ready());
+		var client = createClient();
+		runClient(client);
 		return client;
 	}
 
 	public Client startClientAfterInfo() throws InterruptedException, ExecutionException, TimeoutException {
-		var client = startClient();
-		awaitNextClientPacket(client, GameInfoPacket.class);
+		var client = createClient();
+		var gameInfoPromise = nextClientPacket(client, GameInfoPacket.class);
+		runClient(client);
+		await(gameInfoPromise);
 		return client;
 	}
 
-	@DisplayName("A GameInfo packet is sent to all clients that connect")
+	@DisplayName("When a client connects, it should receive a GameInfo packet")
 	@Test
 	public void gameInfoSent() throws InterruptedException, ExecutionException, TimeoutException {
-		Client client = startClient();
-		var gameInfo = awaitNextClientPacket(client, GameInfoPacket.class);
+		var client = createClient();
+		var gameInfoPromise = nextClientPacket(client, GameInfoPacket.class);
+		runClient(client);
+		var gameInfo = await(gameInfoPromise);
 		assertEquals(gameInfo.getGameName(), "testgame");
 		assertTrue(gameInfo.getPlayers().isEmpty());
 	}
 
-	@DisplayName("A client which connects after another client has joined the game, should see the previous player in the player list")
-	@Test
-	public void joinGameNextGameInfo() throws InterruptedException, ExecutionException, TimeoutException {
-		var packet = new GameJoinPacket("foobar");
-		var nextJoinPacket = nextServerPacket(server, GameJoinPacket.class);
-		var client1 = startClientAfterInfo();
-		client1.sendToServer(packet);
-		assertEquals(packet, await(nextJoinPacket));
+	@Nested
+	@DisplayName("Given that one player named foobar has already joined the game")
+	class OnePlayerJoined {
 
-		var client2 = startClient();
-		var gameInfo = awaitNextClientPacket(client2, GameInfoPacket.class);
-		assertEquals(gameInfo.getPlayers(), List.of("foobar"));
+		private Client startFoobar() throws InterruptedException, ExecutionException, TimeoutException {
+			var client = startClientAfterInfo();
+			awaitJoinGameSuccessfull(client, "foobar");
+			return client;
+		}
+
+		@DisplayName("When another client connects, it should see the previous player in the player list")
+		@Test
+		public void joinGameNextGameInfo() throws InterruptedException, ExecutionException, TimeoutException {
+			startFoobar();
+
+			var client2 = createClient();
+			var gameInfoPromise = nextClientPacket(client2, GameInfoPacket.class);
+			runClient(client2);
+			var gameInfo = await(gameInfoPromise);
+			assertEquals(gameInfo.getPlayers(), List.of("foobar"));
+		}
+
+		@DisplayName("When another client tries to connect named foobar, it should be denied because the name is in use")
+		@Test
+		public void denySameName() throws InterruptedException, ExecutionException, TimeoutException {
+			startFoobar();
+
+			var client2 = startClientAfterInfo();
+			var result = awaitJoinGame(client2, "foobar");
+
+			assertEquals(result, JoinResult.NAME_IN_USE);
+		}
+
+		@DisplayName("When another player joins a game, existing players should be notified of this")
+		@Test
+		public void notifyExistingPlayers() throws InterruptedException, ExecutionException, TimeoutException {
+			var foobar = startFoobar();
+
+			var client2 = startClientAfterInfo();
+			var nextPlayerJoinedGame = nextClientPacket(foobar, PlayerJoinedGamePacket.class);
+			awaitJoinGameSuccessfull(client2, "foobaz");
+
+			assertEquals(await(nextPlayerJoinedGame).getPlayerName(), "foobaz");
+		}
 	}
 
-	@DisplayName("When two clients connect at the same time, and one joins, the other should receive an updated GameInfo packet")
-	@Test
-	public void twoSimultaneousJoinsUpdatedGameInfo() throws InterruptedException, ExecutionException, TimeoutException {
-		var client1 = startClientAfterInfo();
-		var client2 = startClientAfterInfo();
+	@Nested
+	@DisplayName("Given that one client has already connected")
+	class OnePlayerConnected {
 
-		client1.sendToServer(new GameJoinPacket("foobar"));
-		var nextResult = nextClientPacket(client1, GameJoinResultPacket.class);
-		var nextUpdatedGameInfo = nextClientPacket(client2, GameInfoPacket.class);
+		@DisplayName("When another client connects and joins the game, the original client should receive an updated GameInfo packet")
+		@Test
+		public void twoSimultaneousJoinsUpdatedGameInfo() throws InterruptedException, ExecutionException, TimeoutException {
+			var client1 = startClientAfterInfo();
+			var client2 = startClientAfterInfo();
 
-		assertEquals(await(nextResult).getResult(), JoinResult.SUCCESS);
-		assertEquals(await(nextUpdatedGameInfo).getPlayers(), List.of("foobar"));
-	}
+			var updatedGameInfoPromise = nextClientPacket(client1, GameInfoPacket.class);
+			awaitJoinGameSuccessfull(client2, "foobar");
+			var updatedGameInfo = await(updatedGameInfoPromise);
 
-	@DisplayName("When a player joins a game, existing players should be notified of this")
-	@Test
-	public void notifyExistingPlayers() throws InterruptedException, ExecutionException, TimeoutException {
-		var client1 = startClientAfterInfo();
-		client1.sendToServer(new GameJoinPacket("foobar"));
-		assertEquals(awaitNextClientPacket(client1, GameJoinResultPacket.class).getResult(), JoinResult.SUCCESS);
-
-		var client2 = startClientAfterInfo();
-		client2.sendToServer(new GameJoinPacket("foobaz"));
-		var nextPlayerJoinedGame = nextClientPacket(client1, PlayerJoinedGamePacket.class);
-		var nextResult = nextClientPacket(client2, GameJoinResultPacket.class);
-
-		assertEquals(await(nextPlayerJoinedGame).getPlayerName(), "foobaz");
-		assertEquals(await(nextResult).getResult(), JoinResult.SUCCESS);
-	}
-
-	@DisplayName("Two players should not be able to join with the same name")
-	@Test
-	public void denySameName() throws InterruptedException, ExecutionException, TimeoutException {
-		var client1 = startClientAfterInfo();
-		client1.sendToServer(new GameJoinPacket("foobar"));
-		assertEquals(awaitNextClientPacket(client1, GameJoinResultPacket.class).getResult(), JoinResult.SUCCESS);
-
-		var client2 = startClientAfterInfo();
-		client2.sendToServer(new GameJoinPacket("foobar"));
-		var nextResult = nextClientPacket(client2, GameJoinResultPacket.class);
-
-		assertEquals(await(nextResult).getResult(), JoinResult.NAME_IN_USE);
+			assertEquals(updatedGameInfo.getPlayers(), List.of("foobar"));
+		}
 	}
 }
