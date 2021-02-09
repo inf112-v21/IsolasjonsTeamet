@@ -65,7 +65,8 @@ public interface Client {
 	 * @return The result of joining the game.
 	 */
 	default CompletableFuture<JoinResult> joinGame(String playerName) {
-		var response = ClientPacketListener.next(this, GameJoinResultPacket.class).thenApply(GameJoinResultPacket::getResult);
+		var response =
+				ClientPacketListener.next(this, GameJoinResultPacket.class).thenApply(GameJoinResultPacket::getResult);
 		sendToServer(new GameJoinPacket(playerName));
 		return response;
 	}

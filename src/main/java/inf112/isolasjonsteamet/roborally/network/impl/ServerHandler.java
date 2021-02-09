@@ -53,7 +53,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 		}
 	};
 
-	public ServerHandler(String gameName) {
+	ServerHandler(String gameName) {
 		this.gameName = gameName;
 	}
 
@@ -61,27 +61,30 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 		ctx.writeAndFlush(packet).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
 	}
 
-	public ChannelGroupFuture sendToAllNonPlayers(Server2ClientPacket packet) {
+	ChannelGroupFuture sendToAllNonPlayers(Server2ClientPacket packet) {
 		return nonGamePlayers.writeAndFlush(packet).addListener(GROUP_FIRE_EXCEPTION_ON_FAILURE);
 	}
 
-	public ChannelGroupFuture sendToAllPlayers(Server2ClientPacket packet) {
+	ChannelGroupFuture sendToAllPlayers(Server2ClientPacket packet) {
 		return gamePlayers.writeAndFlush(packet).addListener(GROUP_FIRE_EXCEPTION_ON_FAILURE);
 	}
 
-	public void sendToPlayer(String player, Server2ClientPacket packet) {
-		playersToChannel.get(player).writeAndFlush(packet).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
+	void sendToPlayer(String player, Server2ClientPacket packet) {
+		playersToChannel
+				.get(player)
+				.writeAndFlush(packet)
+				.addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
 	}
 
-	public void addListener(ServerPacketListener<?> listener) {
+	void addListener(ServerPacketListener<?> listener) {
 		listeners.add(listener);
 	}
 
-	public void removeListener(ServerPacketListener<?> listener) {
+	void removeListener(ServerPacketListener<?> listener) {
 		listeners.remove(listener);
 	}
 
-	public ChannelGroupFuture disconnectAll(@Nullable String reason) {
+	ChannelGroupFuture disconnectAll(@Nullable String reason) {
 		final ChannelGroupFuture allClosedFuture = gamePlayers.newCloseFuture();
 		sendToAllPlayers(new ServerClosingPacket(reason))
 				.addListener((ChannelGroupFutureListener) future -> future.group().close());
@@ -105,7 +108,7 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 
 	private GameInfoPacket createGameInfoPacket() {
 		var players = ImmutableList.copyOf(playersToChannel.keySet());
-		return new GameInfoPacket(PacketProtocol.PROTOCOL, PacketProtocol.REQUIRED_VERSION, gameName, players);
+		return GameInfoPacket.ofThisVersion(gameName, players);
 	}
 
 	private void handleGameJoin(ChannelHandlerContext ctx, GameJoinPacket packet) {
@@ -127,7 +130,8 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 		sendPacket(ctx, new GameJoinResultPacket(result));
 
 		if (result == JoinResult.SUCCESS) {
-			//We add and remove from the channel group in this order so that the new player won't receive either of these packets
+			// We add and remove from the channel group in this order so that
+			// the new player won't receive either of these packets
 			playersToChannel.put(playerName, channel);
 			channelToPlayers.put(channel, playerName);
 			nonGamePlayers.remove(channel);

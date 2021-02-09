@@ -20,7 +20,7 @@ public class GameInfoPacket implements Server2ClientPacket {
 	private final String gameName;
 	private final List<String> players;
 
-	public GameInfoPacket(int protocol, String requiredVersion, String gameName, List<String> players) {
+	private GameInfoPacket(int protocol, String requiredVersion, String gameName, List<String> players) {
 		this.protocol = protocol;
 		this.requiredVersion = requiredVersion;
 		this.gameName = gameName;

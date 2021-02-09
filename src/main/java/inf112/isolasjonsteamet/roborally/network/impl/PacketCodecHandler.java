@@ -62,7 +62,7 @@ public class PacketCodecHandler extends ChannelDuplexHandler {
 		}
 	};
 
-	public PacketCodecHandler() {
+	PacketCodecHandler() {
 		//noinspection ConstantConditions
 		if (PacketProtocol.REGISTRATIONS.length > 255) {
 			throw new IllegalArgumentException("Too many packet registrations");

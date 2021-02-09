@@ -28,19 +28,19 @@ public class ClientHandler extends SimpleChannelInboundHandler<Packet> {
 
 	private ChannelHandlerContext ctx;
 
-	public ChannelFuture sendMessage(Client2ServerPacket packet) {
+	ChannelFuture sendMessage(Client2ServerPacket packet) {
 		return ctx.writeAndFlush(packet).addListener(ChannelFutureListener.FIRE_EXCEPTION_ON_FAILURE);
 	}
 
-	public void addListener(ClientPacketListener<?> listener) {
+	void addListener(ClientPacketListener<?> listener) {
 		listeners.add(listener);
 	}
 
-	public void removeListener(ClientPacketListener<?> listener) {
+	void removeListener(ClientPacketListener<?> listener) {
 		listeners.remove(listener);
 	}
 
-	public ChannelFuture disconnect(@Nullable String reason) {
+	ChannelFuture disconnect(@Nullable String reason) {
 		sendMessage(new ClientDisconnectingPacket(reason)).addListener(ChannelFutureListener.CLOSE);
 		return ctx.channel().closeFuture();
 	}
