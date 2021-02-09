@@ -5,15 +5,26 @@ on:
   - pull_request
 
 jobs:
-#  gradle-checkstyle:
-#    name: Checkstyle
-#    runs-on: ubuntu-latest
-#
-#    steps:
-#      - uses: actions/checkout@v2
-#      - uses: actions/setup-java@v1
-#        with:
-#          java-version: '15' # The JDK version to make available on the path.
+  gradle-checkstyle:
+    name: Checkstyle
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-java@v1
+        with:
+          java-version: '15'
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Run checkstyle
+        run: ./gradlew checkstyleMain
 
   gradle-test:
     name: Run ${{ matrix.os }} tests
@@ -26,6 +37,15 @@ jobs:
       - uses: actions/checkout@v2
       - uses: actions/setup-java@v1
         with:
-          java-version: '15' # The JDK version to make available on the path.
+          java-version: '15'
+      - name: Cache Gradle packages
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
       - name: Run tests
         run: ./gradlew test
