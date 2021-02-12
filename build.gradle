@@ -22,6 +22,8 @@ java {
 checkstyle {
     configDirectory = rootProject.projectDir
     toolVersion = "8.40"
+    ignoreFailures = false
+    maxWarnings = 0
 }
 
 repositories {
