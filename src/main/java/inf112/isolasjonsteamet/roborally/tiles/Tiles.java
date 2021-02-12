@@ -9,8 +9,6 @@ import inf112.isolasjonsteamet.roborally.actions.RotateRight;
  */
 public class Tiles {
 
-	//public static final TileType FOO = new TileType(new MoveForward(1));
-
     public static final TileType HOLE =  new TileType(); //TODO: Add actions to this tile
     public static final TileType LASER =  new TileType(); //TODO: Add actions to this tile
     public static final TileType FLAG =  new TileType(); //TODO: Add actions to this tile
