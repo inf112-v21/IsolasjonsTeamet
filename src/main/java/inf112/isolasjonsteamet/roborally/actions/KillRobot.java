@@ -4,6 +4,6 @@ package inf112.isolasjonsteamet.roborally.actions;
  * Kill robot is an action that let's a player kill a robot or the main master robot.
  *
  */
-public class KillRobot implements Action{
+public class KillRobot implements Action {
 
 }
