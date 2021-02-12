@@ -1,4 +1,4 @@
-package inf112.skeleton.app;
+package inf112.isolasjonsteamet.roborally.app;
 
 import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
