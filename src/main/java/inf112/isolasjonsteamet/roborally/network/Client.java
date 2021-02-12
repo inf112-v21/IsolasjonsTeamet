@@ -54,6 +54,7 @@ public interface Client {
 				promise.completeExceptionally(new ProtocolException(info.getProtocol(), info.getRequiredVersion()));
 			}
 		});
+		client.start();
 
 		return promise;
 	}
