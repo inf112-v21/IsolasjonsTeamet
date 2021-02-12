@@ -15,10 +15,11 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 
-import java.util.Vector;
-
+/**
+ * Game class that starts a new game.
+ */
 public class HelloWorld extends InputAdapter implements ApplicationListener {
-    private SpriteBatch batch;
+	private SpriteBatch batch;
     private BitmapFont font;
 
     public TiledMap map;
@@ -35,7 +36,11 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
     public TiledMapTileLayer.Cell defaultTileCell;
     public Vector2 playerVec;
 
+
     @Override
+	/**
+	 * Create method used to create new items and elements used in the game.
+	 */
     public void create() {
         batch = new SpriteBatch();
         font = new BitmapFont();
@@ -80,13 +85,19 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
         mapRenderer.setView(camera);
     }
 
-    @Override
+	/**
+	 * Method for disposal of items.
+	 */
+	@Override
     public void dispose() {
         batch.dispose();
         font.dispose();
     }
 
-    @Override
+	/**
+	 * Render method that places new and changes current items on the board, dynamically.
+	 */
+	@Override
     public void render() {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
@@ -107,6 +118,9 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
     }
 
 
+    /**
+	 * keyUp method that listens for keys released on the keyboard, and perfoms wanted action based on conditions.
+     */
     @Override
     public boolean keyUp(int keycode) {
         switch (keycode) {
@@ -153,15 +167,26 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
         return false;
     }
 
-    @Override
+	/**
+	 * Method for resizing.
+	 * @param width
+	 * @param height
+	 */
+	@Override
     public void resize(int width, int height) {
     }
 
-    @Override
+	/**
+	 * Pause method to pause an active game.
+	 */
+	@Override
     public void pause() {
     }
 
-    @Override
+	/**
+	 * Resume method to resume paused game.
+	 */
+	@Override
     public void resume() {
     }
 }
