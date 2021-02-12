@@ -1,6 +1,7 @@
 plugins {
   id 'application'
   id 'java-library'
+  id 'checkstyle'
 }
 
 group = 'inf112.skeleton.app'
@@ -19,6 +20,11 @@ java {
     toolchain {
         languageVersion = JavaLanguageVersion.of(15)
     }
+}
+
+checkstyle {
+    configDirectory = rootProject.projectDir
+    toolVersion = "8.40"
 }
 
 repositories {
