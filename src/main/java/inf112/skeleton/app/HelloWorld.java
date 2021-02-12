@@ -33,7 +33,7 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
     public TiledMapTileLayer.Cell playerWonCell;
     public TiledMapTileLayer.Cell playerDiedCell;
     public TiledMapTileLayer.Cell playerCell;
-    public TiledMapTileLayer.Cell defaultTileCell;
+    public TiledMapTileLayer.Cell transparentCell;
     public Vector2 playerVec;
 
 
@@ -61,27 +61,32 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
 
 
         //Static tiles for playing, dead and winning player cells
-        StaticTiledMapTile defaultTileTexture = new StaticTiledMapTile(tReg2[15][4]);
+        StaticTiledMapTile transparentTileTexture = new StaticTiledMapTile(tReg2[15][4]);
         StaticTiledMapTile staticPlayTile = new StaticTiledMapTile(tReg[0][0]);
         StaticTiledMapTile staticWonTile = new StaticTiledMapTile(tReg[0][2]);
         StaticTiledMapTile staticDiedTile = new StaticTiledMapTile(tReg[0][1]);
 
-        defaultTileCell = new TiledMapTileLayer.Cell().setTile(defaultTileTexture);
+        //Creating new instances of our field variables
+		transparentCell = new TiledMapTileLayer.Cell().setTile(transparentTileTexture);
         playerWonCell = new TiledMapTileLayer.Cell().setTile(staticWonTile);
         playerDiedCell = new TiledMapTileLayer.Cell().setTile(staticDiedTile);
         playerCell = new TiledMapTileLayer.Cell().setTile(staticPlayTile);
         playerVec = new Vector2(0,0);
 
+        //Key input handling
         Gdx.input.setInputProcessor(this);
 
+        //Code for our camera on the board, positions and viewangle
         camera = new OrthographicCamera();
         mapRenderer = new OrthogonalTiledMapRenderer(map, (float) 1/300);
         camera.setToOrtho(false, (float) 5, 5);
         camera.position.set(camera.viewportWidth/2,camera.viewportHeight/2, 0);
         camera.update();
 
+        //Create a new playerCell
         playerLayer.setCell(0,0, playerCell);
 
+        //Set our current view to camera
         mapRenderer.setView(camera);
     }
 
@@ -102,18 +107,17 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
         Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
-        //playerLayer.setCell(1,2, playerCell);
-        //playerLayer.setCell(0,2, playerWonCell);
-        //playerLayer.setCell(0,4, playerDiedCell);
-
+        //Check if a win condition is met
         if(flagLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
             playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerWonCell);
 
         }
+        //Check if a loss condition is met
         if(holeLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
             playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerDiedCell);
         }
 
+        //Render changes
         mapRenderer.render();
     }
 
@@ -129,7 +133,7 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
                     return true;
                 }
                 playerLayer.setCell((int) playerVec.x, (int) playerVec.y + 1, playerCell);
-                playerLayer.setCell((int) playerVec.x, (int) playerVec.y, defaultTileCell);
+                playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
                 playerVec.set(playerVec.x, playerVec.y + 1);
                 System.out.println("W-Pressed; Player moved up");
                 return true;
@@ -139,7 +143,7 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
                     return true;
                 }
                 playerLayer.setCell((int) playerVec.x-1, (int) playerVec.y, playerCell);
-                playerLayer.setCell((int) playerVec.x, (int) playerVec.y, defaultTileCell);
+                playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
                 playerVec.set(playerVec.x-1,playerVec.y);
                 System.out.println("A-Pressed; Player moved left");
                 return true;
@@ -149,7 +153,7 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
                     return true;
                 }
                 playerLayer.setCell((int) playerVec.x, (int) playerVec.y - 1, playerCell);
-                playerLayer.setCell((int) playerVec.x, (int) playerVec.y, defaultTileCell);
+                playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
                 playerVec.set(playerVec.x, playerVec.y -1);
                 System.out.println("S-Pressed; Player moved down");
                 return true;
@@ -159,7 +163,7 @@ public class HelloWorld extends InputAdapter implements ApplicationListener {
                     return true;
                 }
                 playerLayer.setCell((int) playerVec.x+1, (int) playerVec.y, playerCell);
-                playerLayer.setCell((int) playerVec.x, (int) playerVec.y, defaultTileCell);
+                playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
                 playerVec.set(playerVec.x+1,playerVec.y);
                 System.out.println("D-Pressed; Player moved right");
                 return true;
