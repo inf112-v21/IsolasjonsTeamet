@@ -9,7 +9,7 @@ import inf112.isolasjonsteamet.roborally.actions.RotateRight;
  */
 public class Cards {
 
-	//public static final CardType FOO = new CardType(123, new MoveForward(1), new RotateLeft());
+
 	public static final CardType MOVE_ONE = new CardType(18, new MoveForward(1));
 	public static final CardType MOVE_TWO = new CardType(12, new MoveForward(2));
 	public static final CardType MOVE_THREE = new CardType(6, new MoveForward(3));
