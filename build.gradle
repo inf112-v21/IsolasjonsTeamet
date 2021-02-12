@@ -9,6 +9,9 @@ version = '1.0-SNAPSHOT'
 
 description = """mvn-app"""
 
+application.mainClass = 'inf112.skeleton.app.Main'
+
+
 tasks.withType(JavaCompile) {
 	options.encoding = 'UTF-8'
 }
