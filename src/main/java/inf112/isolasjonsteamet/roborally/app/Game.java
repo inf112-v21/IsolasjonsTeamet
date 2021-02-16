@@ -21,7 +21,7 @@ import com.badlogic.gdx.math.Vector2;
 /**
  * Game class that starts a new game.
  */
-public class HelloWorld extends InputAdapter implements ApplicationListener {
+public class Game extends InputAdapter implements ApplicationListener {
 
 	private SpriteBatch batch;
 	private BitmapFont font;
