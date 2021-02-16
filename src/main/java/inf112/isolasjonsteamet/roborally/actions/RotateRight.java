@@ -1,8 +1,15 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
+import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.players.Player;
+
 /**
  * An action which indicates the player will rotate to the right.
  */
 public class RotateRight implements Action {
 
+	@Override
+	public void perform(Board board, Player player) {
+
+	}
 }
