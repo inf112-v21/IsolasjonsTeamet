@@ -1,89 +1,42 @@
 package inf112.isolasjonsteamet.roborally.players;
 
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.utils.OrderedSet.OrderedSetIterator;
 import inf112.isolasjonsteamet.roborally.util.Coords;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
-public class Player implements PlayerImpl {
-	public int playerID;
-	public String playerName;
-	public Orientation direction;
-	public int life;
-	private Coords pos;
-	private Coords nextPos;
-
-	public Player() {
-		this.playerID = playerID;
-		this.playerName = playerName;
-		this.life = 5;
-		this.direction = Orientation.EAST;
-	}
+/**
+ * A player on the board.
+ */
+public interface Player {
 
 	/**
 	 * Get the position of a player.
+	 * @return
 	 */
-	@Override
-	public Coords getPos() {
-		return pos;
-	}
+	Coords getPos();
 
 	/**
-	 * Get the position of a player.
+	 * Sets the position of a player.
+	 * @param c
 	 */
-	@Override
-	public void setPos(Coords c) {
-		this.pos = c;
-	}
+	void setPos(Coords c);
 
 	/**
 	 * Move the player on the board.
+	 * @param amount
 	 */
-	@Override
-	public void move(Vector2 amount) {
-
-	}
+	void move(Vector2 amount);
 
 	/**
 	 * Returns the name of the player
+	 * @return
 	 */
-	@Override
-	public String getName() {
-		return playerName;
-	}
+	String getName();
+	Orientation getDir();
 
-	/**
-	 * Gets direction of the player.
-	 * @return direction
-	 */
-	@Override
-	public Orientation getDir() {
-		return direction;
-	}
+	void setDir(Orientation dir);
 
-	/**
-	 * Sets direction of the player.
-	 * @param dir
-	 */
-	@Override
-	public void setDir(Orientation dir) {
-		this.direction = dir;
-	}
+	void setMovDir(Orientation movingDir);
 
-	/**
-	 * Sets moving direction of the player.
-	 * @param movingDir
-	 */
-	@Override
-	public void setMovDir(Orientation movingDir) {
-
-	}
-
-	/**
-	 * Sets next positions of the player.
-	 * @param c
-	 */
-	public void setNextPos(Coords c) {
-		this.nextPos  = c;
-	}
+	void setNextPos(Coords c);
 }

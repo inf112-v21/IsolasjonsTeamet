@@ -1,15 +1,15 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
-import inf112.isolasjonsteamet.roborally.board.BoardImpl;
-import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
+import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.players.Player;
 
 /**
  * Damage is an action that damages a robot x much according to the game obstacles.
  */
-public class Damage implements ActionImpl {
+public class Damage implements Action {
 
 	@Override
-	public void perform(BoardImpl board, PlayerImpl player) {
+	public void perform(Board board, Player player) {
 		// TODO
 		//player.damage();
 

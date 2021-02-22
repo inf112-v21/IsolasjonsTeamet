@@ -1,10 +1,8 @@
 package inf112.isolasjonsteamet.roborally.cards;
 
-import inf112.isolasjonsteamet.roborally.actions.ActionImpl;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateLeft;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
-import javax.swing.plaf.basic.BasicArrowButton;
 
 /**
  * Holds all the different known card types.

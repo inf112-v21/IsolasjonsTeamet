@@ -1,13 +1,13 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
-import inf112.isolasjonsteamet.roborally.board.BoardImpl;
-import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
+import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
 /**
  * An action which indicates the player will rotate to the left.
  */
-public class RotateLeft implements ActionImpl {
+public class RotateLeft implements Action {
 
 	public Orientation direction;
 
@@ -17,7 +17,7 @@ public class RotateLeft implements ActionImpl {
 	}
 
 	@Override
-	public void perform(BoardImpl board, PlayerImpl player) {
+	public void perform(Board board, Player player) {
 		switch (player.getDir()) {
 			case NORTH:
 				player.setDir(Orientation.WEST);

@@ -1,13 +1,13 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
-import inf112.isolasjonsteamet.roborally.board.BoardImpl;
-import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
+import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.players.Player;
 
 /**
  * Checkpoint is an action that let's us keep track of when a player has reached a chekcpoint.
  *
  */
-public class CheckPoint implements ActionImpl {
+public class CheckPoint implements Action {
 
 	private int id;
 
@@ -19,7 +19,7 @@ public class CheckPoint implements ActionImpl {
 	 * Perfom an Action on the board.
 	 */
 	@Override
-	public void perform(BoardImpl board, PlayerImpl player) {
+	public void perform(Board board, Player player) {
 
 	}
 }

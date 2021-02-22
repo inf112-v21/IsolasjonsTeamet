@@ -1,15 +1,14 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
-import inf112.isolasjonsteamet.roborally.board.BoardImpl;
+import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.players.Player;
-import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.util.Coords;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
 /**
  * An action which indicates the player will move forward.
  */
-public class Move implements ActionImpl {
+public class Move implements Action {
 
 	private Orientation direction;
 
@@ -22,7 +21,7 @@ public class Move implements ActionImpl {
 	}
 
 	@Override
-	public void perform(BoardImpl board, PlayerImpl player) {
+	public void perform(Board board, Player player) {
 
 		switch (direction) {
 			case NORTH:

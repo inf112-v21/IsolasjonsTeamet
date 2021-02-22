@@ -1,13 +1,13 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
-import inf112.isolasjonsteamet.roborally.board.BoardImpl;
-import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
+import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
 /**
  * A Class that provides the actions with directions and positions of a player.
  */
-public class Direction implements ActionImpl {
+public class Direction implements Action {
 
 	private final Orientation direction;
 
@@ -16,7 +16,7 @@ public class Direction implements ActionImpl {
 	}
 
 	@Override
-	public void perform(BoardImpl board, PlayerImpl player) {
+	public void perform(Board board, Player player) {
 
 	}
 

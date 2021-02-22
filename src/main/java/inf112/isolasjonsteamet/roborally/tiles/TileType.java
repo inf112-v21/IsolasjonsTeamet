@@ -1,7 +1,7 @@
 package inf112.isolasjonsteamet.roborally.tiles;
 
 import com.google.common.collect.ImmutableList;
-import inf112.isolasjonsteamet.roborally.actions.ActionImpl;
+import inf112.isolasjonsteamet.roborally.actions.Action;
 import java.util.List;
 
 /**
@@ -9,13 +9,13 @@ import java.util.List;
  */
 public class TileType {
 
-	private final List<ActionImpl> actions;
+	private final List<Action> actions;
 
-	public TileType(List<ActionImpl> actions) {
+	public TileType(List<Action> actions) {
 		this.actions = ImmutableList.copyOf(actions);
 	}
 
-	public TileType(ActionImpl... actions) {
+	public TileType(Action... actions) {
 		this.actions = ImmutableList.copyOf(actions);
 	}
 }

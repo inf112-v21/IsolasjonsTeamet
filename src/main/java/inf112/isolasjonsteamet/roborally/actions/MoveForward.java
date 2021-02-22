@@ -1,9 +1,9 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
-import inf112.isolasjonsteamet.roborally.board.BoardImpl;
-import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
+import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.players.Player;
 
-public class MoveForward implements ActionImpl{
+public class MoveForward implements Action {
 
 	int numMoves;
 
@@ -15,7 +15,7 @@ public class MoveForward implements ActionImpl{
 	 * Perfom an Action on the board.
 	 */
 	@Override
-	public void perform(BoardImpl board, PlayerImpl player) {
+	public void perform(Board board, Player player) {
 		player.setMovDir(player.getDir());
 		new Move().perform(board, player);
 	}
