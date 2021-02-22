@@ -1,15 +1,15 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
-import inf112.isolasjonsteamet.roborally.board.Board;
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.board.BoardImpl;
+import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 
 /**
  * Is an Action that let's the player destroy things on the board.
  */
-public class Destruction implements Action {
+public class Destruction implements ActionImpl {
 
 	@Override
-	public void perform(Board board, Player player) {
+	public void perform(BoardImpl board, PlayerImpl player) {
 
 	}
 }

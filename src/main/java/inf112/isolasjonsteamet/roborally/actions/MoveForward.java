@@ -1,21 +1,23 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
-import inf112.isolasjonsteamet.roborally.board.Board;
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.board.BoardImpl;
+import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 
-/**
- * An action which indicates the player will move forward.
- */
-public class MoveForward implements Action {
+public class MoveForward implements ActionImpl{
 
-	private final int amount;
+	int numMoves;
 
-	public MoveForward(int amount) {
-		this.amount = amount;
+	public MoveForward(int numMoves) {
+		this.numMoves = numMoves;
 	}
 
+	/**
+	 * Perfom an Action on the board.
+	 */
 	@Override
-	public void perform(Board board, Player player) {
-
+	public void perform(BoardImpl board, PlayerImpl player) {
+		player.setMovDir(player.getDir());
+		new Move().perform(board, player);
 	}
+
 }

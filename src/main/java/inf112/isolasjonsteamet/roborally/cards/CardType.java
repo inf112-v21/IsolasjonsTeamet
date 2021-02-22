@@ -1,7 +1,7 @@
 package inf112.isolasjonsteamet.roborally.cards;
 
 import com.google.common.collect.ImmutableList;
-import inf112.isolasjonsteamet.roborally.actions.Action;
+import inf112.isolasjonsteamet.roborally.actions.ActionImpl;
 import java.util.List;
 
 /**
@@ -10,14 +10,14 @@ import java.util.List;
 public class CardType {
 
 	private final int priority;
-	private final List<Action> actions;
+	private final List<ActionImpl> actions;
 
-	public CardType(int priority, List<Action> actions) {
+	public CardType(int priority, List<ActionImpl> actions) {
 		this.priority = priority;
 		this.actions = ImmutableList.copyOf(actions);
 	}
 
-	public CardType(int priority, Action... actions) {
+	public CardType(int priority, ActionImpl... actions) {
 		this.priority = priority;
 		this.actions = ImmutableList.copyOf(actions);
 	}
@@ -26,7 +26,7 @@ public class CardType {
 		return priority;
 	}
 
-	public List<Action> getActions() {
+	public List<ActionImpl> getActions() {
 		return actions;
 	}
 }
