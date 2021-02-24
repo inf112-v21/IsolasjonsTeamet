@@ -8,7 +8,7 @@ public enum Orientation {
 
 	public Orientation opposingDir;
 
-	public Orientation getOpposingDir(){
+	public Orientation getOpposingDir() {
 		return opposingDir;
 	}
 
@@ -18,5 +18,4 @@ public enum Orientation {
 		NORTH.opposingDir = SOUTH;
 		SOUTH.opposingDir = NORTH;
 	}
-
 }

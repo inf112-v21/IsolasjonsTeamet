@@ -31,6 +31,8 @@ public class RotateRight implements Action {
 			case WEST:
 				player.setDir(Orientation.NORTH);
 				break;
+			default:
+				break;
 		}
 		System.out.println(player.getName() + " rotated right.");
 	}

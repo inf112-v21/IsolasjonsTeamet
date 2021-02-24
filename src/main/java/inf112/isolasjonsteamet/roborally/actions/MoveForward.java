@@ -3,6 +3,9 @@ package inf112.isolasjonsteamet.roborally.actions;
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.players.Player;
 
+/**
+ * Class to move or item forward.
+ */
 public class MoveForward implements Action {
 
 	int numMoves;

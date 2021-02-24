@@ -1,19 +1,26 @@
 package inf112.isolasjonsteamet.roborally.players;
 
 import com.badlogic.gdx.math.Vector2;
-import inf112.isolasjonsteamet.roborally.util.Coords;
+import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
+/**
+ * Player class that holds player methods.
+ */
 public class PlayerImpl implements Player {
-	public int playerID;
+
+	public int id;
 	public String playerName;
 	public Orientation direction;
 	public int life;
-	private Coords pos;
-	private Coords nextPos;
+	private Coordinate pos;
+	private Coordinate nextPos;
 
+	/**
+	 * Constructor of a new player.
+	 */
 	public PlayerImpl() {
-		this.playerID = playerID;
+		this.id = id;
 		this.playerName = playerName;
 		this.life = 5;
 		this.direction = Orientation.EAST;
@@ -23,7 +30,7 @@ public class PlayerImpl implements Player {
 	 * Get the position of a player.
 	 */
 	@Override
-	public Coords getPos() {
+	public Coordinate getPos() {
 		return pos;
 	}
 
@@ -31,7 +38,7 @@ public class PlayerImpl implements Player {
 	 * Get the position of a player.
 	 */
 	@Override
-	public void setPos(Coords c) {
+	public void setPos(Coordinate c) {
 		this.pos = c;
 	}
 
@@ -44,7 +51,7 @@ public class PlayerImpl implements Player {
 	}
 
 	/**
-	 * Returns the name of the player
+	 * Returns the name of the player.
 	 */
 	@Override
 	public String getName() {
@@ -53,6 +60,7 @@ public class PlayerImpl implements Player {
 
 	/**
 	 * Gets direction of the player.
+	 *
 	 * @return direction
 	 */
 	@Override
@@ -62,7 +70,6 @@ public class PlayerImpl implements Player {
 
 	/**
 	 * Sets direction of the player.
-	 * @param dir
 	 */
 	@Override
 	public void setDir(Orientation dir) {
@@ -71,7 +78,6 @@ public class PlayerImpl implements Player {
 
 	/**
 	 * Sets moving direction of the player.
-	 * @param movingDir
 	 */
 	@Override
 	public void setMovDir(Orientation movingDir) {
@@ -80,10 +86,8 @@ public class PlayerImpl implements Player {
 
 	/**
 	 * Sets next positions of the player.
-	 * @param c
 	 */
-	public void setNextPos(Coords c) {
-		this.nextPos  = c;
+	public void setNextPos(Coordinate c) {
+		this.nextPos = c;
 	}
-
 }

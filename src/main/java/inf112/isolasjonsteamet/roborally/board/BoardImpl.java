@@ -6,9 +6,12 @@ import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import java.util.List;
 import javax.annotation.Nullable;
 
-public class BoardImpl implements Board{
+/**
+ * Board class that will create and manipulate boards.
+ */
+public class BoardImpl implements Board {
 
-	public BoardImpl(){
+	public BoardImpl() {
 
 	}
 
@@ -35,5 +38,4 @@ public class BoardImpl implements Board{
 	public List<TileType> getTilesAt(Vector2 pos) {
 		return null;
 	}
-
 }

@@ -10,7 +10,6 @@ public interface Action {
 
 	/**
 	 * Perfom an Action on the board.
-	 * @param player
 	 */
 	void perform(Board board, Player player);
 }

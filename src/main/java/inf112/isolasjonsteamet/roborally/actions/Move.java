@@ -2,7 +2,7 @@ package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.players.Player;
-import inf112.isolasjonsteamet.roborally.util.Coords;
+import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
 /**
@@ -25,16 +25,18 @@ public class Move implements Action {
 
 		switch (direction) {
 			case NORTH:
-				player.setNextPos(new Coords(player.getPos().getX(), player.getPos().getY() - 1));
+				player.setNextPos(new Coordinate(player.getPos().getX(), player.getPos().getY() - 1));
 				break;
 			case SOUTH:
-				player.setNextPos(new Coords(player.getPos().getX(), player.getPos().getY() + 1));
+				player.setNextPos(new Coordinate(player.getPos().getX(), player.getPos().getY() + 1));
 				break;
 			case EAST:
-				player.setNextPos(new Coords(player.getPos().getX() + 1, player.getPos().getY()));
+				player.setNextPos(new Coordinate(player.getPos().getX() + 1, player.getPos().getY()));
 				break;
 			case WEST:
-				player.setNextPos(new Coords(player.getPos().getX() - 1, player.getPos().getY()));
+				player.setNextPos(new Coordinate(player.getPos().getX() - 1, player.getPos().getY()));
+				break;
+			default:
 				break;
 		}
 	}

@@ -1,7 +1,7 @@
 package inf112.isolasjonsteamet.roborally.players;
 
 import com.badlogic.gdx.math.Vector2;
-import inf112.isolasjonsteamet.roborally.util.Coords;
+import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
 /**
@@ -11,33 +11,29 @@ public interface Player {
 
 	/**
 	 * Get the position of a player.
-	 * @return
 	 */
-	Coords getPos();
+	Coordinate getPos();
 
 	/**
 	 * Sets the position of a player.
-	 * @param c
 	 */
-	void setPos(Coords c);
+	void setPos(Coordinate c);
 
 	/**
 	 * Move the player on the board.
-	 * @param amount
 	 */
 	void move(Vector2 amount);
 
 	/**
-	 * Returns the name of the player
-	 * @return
+	 * Returns the name of the player.
 	 */
 	String getName();
+
 	Orientation getDir();
 
 	void setDir(Orientation dir);
 
 	void setMovDir(Orientation movingDir);
 
-	void setNextPos(Coords c);
-
+	void setNextPos(Coordinate c);
 }
