@@ -85,4 +85,5 @@ public class PlayerImpl implements Player {
 	public void setNextPos(Coords c) {
 		this.nextPos  = c;
 	}
+
 }

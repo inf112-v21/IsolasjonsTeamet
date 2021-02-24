@@ -39,4 +39,5 @@ public interface Player {
 	void setMovDir(Orientation movingDir);
 
 	void setNextPos(Coords c);
+
 }

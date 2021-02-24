@@ -13,10 +13,10 @@ public class Main {
 	 */
 	public static void main(String[] args) {
 		Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
-		cfg.setTitle("First Tile Map");
+		cfg.setTitle("RoboRally");
 		cfg.setWindowedMode(500, 500);
 
-		//Creates a new instance of HelloWorld, our game
+		//Creates a new instance of Game, our roborally game
 		new Lwjgl3Application(new Game(), cfg);
 	}
 }

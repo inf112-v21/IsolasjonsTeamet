@@ -177,7 +177,6 @@ public class Game extends InputAdapter implements ApplicationListener {
 			default:
 				return false;
 		}
-
 	}
 
 	/**
