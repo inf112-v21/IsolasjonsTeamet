@@ -11,12 +11,11 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
-import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
+import inf112.isolasjonsteamet.roborally.board.BoardImpl;
 
 /**
  * Game class that starts a new game.
@@ -25,13 +24,10 @@ public class Game extends InputAdapter implements ApplicationListener {
 
 	private SpriteBatch batch;
 	private BitmapFont font;
-	public TiledMap map;
-	public TiledMapTileLayer boardLayer;
-	public TiledMapTileLayer playerLayer;
-	public TiledMapTileLayer holeLayer;
-	public TiledMapTileLayer flagLayer;
 	public OrthogonalTiledMapRenderer mapRenderer;
 	public OrthographicCamera camera;
+
+	public BoardImpl board;
 
 	public TiledMapTileLayer.Cell playerWonCell;
 	public TiledMapTileLayer.Cell playerDiedCell;
@@ -54,12 +50,9 @@ public class Game extends InputAdapter implements ApplicationListener {
 		font = new BitmapFont();
 		font.setColor(Color.RED);
 
-		map = new TmxMapLoader().load("example.tmx");
-
-		boardLayer = (TiledMapTileLayer) map.getLayers().get("Board");
-		playerLayer = (TiledMapTileLayer) map.getLayers().get("Player");
-		holeLayer = (TiledMapTileLayer) map.getLayers().get("Hole");
-		flagLayer = (TiledMapTileLayer) map.getLayers().get("Flag");
+		//board = new BoardImpl("example2.tmx")
+		//board = new BoardImpl("example3.tmx")
+		board = new BoardImpl("example.tmx");
 
 		Texture playerTx = new Texture("player.png");
 		final TextureRegion[][] tReg = new TextureRegion().split(playerTx, 300, 300);
@@ -85,13 +78,13 @@ public class Game extends InputAdapter implements ApplicationListener {
 
 		//Code for our camera on the board, positions and viewangle
 		camera = new OrthographicCamera();
-		mapRenderer = new OrthogonalTiledMapRenderer(map, (float) 1 / 300);
+		mapRenderer = new OrthogonalTiledMapRenderer(board.map, (float) 1 / 300);
 		camera.setToOrtho(false, (float) 5, 5);
 		camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
 		camera.update();
 
 		//Create a new playerCell
-		playerLayer.setCell(0, 0, playerCell);
+		board.playerLayer.setCell(0, 0, playerCell);
 
 		//Set our current view to camera
 		mapRenderer.setView(camera);
@@ -115,12 +108,12 @@ public class Game extends InputAdapter implements ApplicationListener {
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
 		//Check if a win condition is met
-		if (flagLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
-			playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerWonCell);
+		if (board.flagLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
+			board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerWonCell);
 		}
 		//Check if a loss condition is met
-		if (holeLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
-			playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerDiedCell);
+		if (board.holeLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
+			board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerDiedCell);
 		}
 
 		//Render changes
@@ -135,11 +128,11 @@ public class Game extends InputAdapter implements ApplicationListener {
 	public boolean keyUp(int keycode) {
 		switch (keycode) {
 			case Input.Keys.W:
-				if (playerVec.y >= boardLayer.getHeight() - 1) {
+				if (playerVec.y >= board.boardLayer.getHeight() - 1) {
 					return true;
 				}
-				playerLayer.setCell((int) playerVec.x, (int) playerVec.y + 1, playerCell);
-				playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
+				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y + 1, playerCell);
+				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
 				playerVec.set(playerVec.x, playerVec.y + 1);
 				System.out.println("W-Pressed; Player moved up");
 				return true;
@@ -148,8 +141,8 @@ public class Game extends InputAdapter implements ApplicationListener {
 				if (playerVec.x < 1) {
 					return true;
 				}
-				playerLayer.setCell((int) playerVec.x - 1, (int) playerVec.y, playerCell);
-				playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
+				board.playerLayer.setCell((int) playerVec.x - 1, (int) playerVec.y, playerCell);
+				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
 				playerVec.set(playerVec.x - 1, playerVec.y);
 				System.out.println("A-Pressed; Player moved left");
 				return true;
@@ -158,18 +151,18 @@ public class Game extends InputAdapter implements ApplicationListener {
 				if (playerVec.y < 1) {
 					return true;
 				}
-				playerLayer.setCell((int) playerVec.x, (int) playerVec.y - 1, playerCell);
-				playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
+				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y - 1, playerCell);
+				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
 				playerVec.set(playerVec.x, playerVec.y - 1);
 				System.out.println("S-Pressed; Player moved down");
 				return true;
 
 			case Input.Keys.D:
-				if (playerVec.x >= boardLayer.getWidth() - 1) {
+				if (playerVec.x >= board.boardLayer.getWidth() - 1) {
 					return true;
 				}
-				playerLayer.setCell((int) playerVec.x + 1, (int) playerVec.y, playerCell);
-				playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
+				board.playerLayer.setCell((int) playerVec.x + 1, (int) playerVec.y, playerCell);
+				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
 				playerVec.set(playerVec.x + 1, playerVec.y);
 				System.out.println("D-Pressed; Player moved right");
 				return true;
