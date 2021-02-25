@@ -1,13 +1,8 @@
 package inf112.isolasjonsteamet.roborally.board;
 
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
-import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
@@ -25,6 +20,9 @@ public class BoardImpl implements Board {
 	public TiledMapTileLayer holeLayer;
 	public TiledMapTileLayer flagLayer;
 
+	/**
+	 * Create a new board by creating a new instance of BoardImpl. * @param boardName
+	 */
 	public BoardImpl(String boardName) {
 		map = new TmxMapLoader().load(boardName);
 
