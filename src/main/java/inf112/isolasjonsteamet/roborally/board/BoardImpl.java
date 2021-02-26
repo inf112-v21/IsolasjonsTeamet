@@ -14,22 +14,10 @@ import javax.annotation.Nullable;
  */
 public class BoardImpl implements Board {
 
-	public TiledMap map;
-	public TiledMapTileLayer boardLayer;
-	public TiledMapTileLayer playerLayer;
-	public TiledMapTileLayer holeLayer;
-	public TiledMapTileLayer flagLayer;
-
 	/**
 	 * Create a new board by creating a new instance of BoardImpl. * @param boardName
 	 */
 	public BoardImpl(String boardName) {
-		map = new TmxMapLoader().load(boardName);
-
-		boardLayer = (TiledMapTileLayer) map.getLayers().get("Board");
-		holeLayer = (TiledMapTileLayer) map.getLayers().get("Hole");
-		flagLayer = (TiledMapTileLayer) map.getLayers().get("Flag");
-		playerLayer = (TiledMapTileLayer) map.getLayers().get("Player");
 	}
 
 

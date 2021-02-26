@@ -1,6 +1,12 @@
 package inf112.isolasjonsteamet.roborally.players;
 
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
+import inf112.isolasjonsteamet.roborally.board.BoardImpl;
+import inf112.isolasjonsteamet.roborally.board.ClientImpl;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
@@ -8,6 +14,11 @@ import inf112.isolasjonsteamet.roborally.util.Orientation;
  * Player class that holds player methods.
  */
 public class PlayerImpl implements Player {
+
+	public TiledMapTileLayer.Cell playerWonCell;
+	public TiledMapTileLayer.Cell playerDiedCell;
+	public TiledMapTileLayer.Cell playerCell;
+	public TiledMapTileLayer.Cell transparentCell;
 
 	public int id;
 	public String playerName;
@@ -19,7 +30,8 @@ public class PlayerImpl implements Player {
 	/**
 	 * Constructor of a new player.
 	 */
-	public PlayerImpl() {
+	public PlayerImpl(String playerName) {
+
 		this.id = id;
 		this.playerName = playerName;
 		this.life = 5;
@@ -39,6 +51,7 @@ public class PlayerImpl implements Player {
 	 */
 	@Override
 	public void setPos(Coordinate c) {
+
 		this.pos = c;
 	}
 
@@ -46,8 +59,23 @@ public class PlayerImpl implements Player {
 	 * Move the player on the board.
 	 */
 	@Override
-	public void move(Vector2 amount) {
+	public void move(ClientImpl board, Vector2 playerVec, int dx, int dy, TiledMapTileLayer.Cell playerCell) {
+		board.playerLayer.setCell((int) playerVec.x + dx, (int) playerVec.y + dy, playerCell);
+		board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
+		playerVec.set(playerVec.x + dx, playerVec.y + dy);
+	}
 
+	public void checkWinCondition(ClientImpl board, Vector2 playerVec) {
+		if (board.flagLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
+			board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerWonCell);
+		}
+	}
+
+	public void checkLossCondition(ClientImpl board, Vector2 playerVec) {
+		//Check if a loss condition is met
+		if (board.holeLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
+			board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerDiedCell);
+		}
 	}
 
 	/**

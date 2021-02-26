@@ -1,6 +1,8 @@
 package inf112.isolasjonsteamet.roborally.players;
 
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.math.Vector2;
+import inf112.isolasjonsteamet.roborally.board.ClientImpl;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
@@ -22,7 +24,7 @@ public interface Player {
 	/**
 	 * Move the player on the board.
 	 */
-	void move(Vector2 amount);
+	void move(ClientImpl board, Vector2 playerVec, int dx, int dy, TiledMapTileLayer.Cell playerCell);
 
 	/**
 	 * Returns the name of the player.

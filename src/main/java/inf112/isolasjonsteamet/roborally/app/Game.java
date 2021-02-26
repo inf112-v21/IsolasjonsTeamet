@@ -15,7 +15,8 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
-import inf112.isolasjonsteamet.roborally.board.BoardImpl;
+import inf112.isolasjonsteamet.roborally.board.ClientImpl;
+import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 
 /**
  * Game class that starts a new game.
@@ -27,7 +28,8 @@ public class Game extends InputAdapter implements ApplicationListener {
 	public OrthogonalTiledMapRenderer mapRenderer;
 	public OrthographicCamera camera;
 
-	public BoardImpl board;
+	public ClientImpl board;
+	public PlayerImpl player;
 
 	public TiledMapTileLayer.Cell playerWonCell;
 	public TiledMapTileLayer.Cell playerDiedCell;
@@ -35,10 +37,10 @@ public class Game extends InputAdapter implements ApplicationListener {
 	public TiledMapTileLayer.Cell transparentCell;
 	public Vector2 playerVec;
 
-	StaticTiledMapTile transparentTileTexture;
-	StaticTiledMapTile staticPlayTile;
-	StaticTiledMapTile staticWonTile;
-	StaticTiledMapTile staticDiedTile;
+	public StaticTiledMapTile transparentTileTexture;
+	public StaticTiledMapTile staticPlayTile;
+	public StaticTiledMapTile staticWonTile;
+	public StaticTiledMapTile staticDiedTile;
 
 
 	/**
@@ -52,7 +54,10 @@ public class Game extends InputAdapter implements ApplicationListener {
 
 		//board = new BoardImpl("example2.tmx")
 		//board = new BoardImpl("example3.tmx")
-		board = new BoardImpl("example.tmx");
+		board = new ClientImpl("example.tmx");
+
+		//Create new player
+		player = new PlayerImpl("player1");
 
 		Texture playerTx = new Texture("player.png");
 		final TextureRegion[][] tReg = new TextureRegion().split(playerTx, 300, 300);
@@ -125,15 +130,13 @@ public class Game extends InputAdapter implements ApplicationListener {
 	 * keyUp method that listens for keys released on the keyboard, and perfoms wanted action based on conditions.
 	 */
 	@Override
-	public boolean keyUp(int keycode) {
+	public boolean keyDown(int keycode) {
 		switch (keycode) {
 			case Input.Keys.W:
 				if (playerVec.y >= board.boardLayer.getHeight() - 1) {
 					return true;
 				}
-				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y + 1, playerCell);
-				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
-				playerVec.set(playerVec.x, playerVec.y + 1);
+				player.move(board, playerVec, 0, 1, playerCell);
 				System.out.println("W-Pressed; Player moved up");
 				return true;
 
@@ -141,9 +144,7 @@ public class Game extends InputAdapter implements ApplicationListener {
 				if (playerVec.x < 1) {
 					return true;
 				}
-				board.playerLayer.setCell((int) playerVec.x - 1, (int) playerVec.y, playerCell);
-				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
-				playerVec.set(playerVec.x - 1, playerVec.y);
+				player.move(board, playerVec, -1, 0, playerCell);
 				System.out.println("A-Pressed; Player moved left");
 				return true;
 
@@ -151,9 +152,7 @@ public class Game extends InputAdapter implements ApplicationListener {
 				if (playerVec.y < 1) {
 					return true;
 				}
-				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y - 1, playerCell);
-				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
-				playerVec.set(playerVec.x, playerVec.y - 1);
+				player.move(board, playerVec, 0, -1, playerCell);
 				System.out.println("S-Pressed; Player moved down");
 				return true;
 
@@ -161,9 +160,7 @@ public class Game extends InputAdapter implements ApplicationListener {
 				if (playerVec.x >= board.boardLayer.getWidth() - 1) {
 					return true;
 				}
-				board.playerLayer.setCell((int) playerVec.x + 1, (int) playerVec.y, playerCell);
-				board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, transparentCell);
-				playerVec.set(playerVec.x + 1, playerVec.y);
+				player.move(board, playerVec, 1, 0, playerCell);
 				System.out.println("D-Pressed; Player moved right");
 				return true;
 
