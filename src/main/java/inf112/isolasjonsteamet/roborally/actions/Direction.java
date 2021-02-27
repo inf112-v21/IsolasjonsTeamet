@@ -1,7 +1,9 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
 import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
 /**
@@ -15,9 +17,12 @@ public class Direction implements Action {
 		this.direction = direction;
 	}
 
+
+	/**
+	 * Perfom an Action on the board.
+	 */
 	@Override
-	public void perform(Board board, Player player) {
+	public void perform(BoardClientImpl board, PlayerImpl player) {
 
 	}
-
 }

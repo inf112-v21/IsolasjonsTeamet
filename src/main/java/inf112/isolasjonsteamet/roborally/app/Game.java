@@ -15,8 +15,11 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.badlogic.gdx.math.Vector2;
-import inf112.isolasjonsteamet.roborally.board.ClientImpl;
+import inf112.isolasjonsteamet.roborally.actions.MoveForward;
+import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
+import inf112.isolasjonsteamet.roborally.util.Coordinate;
+import inf112.isolasjonsteamet.roborally.util.Orientation;
 
 /**
  * Game class that starts a new game.
@@ -28,14 +31,14 @@ public class Game extends InputAdapter implements ApplicationListener {
 	public OrthogonalTiledMapRenderer mapRenderer;
 	public OrthographicCamera camera;
 
-	public ClientImpl board;
+	public BoardClientImpl board;
 	public PlayerImpl player;
 
 	public TiledMapTileLayer.Cell playerWonCell;
 	public TiledMapTileLayer.Cell playerDiedCell;
 	public TiledMapTileLayer.Cell playerCell;
 	public TiledMapTileLayer.Cell transparentCell;
-	public Vector2 playerVec;
+	public Coordinate playerVec;
 
 	public StaticTiledMapTile transparentTileTexture;
 	public StaticTiledMapTile staticPlayTile;
@@ -54,7 +57,7 @@ public class Game extends InputAdapter implements ApplicationListener {
 
 		//board = new BoardImpl("example2.tmx")
 		//board = new BoardImpl("example3.tmx")
-		board = new ClientImpl("example.tmx");
+		board = new BoardClientImpl("example.tmx");
 
 		//Create new player
 		player = new PlayerImpl("player1");
@@ -76,7 +79,8 @@ public class Game extends InputAdapter implements ApplicationListener {
 		playerWonCell = new TiledMapTileLayer.Cell().setTile(staticWonTile);
 		playerDiedCell = new TiledMapTileLayer.Cell().setTile(staticDiedTile);
 		playerCell = new TiledMapTileLayer.Cell().setTile(staticPlayTile);
-		playerVec = new Vector2(0, 0);
+
+		playerVec = new Coordinate(0,0);
 
 		//Key input handling
 		Gdx.input.setInputProcessor(this);
@@ -90,6 +94,8 @@ public class Game extends InputAdapter implements ApplicationListener {
 
 		//Create a new playerCell
 		board.playerLayer.setCell(0, 0, playerCell);
+
+		System.out.println(player.getName() + " is facing " + player.getDir());
 
 		//Set our current view to camera
 		mapRenderer.setView(camera);
@@ -112,14 +118,10 @@ public class Game extends InputAdapter implements ApplicationListener {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
+
 		//Check if a win condition is met
-		if (board.flagLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
-			board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerWonCell);
-		}
-		//Check if a loss condition is met
-		if (board.holeLayer.getCell((int) playerVec.x, (int) playerVec.y) != null) {
-			board.playerLayer.setCell((int) playerVec.x, (int) playerVec.y, playerDiedCell);
-		}
+		player.checkWinCondition(board, playerVec);
+		player.checkLossCondition(board, playerVec);
 
 		//Render changes
 		mapRenderer.render();
@@ -132,36 +134,40 @@ public class Game extends InputAdapter implements ApplicationListener {
 	@Override
 	public boolean keyDown(int keycode) {
 		switch (keycode) {
+			case Input.Keys.R:
+				player.setDir(Orientation.rotateRight(player.getDir()));
+				System.out.println("R-Pressed: "+player.getName()+" is now facing " +player.getDir());
+				return true;
 			case Input.Keys.W:
-				if (playerVec.y >= board.boardLayer.getHeight() - 1) {
-					return true;
-				}
-				player.move(board, playerVec, 0, 1, playerCell);
-				System.out.println("W-Pressed; Player moved up");
+
+				//player.move(board, playerVec, 0, 1);
+				MoveForward mov = new MoveForward(1);
+				mov.perform(board, playerVec, player);
+				System.out.println("W-Pressed: "+player.getName()+" moved to: "+playerVec.getPos());
 				return true;
 
 			case Input.Keys.A:
-				if (playerVec.x < 1) {
+				if (playerVec.dx < 1) {
 					return true;
 				}
-				player.move(board, playerVec, -1, 0, playerCell);
-				System.out.println("A-Pressed; Player moved left");
+				player.move(board, playerVec, -1, 0);
+				System.out.println("A-Pressed: "+player.getName()+ " moved left. Current pos: "+playerVec.getPos());
 				return true;
 
 			case Input.Keys.S:
-				if (playerVec.y < 1) {
+				if (playerVec.dy < 1) {
 					return true;
 				}
-				player.move(board, playerVec, 0, -1, playerCell);
-				System.out.println("S-Pressed; Player moved down");
+				player.move(board, playerVec, 0, -1);
+				System.out.println("S-Pressed: "+player.getName()+" moved down. Current pos: "+playerVec.getPos());
 				return true;
 
 			case Input.Keys.D:
-				if (playerVec.x >= board.boardLayer.getWidth() - 1) {
+				if (playerVec.dx >= board.boardLayer.getWidth() - 1) {
 					return true;
 				}
-				player.move(board, playerVec, 1, 0, playerCell);
-				System.out.println("D-Pressed; Player moved right");
+				player.move(board, playerVec, 1, 0);
+				System.out.println("D-Pressed: "+player.getName()+" moved right. Current pos: "+playerVec.getPos());
 				return true;
 
 			default:

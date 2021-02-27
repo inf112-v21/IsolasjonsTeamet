@@ -1,16 +1,23 @@
 package inf112.isolasjonsteamet.roborally.util;
 
+import com.badlogic.gdx.math.Vector2;
+
 /**
  * Class to store x and y values.
  */
 public class Coordinate {
 
-	final int dx;
-	final int dy;
+	public int dx;
+	public int dy;
 
 	public Coordinate(int x, int y) {
 		this.dx = x;
 		this.dy = y;
+	}
+	public Coordinate set(int x, int y) {
+		this.dx = x;
+		this.dy = y;
+		return this;
 	}
 
 	public int getX() {
@@ -19,6 +26,10 @@ public class Coordinate {
 
 	public int getY() {
 		return this.dy;
+	}
+
+	public String getPos() {
+		return "("+dx+", "+dy+")";
 	}
 
 	public Coordinate copy() {

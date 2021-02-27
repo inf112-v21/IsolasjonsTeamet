@@ -1,7 +1,9 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
 import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
@@ -21,7 +23,7 @@ public class Move implements Action {
 	}
 
 	@Override
-	public void perform(Board board, Player player) {
+	public void perform(BoardClientImpl board, PlayerImpl player) {
 
 		switch (direction) {
 			case NORTH:

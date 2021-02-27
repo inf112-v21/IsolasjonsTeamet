@@ -37,7 +37,7 @@ public enum Orientation {
 		}
 	}
 
-	public Orientation rotateRight(Orientation currentDir) {
+	public static Orientation rotateRight(Orientation currentDir) {
 		switch (currentDir) {
 			case NORTH:
 				return EAST;

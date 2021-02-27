@@ -7,7 +7,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 /**
  * Class for our boards that hold all the client related code (libgdbx).
  */
-public class ClientImpl extends BoardImpl{
+public class BoardClientImpl extends BoardImpl{
 
 	public TiledMap map;
 	public TiledMapTileLayer boardLayer;
@@ -18,7 +18,7 @@ public class ClientImpl extends BoardImpl{
 	/**
 	 * Create a new board by creating a new instance of BoardImpl. * @param boardName
 	 */
-	public ClientImpl(String boardName) {
+	public BoardClientImpl(String boardName) {
 		super(boardName);
 
 		map = new TmxMapLoader().load(boardName);
