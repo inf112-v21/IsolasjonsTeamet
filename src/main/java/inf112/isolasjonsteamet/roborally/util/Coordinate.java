@@ -1,50 +1,70 @@
 package inf112.isolasjonsteamet.roborally.util;
 
-import com.badlogic.gdx.math.Vector2;
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 
 /**
  * Class to store x and y values.
  */
 public class Coordinate {
 
-	public int dx;
-	public int dy;
+	@SuppressWarnings("checkstyle:MemberName")
+	private final int x;
+	@SuppressWarnings("checkstyle:MemberName")
+	private final int y;
+
+	public static final Coordinate NORTH = new Coordinate(0, 1);
+	public static final Coordinate SOUTH = new Coordinate(0, -1);
+	public static final Coordinate WEST = new Coordinate(-1, 0);
+	public static final Coordinate EAST = new Coordinate(1, 0);
 
 	public Coordinate(int x, int y) {
-		this.dx = x;
-		this.dy = y;
-	}
-	public Coordinate set(int x, int y) {
-		this.dx = x;
-		this.dy = y;
-		return this;
+		this.x = x;
+		this.y = y;
 	}
 
 	public int getX() {
-		return this.dx;
+		return this.x;
 	}
 
 	public int getY() {
-		return this.dy;
+		return this.y;
 	}
 
-	public String getPos() {
-		return "("+dx+", "+dy+")";
+	public Coordinate add(Coordinate that) {
+		return new Coordinate(this.x + that.x, this.y + that.y);
 	}
 
-	public Coordinate copy() {
-		return new Coordinate(dx, dy);
+	public Coordinate sub(Coordinate that) {
+		return new Coordinate(this.x - that.x, this.y - that.y);
+	}
+
+	public Coordinate mult(int num) {
+		return new Coordinate(x * num, y * num);
 	}
 
 	@Override
-	public boolean equals(final Object obj) {
-		if (this == obj) {
+	public boolean equals(Object o) {
+		if (this == o) {
 			return true;
 		}
-		if (obj == null || getClass() != obj.getClass()) {
+		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		Coordinate other = (Coordinate) obj;
-		return this.dx == other.dx && this.dy == other.dy;
+		Coordinate that = (Coordinate) o;
+		return x == that.x && y == that.y;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(x, y);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("x", x)
+				.add("y", y)
+				.toString();
 	}
 }

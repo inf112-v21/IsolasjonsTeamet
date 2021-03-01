@@ -4,6 +4,7 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -12,9 +13,11 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
-import com.badlogic.gdx.math.Vector2;
+import com.google.common.collect.ImmutableList;
+import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
@@ -34,17 +37,6 @@ public class Game extends InputAdapter implements ApplicationListener {
 	public BoardClientImpl board;
 	public PlayerImpl player;
 
-	public TiledMapTileLayer.Cell playerWonCell;
-	public TiledMapTileLayer.Cell playerDiedCell;
-	public TiledMapTileLayer.Cell playerCell;
-	public TiledMapTileLayer.Cell transparentCell;
-	public Coordinate playerVec;
-
-	public StaticTiledMapTile transparentTileTexture;
-	public StaticTiledMapTile staticPlayTile;
-	public StaticTiledMapTile staticWonTile;
-	public StaticTiledMapTile staticDiedTile;
-
 
 	/**
 	 * Create method used to create new items and elements used in the game.
@@ -55,32 +47,12 @@ public class Game extends InputAdapter implements ApplicationListener {
 		font = new BitmapFont();
 		font.setColor(Color.RED);
 
+		//Create new player
+		player = new PlayerImpl("player1", new Coordinate(0, 0), Orientation.EAST);
+
 		//board = new BoardImpl("example2.tmx")
 		//board = new BoardImpl("example3.tmx")
-		board = new BoardClientImpl("example.tmx");
-
-		//Create new player
-		player = new PlayerImpl("player1");
-
-		Texture playerTx = new Texture("player.png");
-		final TextureRegion[][] tReg = new TextureRegion().split(playerTx, 300, 300);
-
-		Texture defTx = new Texture("tiles.png");
-		final TextureRegion[][] tReg2 = new TextureRegion().split(defTx, 300, 300);
-
-		//Static tiles for playing, dead and winning player cells
-		transparentTileTexture = new StaticTiledMapTile(tReg2[15][4]);
-		staticPlayTile = new StaticTiledMapTile(tReg[0][0]);
-		staticWonTile = new StaticTiledMapTile(tReg[0][2]);
-		staticDiedTile = new StaticTiledMapTile(tReg[0][1]);
-
-		//Creating new instances of our field variables
-		transparentCell = new TiledMapTileLayer.Cell().setTile(transparentTileTexture);
-		playerWonCell = new TiledMapTileLayer.Cell().setTile(staticWonTile);
-		playerDiedCell = new TiledMapTileLayer.Cell().setTile(staticDiedTile);
-		playerCell = new TiledMapTileLayer.Cell().setTile(staticPlayTile);
-
-		playerVec = new Coordinate(0,0);
+		board = new BoardClientImpl(ImmutableList.of(player), "example.tmx");
 
 		//Key input handling
 		Gdx.input.setInputProcessor(this);
@@ -93,7 +65,7 @@ public class Game extends InputAdapter implements ApplicationListener {
 		camera.update();
 
 		//Create a new playerCell
-		board.playerLayer.setCell(0, 0, playerCell);
+		board.updatePlayerView();
 
 		System.out.println(player.getName() + " is facing " + player.getDir());
 
@@ -120,59 +92,82 @@ public class Game extends InputAdapter implements ApplicationListener {
 
 
 		//Check if a win condition is met
-		player.checkWinCondition(board, playerVec);
-		player.checkLossCondition(board, playerVec);
+		Coordinate playerPos = player.getPos();
+		if (player.checkWinCondition(board)) {
+			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerWonCell);
+		}
+
+		if (player.checkLossCondition(board)) {
+			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerDiedCell);
+		}
 
 		//Render changes
 		mapRenderer.render();
+	}
+
+	private void performAction(Action action) {
+		action.perform(board, player);
+		board.checkValid();
 	}
 
 
 	/**
 	 * keyUp method that listens for keys released on the keyboard, and perfoms wanted action based on conditions.
 	 */
+	@SuppressWarnings("checkstyle:Indentation")
 	@Override
 	public boolean keyDown(int keycode) {
-		switch (keycode) {
-			case Input.Keys.R:
-				player.setDir(Orientation.rotateRight(player.getDir()));
-				System.out.println("R-Pressed: "+player.getName()+" is now facing " +player.getDir());
-				return true;
-			case Input.Keys.W:
+		Coordinate oldPos = player.getPos();
+
+		boolean handled = switch (keycode) {
+			case Input.Keys.R -> {
+				player.setDir(player.getDir().rotateRight());
+				System.out.println("R-Pressed: " + player.getName() + " is now facing " + player.getDir());
+				yield true;
+			}
+			case Input.Keys.W -> {
 
 				//player.move(board, playerVec, 0, 1);
-				MoveForward mov = new MoveForward(1);
-				mov.perform(board, playerVec, player);
-				System.out.println("W-Pressed: "+player.getName()+" moved to: "+playerVec.getPos());
-				return true;
+				performAction(new MoveForward(1));
+				System.out.println("W-Pressed: " + player.getName() + " moved to: " + player.getPos());
+				yield true;
+			}
 
-			case Input.Keys.A:
-				if (playerVec.dx < 1) {
-					return true;
+			case Input.Keys.A -> {
+				if (oldPos.getX() >= 1) {
+					player.move(Coordinate.WEST);
+					System.out.println("A-Pressed: " + player.getName() + " moved left. Current pos: " + player.getPos());
 				}
-				player.move(board, playerVec, -1, 0);
-				System.out.println("A-Pressed: "+player.getName()+ " moved left. Current pos: "+playerVec.getPos());
-				return true;
+				yield true;
+			}
 
-			case Input.Keys.S:
-				if (playerVec.dy < 1) {
-					return true;
+			case Input.Keys.S -> {
+				performAction(new MoveForward(-1));
+				System.out.println("S-Pressed: " + player.getName() + " moved down. Current pos: " + player.getPos());
+				yield true;
+			}
+
+			case Input.Keys.D -> {
+				if (oldPos.getX() < board.boardLayer.getWidth() - 1) {
+					player.move(Coordinate.EAST);
+					System.out.println("D-Pressed: " + player.getName() + " moved right. Current pos: " + player.getPos());
 				}
-				player.move(board, playerVec, 0, -1);
-				System.out.println("S-Pressed: "+player.getName()+" moved down. Current pos: "+playerVec.getPos());
-				return true;
+				yield true;
+			}
 
-			case Input.Keys.D:
-				if (playerVec.dx >= board.boardLayer.getWidth() - 1) {
-					return true;
-				}
-				player.move(board, playerVec, 1, 0);
-				System.out.println("D-Pressed: "+player.getName()+" moved right. Current pos: "+playerVec.getPos());
-				return true;
+			default -> false;
+		};
 
-			default:
-				return false;
+		if (handled) {
+			Coordinate newPos = player.getPos();
+
+			if (!oldPos.equals(newPos)) {
+				board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
+				board.playerLayer.setCell(newPos.getX(), newPos.getY(), board.playerCell);
+			}
 		}
+
+		return handled;
 	}
 
 	/**

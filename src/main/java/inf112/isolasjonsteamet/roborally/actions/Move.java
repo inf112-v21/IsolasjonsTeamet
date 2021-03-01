@@ -1,9 +1,8 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
+import com.badlogic.gdx.math.MathUtils;
 import inf112.isolasjonsteamet.roborally.board.Board;
-import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
 import inf112.isolasjonsteamet.roborally.players.Player;
-import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
@@ -12,34 +11,25 @@ import inf112.isolasjonsteamet.roborally.util.Orientation;
  */
 public class Move implements Action {
 
-	private Orientation direction;
+	private final Orientation direction;
+	private final int numMoves;
 
-	public Move() {
-		this.direction = null;
-	}
-
-	public Move(Orientation direction) {
+	public Move(Orientation direction, int numMoves) {
 		this.direction = direction;
+		this.numMoves = numMoves;
 	}
 
 	@Override
-	public void perform(BoardClientImpl board, PlayerImpl player) {
+	public void perform(Board board, Player player) {
+		final Coordinate offset = direction.toCoord().mult(numMoves);
+		final Coordinate pos = player.getPos().add(offset);
 
-		switch (direction) {
-			case NORTH:
-				player.setNextPos(new Coordinate(player.getPos().getX(), player.getPos().getY() - 1));
-				break;
-			case SOUTH:
-				player.setNextPos(new Coordinate(player.getPos().getX(), player.getPos().getY() + 1));
-				break;
-			case EAST:
-				player.setNextPos(new Coordinate(player.getPos().getX() + 1, player.getPos().getY()));
-				break;
-			case WEST:
-				player.setNextPos(new Coordinate(player.getPos().getX() - 1, player.getPos().getY()));
-				break;
-			default:
-				break;
-		}
+		int clampedX = MathUtils.clamp(pos.getX(), 0, board.getWidth() - 1);
+		int clampedY = MathUtils.clamp(pos.getY(), 0, board.getHeight() - 1);
+
+		var moveTo = new Coordinate(clampedX, clampedY);
+		var clampedOffset = moveTo.sub(player.getPos());
+
+		player.move(clampedOffset);
 	}
 }

@@ -17,4 +17,5 @@ public class Tiles {
 	public static final TileType CONVEYOR_BELT = new TileType(new MoveForward(1));
 	public static final TileType ROTATING_CONVEYOR_BELT_LEFT = new TileType(new RotateLeft());
 	public static final TileType ROTATING_CONVEYOR_BELT_RIGHT = new TileType(new RotateRight());
+	public static final TileType GROUND = new TileType();
 }

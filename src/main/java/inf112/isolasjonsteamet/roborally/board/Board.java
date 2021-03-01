@@ -1,8 +1,8 @@
 package inf112.isolasjonsteamet.roborally.board;
 
-import com.badlogic.gdx.math.Vector2;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
+import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -23,10 +23,14 @@ public interface Board {
 	 * Get player at a given osition.
 	 */
 	@Nullable
-	Player getPlayerAt(Vector2 pos);
+	Player getPlayerAt(Coordinate pos);
 
 	/**
 	 * Get tiles at a given position.
 	 */
-	List<TileType> getTilesAt(Vector2 pos);
+	List<TileType> getTilesAt(Coordinate pos);
+
+	int getWidth();
+
+	int getHeight();
 }
