@@ -1,42 +1,24 @@
-public class CardDeck {
+package inf112.isolasjonsteamet.roborally.cards;
 
-	private int deckSize = 84; // Max amount of cards in deck
-	private List<CardType> deck; // The deck itself
+import java.util.List;
 
-	public CardDeck() {
-		deck = new List<CardType>(deckSize); // Create new deck with room for 84 cards
-		fillDeck();
-	}
+/**
+ * A deck of cards containing potentially multiple instances of different card types.
+ */
+public interface CardDeck {
 
-	// Fills deck with cards
-	void fillDeck() {
-		// Some code that fills the deck with the correct cards
-		// like:
-		// for loop {
-		// add cards that enable left turn, with priority and all that
-		// }
-		// etc for right turn, move 3, 2, 1, u-turn
-	}
+	/**
+	 * Grabs the given amount of cards from the card deck.
+	 *
+	 * @param amount The amount of cards to grab.
+	 * @return A list with the grabbed cards, with size equal to the amount requested.
+	 * @throws java.util.NoSuchElementException If the desired amount of cards to return is greater than the remaining
+	 * 		cards in the deck.
+	 */
+	List<CardType> grabCards(int amount);
 
-	// Shuffles deck randomly
-	void shuffle() {
-		Collections.shuffle(deck); // Randomly shuffle the deck
-	}
-
-	List<CardType> grabCards(int amount) {
-		List<CardType> grabbedCards = new List<CardType>();
-
-		for (int i = 0; i <= amount; i++) {
-			grabbedCards.add(deck.get(0)); // Add the picked card from deck into list of new cards added to hand
-			deck.remove(0); // Delete the picked card from the deck
-		}
-
-		return grabbedCards; // Return the list of cards to be added to player hand
-	}
-
-	// Removes all cards from deck and fills it again
-	void reset() {
-		deck.removeAll(); // Or something else
-		fillDeck();
-	}
+	/**
+	 * Resets this card deck to it's initial state, returning all the cards that have been dealt, and shuffles it.
+	 */
+	void reset();
 }
