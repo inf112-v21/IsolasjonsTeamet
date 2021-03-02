@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Class for our boards that hold all the client related code (libgdbx).
  */
-public class BoardClientImpl extends BoardImpl{
+public class BoardClientImpl extends BoardImpl {
 
 	public TiledMap map;
 	public TiledMapTileLayer boardLayer;
@@ -30,6 +30,9 @@ public class BoardClientImpl extends BoardImpl{
 	public TiledMapTileLayer.Cell playerCell;
 	public TiledMapTileLayer.Cell transparentCell;
 
+	/**
+	 * Create a new instance of BoardClientImpl.
+	 */
 	public BoardClientImpl(List<Player> players, String boardFilename) {
 		super(players, new ArrayList<>());
 		map = new TmxMapLoader().load(boardFilename);
@@ -39,6 +42,9 @@ public class BoardClientImpl extends BoardImpl{
 		width = playerLayer.getWidth();
 	}
 
+	/**
+	 * Load cells needed to build the board.
+	 */
 	private void loadCells() {
 		boardLayer = (TiledMapTileLayer) map.getLayers().get("Board");
 		playerLayer = (TiledMapTileLayer) map.getLayers().get("Player");
@@ -53,17 +59,21 @@ public class BoardClientImpl extends BoardImpl{
 
 		//Static tiles for playing, dead and winning player cells
 		var transparentTile = new StaticTiledMapTile(tReg2[15][4]);
-		var playerTile = new StaticTiledMapTile(tReg[0][0]);
-		var playerWonTile = new StaticTiledMapTile(tReg[0][2]);
-		var playerDiedTile = new StaticTiledMapTile(tReg[0][1]);
-
-		//Creating new instances of our field variables
 		transparentCell = new TiledMapTileLayer.Cell().setTile(transparentTile);
-		playerWonCell = new TiledMapTileLayer.Cell().setTile(playerWonTile);
-		playerDiedCell = new TiledMapTileLayer.Cell().setTile(playerDiedTile);
+
+		var playerTile = new StaticTiledMapTile(tReg[0][0]);
 		playerCell = new TiledMapTileLayer.Cell().setTile(playerTile);
+
+		var playerWonTile = new StaticTiledMapTile(tReg[0][2]);
+		playerWonCell = new TiledMapTileLayer.Cell().setTile(playerWonTile);
+
+		var playerDiedTile = new StaticTiledMapTile(tReg[0][1]);
+		playerDiedCell = new TiledMapTileLayer.Cell().setTile(playerDiedTile);
 	}
 
+	/**
+	 * Get tiles from the map.
+	 */
 	private ImmutableList<List<List<TileType>>> tilesFromMap(String boardFilename) {
 		int width = playerLayer.getWidth();
 		int height = playerLayer.getHeight();
@@ -86,7 +96,6 @@ public class BoardClientImpl extends BoardImpl{
 					acc.add(Tiles.FLAG);
 				}
 
-
 				accY.add(ImmutableList.copyOf(acc));
 			}
 			accX.add(ImmutableList.copyOf(accY));
@@ -95,6 +104,9 @@ public class BoardClientImpl extends BoardImpl{
 		return ImmutableList.copyOf(accX);
 	}
 
+	/**
+	 * Update the playerview.
+	 */
 	public void updatePlayerView() {
 		for (Player player : players) {
 			Coordinate pos = player.getPos();

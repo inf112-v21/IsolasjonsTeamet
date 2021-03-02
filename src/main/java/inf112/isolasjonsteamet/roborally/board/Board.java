@@ -30,7 +30,17 @@ public interface Board {
 	 */
 	List<TileType> getTilesAt(Coordinate pos);
 
+	/**
+	 * Get width of board.
+	 *
+	 * @return width
+	 */
 	int getWidth();
 
+	/**
+	 * Get height of the board.
+	 *
+	 * @return height
+	 */
 	int getHeight();
 }
