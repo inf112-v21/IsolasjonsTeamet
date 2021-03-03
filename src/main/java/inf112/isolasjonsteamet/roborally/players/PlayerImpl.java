@@ -81,14 +81,17 @@ public class PlayerImpl implements Player {
 	public void damageRobot() {
 		if (this.damageToken < 10) {
 			this.damageToken += 1;
-		}
-		else {
+		} else {
 			this.life -= 1;
 			this.damageToken = 0;
 		}
 	}
 
 	public void repairRobot() {
-		if (damageToken == 0)
-		this.damageToken -= 1; }
+		if (damageToken == 0) {
+			throw new IllegalArgumentException("Can not get negative damage tokens");
+		} else {
+			this.damageToken -= 1;
+		}
+	}
 }
