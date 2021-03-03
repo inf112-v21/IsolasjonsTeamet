@@ -18,7 +18,6 @@ public interface Board {
 	 */
 	List<Player> getPlayers();
 
-
 	/**
 	 * Get player at a given osition.
 	 */
