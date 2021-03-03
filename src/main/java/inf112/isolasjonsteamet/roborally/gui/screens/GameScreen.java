@@ -2,7 +2,7 @@ package inf112.isolasjonsteamet.roborally.gui.screens;
 
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import inf112.isolasjonsteamet.roborally.app.HelloWorld;
+import inf112.isolasjonsteamet.roborally.app.RoboRallyGame;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
 
 /**
@@ -10,30 +10,30 @@ import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
  */
 public class GameScreen implements Screen, DelegatingInputProcessor {
 
-	private final HelloWorld helloWorld = new HelloWorld();
+	private final RoboRallyGame roboRallyGame = new RoboRallyGame();
 
 	public GameScreen() {
-		helloWorld.create();
+		roboRallyGame.create();
 	}
 
 	@Override
 	public void render(float delta) {
-		helloWorld.render();
+		roboRallyGame.render();
 	}
 
 	@Override
 	public void resize(int width, int height) {
-		helloWorld.resize(width, height);
+		roboRallyGame.resize(width, height);
 	}
 
 	@Override
 	public void pause() {
-		helloWorld.pause();
+		roboRallyGame.pause();
 	}
 
 	@Override
 	public void resume() {
-		helloWorld.resume();
+		roboRallyGame.resume();
 	}
 
 	@Override
@@ -46,11 +46,11 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 
 	@Override
 	public void dispose() {
-		helloWorld.dispose();
+		roboRallyGame.dispose();
 	}
 
 	@Override
 	public InputProcessor delegateInputsTo() {
-		return helloWorld;
+		return roboRallyGame;
 	}
 }
