@@ -25,11 +25,11 @@ public class Game extends InputAdapter implements ApplicationListener {
 
 	private SpriteBatch batch;
 	private BitmapFont font;
-	public OrthogonalTiledMapRenderer mapRenderer;
-	public OrthographicCamera camera;
+	private OrthogonalTiledMapRenderer mapRenderer;
+	private OrthographicCamera camera;
 
-	public BoardClientImpl board;
-	public PlayerImpl player;
+	private BoardClientImpl board;
+	private PlayerImpl player;
 
 
 	/**

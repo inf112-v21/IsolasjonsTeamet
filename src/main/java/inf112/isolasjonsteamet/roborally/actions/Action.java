@@ -9,7 +9,7 @@ import inf112.isolasjonsteamet.roborally.players.Player;
 public interface Action {
 
 	/**
-	 * Perfom an Action on the board.
+	 * Perform an action on the board.
 	 */
 	void perform(Board board, Player player);
 }

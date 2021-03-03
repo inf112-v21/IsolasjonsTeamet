@@ -14,9 +14,6 @@ public class MoveForward implements Action {
 		this.numMoves = numMoves;
 	}
 
-	/**
-	 * Perfom an Action on the board.
-	 */
 	@Override
 	public void perform(Board board, Player player) {
 		new Move(player.getDir(), numMoves).perform(board, player);

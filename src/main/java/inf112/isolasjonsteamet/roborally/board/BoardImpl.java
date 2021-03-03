@@ -117,7 +117,7 @@ public class BoardImpl implements Board {
 	}
 
 	/**
-	 * Check if x and y has valid values.
+	 * Check if the board is in a valid state.
 	 */
 	public void checkValid() {
 		for (Player player : players) {
