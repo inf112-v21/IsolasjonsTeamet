@@ -21,7 +21,7 @@ import inf112.isolasjonsteamet.roborally.util.Orientation;
 /**
  * Game class that starts a new game.
  */
-public class HelloWorld extends InputAdapter implements ApplicationListener {
+public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 
 	private SpriteBatch batch;
 	private BitmapFont font;
