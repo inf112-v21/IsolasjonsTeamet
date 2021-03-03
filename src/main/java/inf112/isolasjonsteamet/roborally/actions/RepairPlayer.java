@@ -14,6 +14,7 @@ public class RepairPlayer implements Action {
 	 */
 	@Override
 	public void perform(Board board, Player player) {
+		player.repairRobot();
 
 	}
 }

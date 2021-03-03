@@ -34,4 +34,8 @@ public interface Player {
 	 * Sets direction of the player.
 	 */
 	void setDir(Orientation dir);
+
+	void damageRobot();
+
+	void repairRobot();
 }
