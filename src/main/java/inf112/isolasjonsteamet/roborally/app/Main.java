@@ -17,6 +17,6 @@ public class Main {
 		cfg.setWindowedMode(500, 500);
 
 		//Creates a new instance of Game, our roborally game
-		new Lwjgl3Application(new Game(), cfg);
+		new Lwjgl3Application(new HelloWorld(), cfg);
 	}
 }

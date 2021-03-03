@@ -21,12 +21,12 @@ import inf112.isolasjonsteamet.roborally.util.Orientation;
 /**
  * Game class that starts a new game.
  */
-public class Game extends InputAdapter implements ApplicationListener {
+public class HelloWorld extends InputAdapter implements ApplicationListener {
 
 	private SpriteBatch batch;
 	private BitmapFont font;
 	private OrthogonalTiledMapRenderer mapRenderer;
-	private OrthographicCamera camera;
+	private final OrthographicCamera camera = new OrthographicCamera();
 
 	private BoardClientImpl board;
 	private PlayerImpl player;
@@ -51,8 +51,7 @@ public class Game extends InputAdapter implements ApplicationListener {
 		//Key input handling
 		Gdx.input.setInputProcessor(this);
 
-		//Code for our camera on the board, positions and viewangle
-		camera = new OrthographicCamera();
+		//Code for our camera on the board, positions and view-angle
 		mapRenderer = new OrthogonalTiledMapRenderer(board.map, (float) 1 / 300);
 		camera.setToOrtho(false, (float) 5, 5);
 		camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
@@ -105,7 +104,7 @@ public class Game extends InputAdapter implements ApplicationListener {
 
 
 	/**
-	 * keyUp method that listens for keys released on the keyboard, and perfoms wanted action based on conditions.
+	 * keyUp method that listens for keys released on the keyboard, and performs wanted action based on conditions.
 	 */
 	@SuppressWarnings("checkstyle:Indentation")
 	@Override
@@ -113,7 +112,7 @@ public class Game extends InputAdapter implements ApplicationListener {
 		Coordinate oldPos = player.getPos();
 
 		boolean handled = switch (keycode) {
-			// If R on the keyboard is pressed, the robot rotates 90 degress to the right.
+			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Input.Keys.R -> {
 				player.setDir(player.getDir().rotateRight());
 				System.out.println("R-Pressed: " + player.getName() + " is now facing " + player.getDir());
