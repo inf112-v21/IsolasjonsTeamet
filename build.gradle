@@ -31,11 +31,16 @@ def java15home = javaToolchains.compilerFor {
 runtime {
     javaHome = java15home
 
+    //Need these to not require JDK 15 for packaging
+    //Remember to update thse now and then. JDK 15 is needed to update them
+    modules = ['java.desktop', 'java.logging', 'jdk.unsupported']
+
     //Seems like compress 2 causes problems, so we'll avoid it
     options = ['--strip-debug', '--compress', '1', '--no-header-files', '--no-man-pages']
 
     jpackage {
         skipInstaller = true
+        jpackageHome = java15home
     }
 
     launcher {
