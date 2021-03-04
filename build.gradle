@@ -23,6 +23,14 @@ java {
     }
 }
 
+test {
+    useJUnitPlatform()
+    testLogging {
+        events "passed", "skipped", "failed"
+        exceptionFormat "full"
+    }
+}
+
 // https://docs.gradle.org/current/userguide/toolchains.html#integration_with_tasks_relying_on_a_java_executable_or_java_home
 def java15home = javaToolchains.compilerFor {
     languageVersion = JavaLanguageVersion.of(15)
