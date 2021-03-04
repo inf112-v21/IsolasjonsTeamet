@@ -13,7 +13,7 @@ import java.util.Stack;
 /**
  * Main controller of the game logic. Routes the active screen around using a stack.
  */
-public class RoboRallyGame extends Game implements DelegatingInputProcessor, ScreenController {
+public class RoboRallyScreenController extends Game implements DelegatingInputProcessor, ScreenController {
 
 	private final MainMenuScreen mainMenuScreen = new MainMenuScreen(this);
 
