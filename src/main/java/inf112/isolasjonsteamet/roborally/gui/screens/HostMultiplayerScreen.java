@@ -94,4 +94,10 @@ public class HostMultiplayerScreen extends StageScreen {
 			}
 		});
 	}
+
+	@Override
+	public void hide() {
+		portField.setText("");
+		statusLabel.setText("");
+	}
 }
