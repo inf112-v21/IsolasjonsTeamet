@@ -53,6 +53,10 @@ runtime {
 
     launcher {
         jvmArgs = ['-Droborally.is-prod=true']
+
+        if (org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem.isMacOsX()) {
+            jvmArgs += '-XstartOnFirstThread'
+        }
     }
 }
 
