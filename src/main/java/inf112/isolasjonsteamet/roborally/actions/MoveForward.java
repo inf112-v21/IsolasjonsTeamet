@@ -23,4 +23,5 @@ public class MoveForward implements Action {
 	@Override
 	public String toString() {
 		return "MoveForward " + numMoves;
+	}
 }
