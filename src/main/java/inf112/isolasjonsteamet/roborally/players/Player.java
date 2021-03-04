@@ -35,7 +35,18 @@ public interface Player {
 	 */
 	void setDir(Orientation dir);
 
+	/**
+	 * Damage a players robot with 1 damage token
+	 */
 	void damageRobot();
 
+	/**
+	 * Repair a players robot with 1 damage token
+	 */
 	void repairRobot();
+
+	/**
+	 *
+	 */
+	void killRobot();
 }

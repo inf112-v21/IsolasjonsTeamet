@@ -94,4 +94,9 @@ public class PlayerImpl implements Player {
 			this.damageToken -= 1;
 		}
 	}
+
+	public void killRobot() {
+		 	life -= 1;
+			damageToken = 0;
+	}
 }

@@ -13,6 +13,6 @@ public class Destruction implements Action {
 	 */
 	@Override
 	public void perform(Board board, Player player) {
-
+		// TODO
 	}
 }
