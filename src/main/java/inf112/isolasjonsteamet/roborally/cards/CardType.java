@@ -29,4 +29,9 @@ public class CardType {
 	public List<Action> getActions() {
 		return actions;
 	}
+
+	@Override
+	public String toString() {
+		return actions.toString();
+	}
 }

@@ -17,5 +17,11 @@ public class MoveForward implements Action {
 	@Override
 	public void perform(Board board, Player player) {
 		new Move(player.getDir(), numMoves).perform(board, player);
+		System.out.println(player.getName() + " moved " + numMoves + " forward. Current pos: " + player.getPos());
+	}
+
+	@Override
+	public String toString() {
+		return "MoveForward " + numMoves;
 	}
 }
