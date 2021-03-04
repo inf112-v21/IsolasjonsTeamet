@@ -45,7 +45,13 @@ runtime {
 
     launcher {
         jvmArgs = ['-Droborally.is-prod=true']
-        noConsole = true
+    }
+}
+
+tasks.getByName("runtime").doLast {
+    copy {
+        from startScripts.outputDir
+        into "${runtime.imageDir.asFile.get()}/${startScripts.outputDir.name}"
     }
 }
 

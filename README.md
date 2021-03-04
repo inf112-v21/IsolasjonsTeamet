@@ -1,5 +1,42 @@
-# INF112 Maven template 
-Simple skeleton with libgdx. 
+# INF112 Isolasjonsteamet Roborally 
+A RoboRally implementation using libGDX.
+
+## Running the project
+1. **Required programs**
+   
+   You need git and Java 11 or later installed on your system to build, run and
+   test the game. Java 8 can work as long as you don't try packaging the game.
+
+2. **Cloning the project**
+
+   Open your terminal and run `git clone https://github.com/inf112-v21/IsolasjonsTeamet.git`.
+   This should create a new folder called `IsolasjonsTeamet`. Move into it with
+   `cd IsolasjonsTeamet`.
+   
+3. **Running the game, and running tests**
+   
+   Now you need to invoke the `gradlew` script however you invoke scripts in 
+   your shell. If you're using Window's `cmd`, then it's `gradlew <command>`. 
+   If you use anything else, it's `./gradlew <command>`. For the rest of this 
+   section I'll assume you're not using `cmd`.
+   
+   To run the tests, run `./gradlew test`. To run the actual game, 
+   run `./gradlew run`. No need to worry about having the right JDK version 
+   on your system. Gradle will take care of it.
+
+4. **Packaging the game**
+   
+   Reminder that you need Java 11 or higher for this part.
+
+   To package the game, run `./gradlew jpackage`. An application distributable
+   appropriate for your system will be generated in `\build\jpackage\isolasjonsteamet-roborally`.
+   For example, if you're on Windows, this will be an `.exe` program, which you
+   can start like any other EXE.
+   
+   Known bug in distribution: On windows, the console is never visible. 
+   If you need to see the console, run `./gradlew image`. An application can 
+   then be started using `./build/image/scripts/isolasjonsteamet-roborally`
+
 
 ## Project setup for development
 
