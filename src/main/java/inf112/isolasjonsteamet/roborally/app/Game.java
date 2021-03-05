@@ -90,7 +90,6 @@ public class Game extends InputAdapter implements ApplicationListener {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
-
 		//Check if a win condition is met
 		Coordinate playerPos = player.getPos();
 		if (player.checkWinCondition(board)) {

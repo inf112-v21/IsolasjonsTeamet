@@ -96,7 +96,7 @@ public class PlayerImpl implements Player {
 	}
 
 	public void killRobot() {
-		 	life -= 1;
-			damageToken = 0;
+		life -= 1;
+		damageToken = 0;
 	}
 }

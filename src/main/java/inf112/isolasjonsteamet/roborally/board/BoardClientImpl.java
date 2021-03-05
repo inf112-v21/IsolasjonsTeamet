@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * Class for our boards that hold all the client related code (libgdbx).
  */
-public class BoardClientImpl extends BoardImpl{
+public class BoardClientImpl extends BoardImpl {
 
 	public TiledMap map;
 	public TiledMapTileLayer boardLayer;
@@ -85,7 +85,6 @@ public class BoardClientImpl extends BoardImpl{
 				if (flagLayer.getCell(x, y) != null) {
 					acc.add(Tiles.FLAG);
 				}
-
 
 				accY.add(ImmutableList.copyOf(acc));
 			}
