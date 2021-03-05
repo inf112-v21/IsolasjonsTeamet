@@ -48,9 +48,6 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		//board = new BoardImpl("example3.tmx")
 		board = new BoardClientImpl(ImmutableList.of(player), "example.tmx");
 
-		//Key input handling
-		Gdx.input.setInputProcessor(this);
-
 		//Code for our camera on the board, positions and view-angle
 		mapRenderer = new OrthogonalTiledMapRenderer(board.map, (float) 1 / 300);
 		camera.setToOrtho(false, (float) 5, 5);
