@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -102,5 +103,36 @@ public class PlayerSpec {
 		runAction(new MoveForward(2));
 
 		assertPlayerPos(player, new Coordinate(0, 0));
+	}
+
+	@Test
+	public void testDamageRobot() {
+		var player = createSimplePlayer();
+		player.damageRobot();
+		assertEquals(1, player.getDamageTokens());
+	}
+
+	@Test
+	public void testNotNegativeDamageToken() {
+		var player = createSimplePlayer();
+		assertThrows(IllegalStateException.class, () -> player.repairRobot());
+	}
+
+	@Test
+	public void testRepairRobot() {
+		var player = createSimplePlayer();
+		player.damageRobot();
+		player.repairRobot();
+		assertEquals(0, player.getDamageTokens());
+	}
+
+	@Test
+	public void testKillRobot() {
+		var player = createSimplePlayer();
+		for (int i = 0; i < 10; i++) {
+			player.damageRobot();
+		}
+		assertEquals(0, player.getDamageTokens());
+		assertEquals(4, player.getLife());
 	}
 }
