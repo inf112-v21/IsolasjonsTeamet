@@ -3,6 +3,7 @@ package inf112.isolasjonsteamet.roborally.app;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
@@ -14,9 +15,17 @@ import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
+import inf112.isolasjonsteamet.roborally.cards.CardDeck;
+import inf112.isolasjonsteamet.roborally.cards.CardType;
+import inf112.isolasjonsteamet.roborally.cards.Cards;
+import inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Scanner;
 
 /**
  * Game class that starts a new game.
@@ -30,6 +39,9 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 
 	private BoardClientImpl board;
 	private PlayerImpl player;
+	private CardDeck deck;
+	private List<CardType> givenCards;
+	private List<CardType> orderCards;
 
 
 	/**
@@ -57,7 +69,12 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		//Create a new playerCell
 		board.updatePlayerView();
 
-		System.out.println(player.getName() + " is facing " + player.getDir());
+		System.out.println("------------| How to play |------------");
+		System.out.println("G: Get 5 cards.");
+		System.out.println("1-5: Change order of cards.");
+		System.out.println("X: Remove card from order.");
+		System.out.println("C: Perform actions from cards.");
+		System.out.println(player.getName() + " pos: " + player.getPos() + ", dir: " + player.getDir());
 
 		//Set our current view to camera
 		mapRenderer.setView(camera);
@@ -110,13 +127,13 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 
 		boolean handled = switch (keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
-			case Input.Keys.R -> {
+			case Keys.R -> {
 				player.setDir(player.getDir().rotateRight());
 				System.out.println("R-Pressed: " + player.getName() + " is now facing " + player.getDir());
 				yield true;
 			}
 			// If E on the keyboard is pressed, the robot moves 1 step forward in the direction it is facing
-			case Input.Keys.E -> {
+			case Keys.E -> {
 
 				//player.move(board, playerVec, 0, 1);
 				performAction(new MoveForward(1));
@@ -124,14 +141,74 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 				yield true;
 			}
 			// If Q on the keyboard is pressed, the robot moves 1 step backwards in the direction it is facing
-			case Input.Keys.Q -> {
+			case Keys.Q -> {
 
 				performAction(new MoveForward(-1));
 				System.out.println("Q-Pressed: " + player.getName() + " moved backwards to: " + player.getPos());
 				yield true;
 			}
 
-			case Input.Keys.W -> {
+			//Lets player grab cards
+			case Keys.G -> {
+				//Create new random carddeck
+				deck = new DequeCardDeckImpl(
+						ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
+								Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.U_TURN),
+						new Random() //Chosen randomly, by a set of dice
+				);
+				givenCards = deck.grabCards(5);
+				orderCards = new ArrayList<>();
+				System.out.println("Given cards: " + givenCards);
+				System.out.println("Current order: " + orderCards);
+				yield true;
+			}
+			case Keys.NUM_1 -> {
+				orderCards.add(givenCards.get(0));
+				System.out.println("Current order: " + orderCards);
+				yield true;
+			}
+			case Keys.NUM_2 -> {
+				orderCards.add(givenCards.get(1));
+				System.out.println("Current order: " + orderCards);
+				yield true;
+			}
+			case Keys.NUM_3 -> {
+				orderCards.add(givenCards.get(2));
+				System.out.println("Current order: " + orderCards);
+				yield true;
+			}
+			case Keys.NUM_4 -> {
+				orderCards.add(givenCards.get(3));
+				System.out.println("Current order: " + orderCards);
+				yield true;
+			}
+			case Keys.NUM_5 -> {
+				orderCards.add(givenCards.get(4));
+				System.out.println("Current order: " + orderCards);
+				yield true;
+			}
+			//Perform 1-5 actions from orderCards
+			case Keys.C -> {
+				if (orderCards != null) {
+					for (CardType card : orderCards) {
+						List<Action> actionList = card.getActions();
+						for (Action act : actionList) {
+							performAction(act);
+						}
+					}
+				}
+				yield true;
+			}
+			//Remove latest card from order
+			case Keys.X -> {
+				if (orderCards.size() > 0) {
+					int lastIndex = orderCards.size() - 1;
+					orderCards.remove(lastIndex);
+					System.out.println("Current order: " + orderCards);
+				}
+				yield true;
+			}
+			case Keys.W -> {
 				if (oldPos.getY() < board.boardLayer.getHeight() - 1) {
 					player.move(Coordinate.NORTH);
 					System.out.println("W-Pressed: " + player.getName()
@@ -140,7 +217,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 				yield true;
 			}
 
-			case Input.Keys.A -> {
+			case Keys.A -> {
 				if (oldPos.getX() >= 1) {
 					player.move(Coordinate.WEST);
 					System.out.println("A-Pressed: " + player.getName()
@@ -149,7 +226,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 				yield true;
 			}
 
-			case Input.Keys.S -> {
+			case Keys.S -> {
 				if (oldPos.getY() >= 1) {
 					player.move(Coordinate.SOUTH);
 					System.out.println("s-Pressed: " + player.getName()
@@ -158,7 +235,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 				yield true;
 			}
 
-			case Input.Keys.D -> {
+			case Keys.D -> {
 				if (oldPos.getX() < board.boardLayer.getWidth() - 1) {
 					player.move(Coordinate.EAST);
 					System.out.println("D-Pressed: " + player.getName()

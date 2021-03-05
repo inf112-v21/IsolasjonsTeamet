@@ -13,5 +13,6 @@ public class Uturn implements Action {
 	public void perform(Board board, Player player) {
 		Orientation currentDir = player.getDir();
 		player.setDir(currentDir.getOpposingDir());
+		System.out.println(player.getName() + " rotated to " + player.getDir());
 	}
 }
