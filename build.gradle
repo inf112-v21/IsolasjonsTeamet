@@ -1,19 +1,20 @@
 plugins {
-  id 'application'
-  id 'java-library'
-  id 'checkstyle'
+    id 'application'
+    id 'java-library'
+    id 'checkstyle'
+    id 'org.beryx.runtime' version '1.12.1'
 }
 
 group = 'inf112.skeleton.app'
-version = '1.0-SNAPSHOT'
+version = '0.2'
 
-description = """mvn-app"""
+description = """isolasjonsteamet-roborally"""
 
-application.mainClass = 'inf112.skeleton.app.Main'
+application.mainClass = 'inf112.isolasjonsteamet.roborally.app.Main'
 
 
 tasks.withType(JavaCompile) {
-	options.encoding = 'UTF-8'
+    options.encoding = 'UTF-8'
 }
 
 java {
@@ -27,6 +28,42 @@ test {
     testLogging {
         events "passed", "skipped", "failed"
         exceptionFormat "full"
+    }
+}
+
+// https://docs.gradle.org/current/userguide/toolchains.html#integration_with_tasks_relying_on_a_java_executable_or_java_home
+def java15home = javaToolchains.compilerFor {
+    languageVersion = JavaLanguageVersion.of(15)
+}.get().metadata.installationPath.asFile.absolutePath
+
+runtime {
+    javaHome = java15home
+
+    //Need these to not require JDK 15 for packaging
+    //Remember to update thse now and then. JDK 15 is needed to update them
+    modules = ['java.desktop', 'java.logging', 'jdk.unsupported']
+
+    //Seems like compress 2 causes problems, so we'll avoid it
+    options = ['--strip-debug', '--compress', '1', '--no-header-files', '--no-man-pages']
+
+    jpackage {
+        skipInstaller = true
+        jpackageHome = java15home
+    }
+
+    launcher {
+        jvmArgs = ['-Droborally.is-prod=true']
+
+        if (org.gradle.nativeplatform.platform.internal.DefaultNativePlatform.currentOperatingSystem.isMacOsX()) {
+            jvmArgs += '-XstartOnFirstThread'
+        }
+    }
+}
+
+tasks.getByName("runtime").doLast {
+    copy {
+        from startScripts.outputDir
+        into "${runtime.imageDir.asFile.get()}/${startScripts.outputDir.name}"
     }
 }
 
