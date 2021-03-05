@@ -24,6 +24,9 @@ public class BoardImpl implements Board {
 	protected int width;
 	protected int height;
 
+	/**
+	 * New instance of BoardImpl.
+	 */
 	protected BoardImpl(List<Player> players, List<List<List<TileType>>> tiles) {
 		this.players = ImmutableList.copyOf(players);
 		this.tiles = tiles;
@@ -35,14 +38,25 @@ public class BoardImpl implements Board {
 		this(players, tilesFromString(charMap, board));
 	}
 
+	/**
+	 * Return width of the board.
+	 */
 	public int getWidth() {
 		return width;
 	}
 
+	/**
+	 * Return height of the board.
+	 */
 	public int getHeight() {
 		return height;
 	}
 
+	/**
+	 * Get tiles from string.
+	 *
+	 * @return list
+	 */
 	private static List<List<List<TileType>>> tilesFromString(Map<Character, List<TileType>> charMap, String board) {
 		int width = board.split("\n", 2)[0].length();
 		int height = (int) board.lines().count();
@@ -73,6 +87,11 @@ public class BoardImpl implements Board {
 		return this.players;
 	}
 
+	/**
+	 * Get a player at a given pos.
+	 *
+	 * @return Player
+	 */
 	@Nullable
 	@Override
 	public Player getPlayerAt(Coordinate pos) {
@@ -97,6 +116,9 @@ public class BoardImpl implements Board {
 		return tilesX.get(pos.getY());
 	}
 
+	/**
+	 * Check if the board is in a valid state.
+	 */
 	public void checkValid() {
 		for (Player player : players) {
 			int x = player.getPos().getX();

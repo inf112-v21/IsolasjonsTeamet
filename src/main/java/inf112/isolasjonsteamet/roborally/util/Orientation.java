@@ -6,6 +6,9 @@ package inf112.isolasjonsteamet.roborally.util;
 public enum Orientation {
 	NORTH, SOUTH, EAST, WEST;
 
+	/**
+	 * Return the opposite direction of a given direction.
+	 */
 	public Orientation getOpposingDir() {
 		return switch (this) {
 			case WEST -> EAST;
@@ -15,6 +18,11 @@ public enum Orientation {
 		};
 	}
 
+	/**
+	 * Return the direction to the left of a given direction.
+	 *
+	 * @return dir
+	 */
 	public Orientation rotateLeft() {
 		return switch (this) {
 			case NORTH -> WEST;
@@ -24,6 +32,11 @@ public enum Orientation {
 		};
 	}
 
+	/**
+	 * Return the direction to the right of a given direction.
+	 *
+	 * @return dir
+	 */
 	public Orientation rotateRight() {
 		return switch (this) {
 			case NORTH -> EAST;
@@ -33,6 +46,11 @@ public enum Orientation {
 		};
 	}
 
+	/**
+	 * Return the coordinate.
+	 *
+	 * @return coord
+	 */
 	public Coordinate toCoord() {
 		return switch (this) {
 			case NORTH -> Coordinate.NORTH;

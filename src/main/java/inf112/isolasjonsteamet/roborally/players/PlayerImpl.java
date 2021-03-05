@@ -99,4 +99,12 @@ public class PlayerImpl implements Player {
 		life -= 1;
 		damageToken = 0;
 	}
+
+	public int getLife() {
+		return life;
+	}
+
+	public int getDamageTokens() {
+		return damageToken;
+	}
 }
