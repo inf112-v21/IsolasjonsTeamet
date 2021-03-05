@@ -8,7 +8,6 @@ import inf112.isolasjonsteamet.roborally.players.Player;
  */
 public class KillRobot implements Action {
 
-
 	/**
 	 * Perfom an Action on the board.
 	 */

@@ -12,7 +12,6 @@ public class RotateRight implements Action {
 	@Override
 	public void perform(Board board, Player player) {
 		player.setDir(player.getDir().rotateRight());
-
 		System.out.println(player.getName() + " rotated right. Current dir: " + player.getDir());
 	}
 

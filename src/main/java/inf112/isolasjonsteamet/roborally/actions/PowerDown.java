@@ -8,7 +8,6 @@ import inf112.isolasjonsteamet.roborally.players.Player;
  */
 public class PowerDown implements Action {
 
-
 	@Override
 	public void perform(Board board, Player player) {
 

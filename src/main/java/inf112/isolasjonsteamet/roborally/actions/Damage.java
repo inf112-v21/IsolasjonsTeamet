@@ -8,7 +8,6 @@ import inf112.isolasjonsteamet.roborally.players.Player;
  */
 public class Damage implements Action {
 
-
 	/**
 	 * Perfom an Action on the board.
 	 */

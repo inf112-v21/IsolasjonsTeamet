@@ -2,12 +2,10 @@ package inf112.isolasjonsteamet.roborally;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
-
 import inf112.isolasjonsteamet.roborally.actions.RotateLeft;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.actions.Uturn;
@@ -22,7 +20,6 @@ import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-
 /**
  * Class to test player code, and see if it is successful.
  */
@@ -33,11 +30,9 @@ public class PlayerSpec {
 	private BoardImpl board;
 	private Player activePlayer;
 
-
 	/**
 	 * Creates a new simple player for testing.
-	 * @param coordinate
-	 * @param orientation
+	 *
 	 * @return PlayerImpl
 	 */
 	private PlayerImpl createSimplePlayer(Coordinate coordinate, Orientation orientation) {
@@ -48,11 +43,9 @@ public class PlayerSpec {
 		return createSimplePlayer(new Coordinate(0, 0), Orientation.EAST);
 	}
 
-
 	/**
 	 * Method for making a new player active.
-	 * @param coordinate
-	 * @param orientation
+	 *
 	 * @return player
 	 */
 	private PlayerImpl createSimpleActivePlayer(Coordinate coordinate, Orientation orientation) {
@@ -67,10 +60,8 @@ public class PlayerSpec {
 		return player;
 	}
 
-
 	/**
 	 * Method for creating a new simple board we will be running our tests on.
-	 * @param player
 	 */
 	private void createSimpleBoard(Player player) {
 		var charMap =
@@ -88,27 +79,21 @@ public class PlayerSpec {
 				ooooo""");
 	}
 
-
 	/**
 	 * Assert current playerpos with wanted pos.
-	 * @param player
-	 * @param coord
 	 */
 	private void assertPlayerPos(Player player, Coordinate coord) {
 		assertEquals(coord, player.getPos());
 		assertEquals(player, board.getPlayerAt(coord));
 	}
 
-
 	/**
 	 * Runs an action on our testboard.
-	 * @param action
 	 */
 	private void runAction(Action action) {
 		action.perform(board, activePlayer);
 		board.checkValid();
 	}
-
 
 	/**
 	 * Test method to check if the player gets the correct position we move him 1 forward.
@@ -123,7 +108,6 @@ public class PlayerSpec {
 
 		assertPlayerPos(player, new Coordinate(1, 0));
 	}
-
 
 	/**
 	 * Test method to check if a player is unable to move out of bounds.
@@ -140,7 +124,6 @@ public class PlayerSpec {
 		assertPlayerPos(player, new Coordinate(0, 0));
 	}
 
-
 	/**
 	 * Test method to check if a player can leap out of bounds.
 	 */
@@ -155,7 +138,6 @@ public class PlayerSpec {
 
 		assertPlayerPos(player, new Coordinate(0, 0));
 	}
-
 
 	@Test
 	public void testDamageRobot() {
