@@ -127,7 +127,6 @@ public class PlayerSpec {
 	/**
 	 * Test method to check if a player can leap out of bounds.
 	 */
-
 	@DisplayName(BOARD_GIVEN + ", given a player at 1,0 facing WEST. Moving forward 2 should move the player once")
 	@Test
 	public void leapOutOfBounds() {
