@@ -78,25 +78,53 @@ public class PlayerImpl implements Player {
 		this.direction = dir;
 	}
 
+	/**
+	 * Damage a players robot with 1 damage token
+	 */
+	@Override
 	public void damageRobot() {
-		if (this.damageToken < 10) {
-			this.damageToken += 1;
-		} else {
-			this.life -= 1;
-			this.damageToken = 0;
+		if (++this.damageToken >= 10) {
+			killRobot();
 		}
 	}
 
+	/**
+	 * Repair a players robot with 1 damage token
+	 */
+	@Override
 	public void repairRobot() {
 		if (damageToken == 0) {
-			throw new IllegalArgumentException("Can not get negative damage tokens");
+			throw new IllegalStateException("Can not get negative damage tokens");
 		} else {
 			this.damageToken -= 1;
 		}
 	}
 
+
+	/**
+	 * If a player gets 10 damageTokens on his robot, player loose 1 life
+	 */
+	@Override
 	public void killRobot() {
-		 	life -= 1;
-			damageToken = 0;
+		this.life -= 1;
+		this.damageToken = 0;
+	}
+
+	/**
+	 * Gets damageToken for an player robot
+	 *
+	 * @return damageToken
+	 */
+	public int getDamageTokens() {
+		return this.damageToken;
+	}
+
+	/**
+	 * Returns how many life an player has
+	 *
+	 * @return life
+	 */
+	public int getLife() {
+		return life;
 	}
 }
