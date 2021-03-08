@@ -6,11 +6,11 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.utils.Scaling;
+import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
@@ -20,6 +20,7 @@ import inf112.isolasjonsteamet.roborally.cards.CardDeck;
 import inf112.isolasjonsteamet.roborally.cards.CardType;
 import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl;
+import inf112.isolasjonsteamet.roborally.gui.MapRendererWidget;
 import inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
@@ -33,9 +34,6 @@ import java.util.Random;
  * Game class that starts a new game.
  */
 public class RoboRallyGame extends InputAdapter implements ApplicationListener {
-
-	private OrthogonalTiledMapRenderer mapRenderer;
-	private final OrthographicCamera camera = new OrthographicCamera();
 
 	private BoardClientImpl board;
 	private PlayerImpl player;
@@ -56,15 +54,10 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		//Create new player
 		player = new PlayerImpl("player1", new Coordinate(0, 0), Orientation.NORTH);
 
-		//board = new BoardImpl("example2.tmx")
-		//board = new BoardImpl("example3.tmx")
 		board = new BoardClientImpl(ImmutableList.of(player), "example.tmx");
 
-		//Code for our camera on the board, positions and view-angle
-		mapRenderer = new OrthogonalTiledMapRenderer(board.map, (float) 1 / 300);
-		camera.setToOrtho(false, (float) 5, 5);
-		camera.position.set(camera.viewportWidth / 2, camera.viewportHeight / 2, 0);
-		camera.update();
+		var viewport = new ScalingViewport(Scaling.fit, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		//var viewport = new ScreenViewport();
 
 		stage = new Stage(viewport);
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
@@ -74,7 +67,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		stage.addActor(table);
 
 		table.top();
-		table.add(" ").width(500).height(700);
+		table.add(new MapRendererWidget(board, 100));
 		table.row();
 
 		var bottomConsole = new PrintStreamLabel(10, System.out, skin, "default-font", Color.WHITE);
@@ -92,8 +85,6 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		out.println("C: Perform actions from cards.");
 		out.println(player.getName() + " pos: " + player.getPos() + ", dir: " + player.getDir());
 		out.flush();
-		//Set our current view to camera
-		mapRenderer.setView(camera);
 	}
 
 	/**
@@ -123,9 +114,6 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerDiedCell);
 		}
 
-		//Render changes
-		mapRenderer.render();
-		
 		stage.act();
 		stage.draw();
 	}
