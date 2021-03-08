@@ -54,7 +54,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 	@Override
 	public void create() {
 		//Create new player
-		player = new PlayerImpl("player1", new Coordinate(0, 0), Orientation.EAST);
+		player = new PlayerImpl("player1", new Coordinate(0, 0), Orientation.NORTH);
 
 		//board = new BoardImpl("example2.tmx")
 		//board = new BoardImpl("example3.tmx")
@@ -143,6 +143,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 	@Override
 	public boolean keyDown(int keycode) {
 		Coordinate oldPos = player.getPos();
+		final Orientation oldDir = player.getDir();
 
 		boolean handled = switch (keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
@@ -207,8 +208,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			case Keys.C -> {
 				if (orderCards != null) {
 					for (CardType card : orderCards) {
-						List<Action> actionList = card.getActions();
-						for (Action act : actionList) {
+						for (Action act : card.getActions()) {
 							performAction(act);
 						}
 					}
@@ -266,14 +266,31 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 
 		if (handled) {
 			Coordinate newPos = player.getPos();
+			final Orientation newDir = player.getDir();
 
 			if (!oldPos.equals(newPos)) {
 				board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
 				board.playerLayer.setCell(newPos.getX(), newPos.getY(), board.playerCell);
 			}
+
+			if (!oldDir.equals(newDir)) {
+				int rotation = orientationToCellRotation(newDir);
+				board.playerCell.setRotation(rotation);
+				board.playerDiedCell.setRotation(rotation);
+				board.playerWonCell.setRotation(rotation);
+			}
 		}
 
 		return handled;
+	}
+
+	private int orientationToCellRotation(Orientation orientation) {
+		return switch (orientation) {
+			case NORTH -> 0;
+			case WEST -> 1;
+			case SOUTH -> 2;
+			case EAST -> 3;
+		};
 	}
 
 	/**
