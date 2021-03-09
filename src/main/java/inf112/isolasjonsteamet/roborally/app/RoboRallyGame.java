@@ -6,11 +6,19 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
@@ -75,16 +83,78 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 
 		table.add(bottomConsole).top().left();
 
+		//Create new random carddeck
+		deck = new DequeCardDeckImpl(
+				ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
+						Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.U_TURN),
+				new Random() //Chosen randomly, by a set of dice
+		);
+		givenCards = deck.grabCards(5);
+		orderCards = new ArrayList<>();
+		//out.println("Given cards: " + givenCards);
+		//out.println("Current order: " + orderCards);
+
+		Table register = new Table(skin);
+		register.setHeight(270);
+		register.setWidth(Gdx.graphics.getWidth());
+		register.bottom().debug();
+
+		//Sets up the card menu
+		Dialog dialog = new Dialog("Card menu", skin);
+		dialog.setSize(Gdx.graphics.getWidth()/2, 185);
+		dialog.setPosition(5,5);
+
+		//Sets up the dropdown menu
+		SelectBox<CardType> selectBox = new SelectBox<>(skin);
+		Array<CardType> a = new Array<>();
+		for (CardType card : givenCards)
+			a.add(card);
+		selectBox.setItems(a);
+
+		//Create button for performing moves from cards
+		TextButton button = new TextButton("Start round", skin);
+		button.addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ChangeEvent changeEvent, Actor actor) {
+				//moves the robot for each card in list
+				if (orderCards != null) {
+					for (CardType card : orderCards) {
+						for (Action act : card.getActions()) {
+							performAction(act);
+						}
+					}
+				}
+			}
+		});
+
+		selectBox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent changeEvent, Actor actor) {
+				if (orderCards.size() < 5) {
+					orderCards.add(selectBox.getSelected());
+				}
+			}
+		});
+		dialog.getContentTable().defaults().pad(10);
+		dialog.getContentTable().add(selectBox);
+		dialog.add(button);
+
+		stage.addActor(dialog);
+		stage.addActor(register);
+		Gdx.input.setInputProcessor(stage);
+
 		//Create a new playerCell
 		board.updatePlayerView();
 
+		/*
 		out.println("------------| How to play |------------");
 		out.println("G: Get 5 cards.");
 		out.println("1-5: Change order of cards.");
 		out.println("X: Remove card from order.");
 		out.println("C: Perform actions from cards.");
 		out.println(player.getName() + " pos: " + player.getPos() + ", dir: " + player.getDir());
-		out.flush();
+		out.flush(); */
 	}
 
 	/**
@@ -114,7 +184,12 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerDiedCell);
 		}
 
-		stage.act();
+		Label label = new Label("Cards: " + orderCards, skin);
+		label.setPosition(Gdx.graphics.getWidth()/2+10, 5 );
+		stage.addActor(label);
+		stage.act(Gdx.graphics.getDeltaTime());
+
+		//stage.act();
 		stage.draw();
 	}
 
@@ -122,7 +197,6 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		action.perform(board, player);
 		board.checkValid();
 	}
-
 
 	/**
 	 * keyUp method that listens for keys released on the keyboard, and performs wanted action based on conditions.
