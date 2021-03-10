@@ -103,14 +103,15 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 
 		//Sets up the card menu
 		Dialog dialog = new Dialog("Card menu", skin);
-		dialog.setSize(Gdx.graphics.getWidth()/2, 185);
-		dialog.setPosition(5,5);
+		dialog.setSize(Gdx.graphics.getWidth() / 2, 185);
+		dialog.setPosition(5, 5);
 
 		//Sets up the dropdown menu
 		SelectBox<CardType> selectBox = new SelectBox<>(skin);
 		Array<CardType> a = new Array<>();
-		for (CardType card : givenCards)
+		for (CardType card : givenCards) {
 			a.add(card);
+		}
 		selectBox.setItems(a);
 
 		//Create button for performing moves from cards
@@ -187,7 +188,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 		}
 
 		Label label = new Label("Cards: " + orderCards, skin);
-		label.setPosition(Gdx.graphics.getWidth()/2+10, 5 );
+		label.setPosition(Gdx.graphics.getWidth() / 2 + 10, 5);
 		stage.addActor(label);
 		stage.act(Gdx.graphics.getDeltaTime());
 
@@ -329,7 +330,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 				player.setDir(Orientation.SOUTH);
 				performAction(new MoveForward(1));
 				out.println("s-Pressed: " + player.getName()
-							+ " moved down. Current pos: " + player.getPos());
+						+ " moved down. Current pos: " + player.getPos());
 				yield true;
 			}
 
@@ -337,7 +338,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 				player.setDir(Orientation.EAST);
 				performAction(new MoveForward(1));
 				out.println("D-Pressed: " + player.getName()
-							+ " moved right. Current pos: " + player.getPos());
+						+ " moved right. Current pos: " + player.getPos());
 				yield true;
 			}
 
