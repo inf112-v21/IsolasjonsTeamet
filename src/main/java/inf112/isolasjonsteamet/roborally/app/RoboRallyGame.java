@@ -145,6 +145,8 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 
 		stage.addActor(dialog);
 		stage.addActor(register);
+
+		//Comment line below out to move around with WASD and debug
 		Gdx.input.setInputProcessor(stage);
 
 		//Create a new playerCell
