@@ -2,6 +2,7 @@ package inf112.isolasjonsteamet.roborally;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import inf112.isolasjonsteamet.roborally.actions.Action;
@@ -138,6 +139,9 @@ public class PlayerSpec {
 		assertPlayerPos(player, new Coordinate(0, 0));
 	}
 
+	/**
+	 * Test method for checking that robots can take damage
+	 */
 	@Test
 	public void testDamageRobot() {
 		var player = createSimplePlayer();
@@ -145,12 +149,18 @@ public class PlayerSpec {
 		assertEquals(1, player.getDamageTokens());
 	}
 
+	/**
+	 * Test method to check that an robot not can get negative damage tokens
+	 */
 	@Test
 	public void testNotNegativeDamageToken() {
 		var player = createSimplePlayer();
 		assertThrows(IllegalStateException.class, () -> player.repairRobot());
 	}
 
+	/**
+	 * Test method to check than an robot can get repaired
+	 */
 	@Test
 	public void testRepairRobot() {
 		var player = createSimplePlayer();
@@ -159,6 +169,9 @@ public class PlayerSpec {
 		assertEquals(0, player.getDamageTokens());
 	}
 
+	/**
+	 * Test method to check if Robots gets killed when it reaches 10 damage tokens and damage tokens
+	 */
 	@Test
 	public void testKillRobot() {
 		var player = createSimplePlayer();

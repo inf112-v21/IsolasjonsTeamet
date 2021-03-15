@@ -9,7 +9,7 @@ import inf112.isolasjonsteamet.roborally.players.Player;
 public class KillRobot implements Action {
 
 	/**
-	 * Perfom an Action on the board.
+	 * {@inheritDoc} Perfom an Action on the board.
 	 */
 	@Override
 	public void perform(Board board, Player player) {

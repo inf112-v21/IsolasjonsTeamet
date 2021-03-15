@@ -9,7 +9,7 @@ import inf112.isolasjonsteamet.roborally.players.Player;
 public class RepairPlayer implements Action {
 
 	/**
-	 * Perform an Action on the board.
+	 * {@inheritDoc}
 	 */
 	@Override
 	public void perform(Board board, Player player) {

@@ -46,7 +46,7 @@ public interface Player {
 	void repairRobot();
 
 	/**
-	 * If a player gets 10 damageTokens on his robot, player loose 1 life
+	 * Decrements life from player and rests damage token for robot
 	 */
 	void killRobot();
 }

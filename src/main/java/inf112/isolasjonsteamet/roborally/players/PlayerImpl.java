@@ -78,23 +78,23 @@ public class PlayerImpl implements Player {
 		this.direction = dir;
 	}
 
+	@Override
 	public void damageRobot() {
-		if (this.damageToken < 10) {
-			this.damageToken += 1;
-		} else {
-			this.life -= 1;
-			this.damageToken = 0;
+		if (++this.damageToken >= 10) {
+			killRobot();
 		}
 	}
 
+	@Override
 	public void repairRobot() {
 		if (damageToken == 0) {
-			throw new IllegalArgumentException("Can not get negative damage tokens");
+			throw new IllegalStateException("Can not get negative damage tokens");
 		} else {
 			this.damageToken -= 1;
 		}
 	}
 
+	@Override
 	public void killRobot() {
 		life -= 1;
 		damageToken = 0;
