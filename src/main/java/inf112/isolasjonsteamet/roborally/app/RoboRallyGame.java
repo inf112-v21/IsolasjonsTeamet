@@ -4,13 +4,22 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
+import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
@@ -20,6 +29,7 @@ import inf112.isolasjonsteamet.roborally.cards.CardDeck;
 import inf112.isolasjonsteamet.roborally.cards.CardType;
 import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl;
+import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
 import inf112.isolasjonsteamet.roborally.gui.MapRendererWidget;
 import inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
@@ -33,7 +43,7 @@ import java.util.Random;
 /**
  * Game class that starts a new game.
  */
-public class RoboRallyGame extends InputAdapter implements ApplicationListener {
+public class RoboRallyGame extends InputAdapter implements ApplicationListener, DelegatingInputProcessor {
 
 	private BoardClientImpl board;
 	private PlayerImpl player;
@@ -75,16 +85,81 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 
 		table.add(bottomConsole).top().left();
 
+		//Create new random carddeck
+		deck = new DequeCardDeckImpl(
+				ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
+						Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.U_TURN),
+				new Random() //Chosen randomly, by a set of dice
+		);
+		givenCards = deck.grabCards(5);
+		orderCards = new ArrayList<>();
+		//out.println("Given cards: " + givenCards);
+		//out.println("Current order: " + orderCards);
+
+		Table register = new Table(skin);
+		register.setHeight(270);
+		register.setWidth(Gdx.graphics.getWidth());
+		//register.bottom().debug();
+
+		//Sets up the card menu
+		Dialog dialog = new Dialog("Card menu", skin);
+		dialog.setSize(Gdx.graphics.getWidth() / 2, 185);
+		dialog.setPosition(5, 5);
+
+		//Sets up the dropdown menu
+		SelectBox<CardType> selectBox = new SelectBox<>(skin);
+		Array<CardType> a = new Array<>();
+		for (CardType card : givenCards) {
+			a.add(card);
+		}
+		selectBox.setItems(a);
+
+		//Create button for performing moves from cards
+		TextButton button = new TextButton("Start round", skin);
+		button.addListener(new ChangeListener() {
+
+			@Override
+			public void changed(ChangeEvent changeEvent, Actor actor) {
+				//moves the robot for each card in list
+				if (orderCards != null) {
+					for (CardType card : orderCards) {
+						for (Action act : card.getActions()) {
+							performAction(act);
+						}
+					}
+				}
+			}
+		});
+
+		selectBox.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent changeEvent, Actor actor) {
+				if (orderCards.size() < 5) {
+					orderCards.add(selectBox.getSelected());
+				}
+			}
+		});
+		dialog.getContentTable().defaults().pad(10);
+		dialog.getContentTable().add(selectBox);
+		dialog.add(button);
+
+		stage.addActor(dialog);
+		stage.addActor(register);
+
+		//Comment line below out to move around with WASD and debug
+		Gdx.input.setInputProcessor(stage);
+
 		//Create a new playerCell
 		board.updatePlayerView();
 
+		/*
 		out.println("------------| How to play |------------");
 		out.println("G: Get 5 cards.");
 		out.println("1-5: Change order of cards.");
 		out.println("X: Remove card from order.");
 		out.println("C: Perform actions from cards.");
 		out.println(player.getName() + " pos: " + player.getPos() + ", dir: " + player.getDir());
-		out.flush();
+		out.flush(); */
 	}
 
 	/**
@@ -114,15 +189,42 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerDiedCell);
 		}
 
-		stage.act();
+		Label label = new Label("Cards: " + orderCards, skin);
+		label.setPosition(Gdx.graphics.getWidth() / 2 + 10, 5);
+		stage.addActor(label);
+		stage.act(Gdx.graphics.getDeltaTime());
+
+		//stage.act();
 		stage.draw();
 	}
 
 	private void performAction(Action action) {
+		Coordinate oldPos = player.getPos();
+		final Orientation oldDir = player.getDir();
+
 		action.perform(board, player);
 		board.checkValid();
+
+		Coordinate newPos = player.getPos();
+		final Orientation newDir = player.getDir();
+
+		if (!oldPos.equals(newPos)) {
+			board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
+			board.playerLayer.setCell(newPos.getX(), newPos.getY(), board.playerCell);
+		}
+
+		if (!oldDir.equals(newDir)) {
+			int rotation = orientationToCellRotation(newDir);
+			board.playerCell.setRotation(rotation);
+			board.playerDiedCell.setRotation(rotation);
+			board.playerWonCell.setRotation(rotation);
+		}
 	}
 
+	@Override
+	public InputProcessor delegateInputsTo() {
+		return stage;
+	}
 
 	/**
 	 * keyUp method that listens for keys released on the keyboard, and performs wanted action based on conditions.
@@ -130,8 +232,6 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 	@SuppressWarnings("checkstyle:Indentation")
 	@Override
 	public boolean keyDown(int keycode) {
-		Coordinate oldPos = player.getPos();
-		final Orientation oldDir = player.getDir();
 
 		boolean handled = switch (keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
@@ -213,61 +313,40 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 				yield true;
 			}
 			case Keys.W -> {
-				if (oldPos.getY() < board.boardLayer.getHeight() - 1) {
-					player.move(Coordinate.NORTH);
-					out.println("W-Pressed: " + player.getName()
-							+ " moved up. Current pos: " + player.getPos());
-				}
+				player.setDir(Orientation.NORTH);
+				performAction(new MoveForward(1));
+				out.println("W-Pressed: " + player.getName()
+						+ " moved up. Current pos: " + player.getPos());
 				yield true;
 			}
 
 			case Keys.A -> {
-				if (oldPos.getX() >= 1) {
-					player.move(Coordinate.WEST);
-					out.println("A-Pressed: " + player.getName()
-							+ " moved left. Current pos: " + player.getPos());
-				}
+				player.setDir(Orientation.WEST);
+				performAction(new MoveForward(1));
+				out.println("A-Pressed: " + player.getName()
+						+ " moved left. Current pos: " + player.getPos());
 				yield true;
 			}
 
 			case Keys.S -> {
-				if (oldPos.getY() >= 1) {
-					player.move(Coordinate.SOUTH);
-					out.println("s-Pressed: " + player.getName()
-							+ " moved down. Current pos: " + player.getPos());
-				}
+				player.setDir(Orientation.SOUTH);
+				performAction(new MoveForward(1));
+				out.println("s-Pressed: " + player.getName()
+						+ " moved down. Current pos: " + player.getPos());
 				yield true;
 			}
 
 			case Keys.D -> {
-				if (oldPos.getX() < board.boardLayer.getWidth() - 1) {
-					player.move(Coordinate.EAST);
-					out.println("D-Pressed: " + player.getName()
-							+ " moved right. Current pos: " + player.getPos());
-				}
+				player.setDir(Orientation.EAST);
+				performAction(new MoveForward(1));
+				out.println("D-Pressed: " + player.getName()
+						+ " moved right. Current pos: " + player.getPos());
 				yield true;
 			}
 
 			default -> false;
 		};
 		out.flush();
-
-		if (handled) {
-			Coordinate newPos = player.getPos();
-			final Orientation newDir = player.getDir();
-
-			if (!oldPos.equals(newPos)) {
-				board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
-				board.playerLayer.setCell(newPos.getX(), newPos.getY(), board.playerCell);
-			}
-
-			if (!oldDir.equals(newDir)) {
-				int rotation = orientationToCellRotation(newDir);
-				board.playerCell.setRotation(rotation);
-				board.playerDiedCell.setRotation(rotation);
-				board.playerWonCell.setRotation(rotation);
-			}
-		}
 
 		return handled;
 	}
