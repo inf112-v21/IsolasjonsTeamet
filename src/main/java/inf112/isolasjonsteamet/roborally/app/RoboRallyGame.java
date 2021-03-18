@@ -9,7 +9,9 @@ import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
@@ -84,6 +86,14 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		mapRenderer.setView(camera);
 	}
 
+	public void showPlayer() {
+		this.activePlayer = activePlayer;
+			for (int i = 0; i < 9; i++){
+				board.updatePlayerView();
+				System.out.println(activePlayer.getName() + " pos: " + activePlayer.getPos() + ", dir: " + activePlayer.getDir());
+		}
+	}
+
 	/**
 	 * Method for disposal of items.
 	 */
@@ -135,7 +145,8 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 	public boolean keyDown(int keycode) {
 		Coordinate oldPos = activePlayer.getPos();
 
-		boolean handled = switch (keycode) {
+		boolean handled;
+		if (switch (keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
 				activePlayer.setDir(activePlayer.getDir().rotateRight());
@@ -199,38 +210,47 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			}
 			case Keys.F1 -> {
 				switchToPlayer(1);
+				showPlayer();
 				yield true;
 			}
 			case Keys.F2 -> {
 				switchToPlayer(2);
+				showPlayer();
 				yield true;
 			}
 			case Keys.F3 -> {
 				switchToPlayer(3);
+				showPlayer();
 				yield true;
 			}
 			case Keys.F4 -> {
 				switchToPlayer(4);
+				showPlayer();
 				yield true;
 			}
 			case Keys.F5 -> {
 				switchToPlayer(5);
+				showPlayer();
 				yield true;
 			}
 			case Keys.F6 -> {
 				switchToPlayer(6);
+				showPlayer();
 				yield true;
 			}
 			case Keys.F7 -> {
 				switchToPlayer(7);
+				showPlayer();
 				yield true;
 			}
 			case Keys.F8 -> {
 				switchToPlayer(8);
+				showPlayer();
 				yield true;
 			}
 			case Keys.F9 -> {
 				switchToPlayer(9);
+				showPlayer();
 				yield true;
 			}
 			//Perform 1-5 actions from orderCards
@@ -291,7 +311,8 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			}
 
 			default -> false;
-		};
+		}) handled = true;
+		else handled = false;
 
 		if (handled) {
 			Coordinate newPos = activePlayer.getPos();
