@@ -129,7 +129,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 		tB.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent changeEvent, Actor actor) {
-				//moves the robot for each card in list
+				//Moves the robot for each card in list
 				if (orderCards != null) {
 					for (CardType card : orderCards) {
 						for (Action act : card.getActions()) {
