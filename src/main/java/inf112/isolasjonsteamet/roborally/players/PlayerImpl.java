@@ -13,6 +13,7 @@ public class PlayerImpl implements Player {
 	private final String playerName;
 	private Orientation direction;
 	private int life;
+	private int damageToken;
 	private Coordinate pos;
 
 	/**
@@ -23,6 +24,7 @@ public class PlayerImpl implements Player {
 		this.life = 5;
 		this.direction = orientation;
 		this.pos = pos;
+		this.damageToken = 0;
 	}
 
 	/**
@@ -74,5 +76,35 @@ public class PlayerImpl implements Player {
 	@Override
 	public void setDir(Orientation dir) {
 		this.direction = dir;
+	}
+
+	@Override
+	public void damageRobot() {
+		if (++this.damageToken >= 10) {
+			killRobot();
+		}
+	}
+
+	@Override
+	public void repairRobot() {
+		if (damageToken == 0) {
+			throw new IllegalStateException("Can not get negative damage tokens");
+		} else {
+			this.damageToken -= 1;
+		}
+	}
+
+	@Override
+	public void killRobot() {
+		life -= 1;
+		damageToken = 0;
+	}
+
+	public int getLife() {
+		return life;
+	}
+
+	public int getDamageTokens() {
+		return damageToken;
 	}
 }
