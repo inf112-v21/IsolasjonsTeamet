@@ -31,6 +31,7 @@ import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
 import inf112.isolasjonsteamet.roborally.gui.MapRendererWidget;
+import inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
