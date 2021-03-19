@@ -149,7 +149,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 		System.out.println(player.getName() + " is at " + player.getPos() + " and is facing " + player.getDir());
 
 		//Comment line below out to move around with WASD and debug
-		//Gdx.input.setInputProcessor(stage);
+		Gdx.input.setInputProcessor(stage);
 
 		//Create a new playerCell
 		board.updatePlayerView();
