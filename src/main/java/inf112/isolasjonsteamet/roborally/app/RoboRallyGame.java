@@ -96,37 +96,35 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 
 		//Adds buttons with the graphic of the card
 		int x = -50;
-		for(CardType cards : givenCards) {
-			card = new Texture(cards.toString() +".jpg");
+		for (CardType cards : givenCards) {
+			card = new Texture(cards.toString() + ".jpg");
 			Button.ButtonStyle tbs = new Button.ButtonStyle();
 			tbs.up = new TextureRegionDrawable(new TextureRegion(card));
 
 			Button b = new Button(tbs);
-			b.setSize(64,89);
+			b.setSize(64, 89);
 			b.addListener(new ChangeListener() {
 				@Override
 				public void changed(ChangeEvent event, Actor actor) {
 					if (!orderCards.contains(cards) && orderCards.size() < 5) {
 						orderCards.add(cards);
 						System.out.println(cards.toString() + " added to order.");
-					}
-					else {
+					} else {
 						orderCards.remove(cards);
 						System.out.println(cards.toString() + " removed from order.");
 					}
 				}
 			});
-			b.setPosition(x+=70, 10);
+			b.setPosition(x += 70, 10);
 
 			stage.addActor(b);
 		}
-
 		//Create button for performing moves from cards
-		TextButton tB = new TextButton("Start round", skin);
+		TextButton textB = new TextButton("Start round", skin);
 
-		tB.setSize(100,30);
-		tB.setColor(Color.ROYAL);
-		tB.addListener(new ChangeListener() {
+		textB.setSize(100, 30);
+		textB.setColor(Color.ROYAL);
+		textB.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent changeEvent, Actor actor) {
 				//Moves the robot for each card in list
@@ -139,8 +137,8 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 				}
 			}
 		});
-		tB.setPosition(Gdx.graphics.getWidth()-118, 10);
-		stage.addActor(tB);
+		textB.setPosition(Gdx.graphics.getWidth() - 118, 10);
+		stage.addActor(textB);
 
 		System.out.println(player.getName() + " is at " + player.getPos() + " and is facing " + player.getDir());
 
@@ -178,11 +176,11 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerDiedCell);
 		}
 
-		TextField tF = new TextField("Cards: " + orderCards, skin);
-		tF.setPosition(19, 105);
-		tF.setSize(Gdx.graphics.getWidth() - 38, 30);
-		tF.setColor(Color.ROYAL);
-		stage.addActor(tF);
+		TextField textF = new TextField("Cards: " + orderCards, skin);
+		textF.setPosition(19, 105);
+		textF.setSize(Gdx.graphics.getWidth() - 38, 30);
+		textF.setColor(Color.ROYAL);
+		stage.addActor(textF);
 		stage.act(Gdx.graphics.getDeltaTime());
 
 		//stage.act();
