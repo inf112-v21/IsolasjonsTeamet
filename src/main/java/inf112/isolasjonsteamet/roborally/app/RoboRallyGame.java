@@ -85,6 +85,12 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 		table.add(new MapRendererWidget(board, 100));
 		table.row();
 
+		var bottomConsole = new PrintStreamLabel(3, System.out, skin, "default-font", Color.WHITE);
+		bottomConsole.setColor(Color.ROYAL);
+		out = bottomConsole.getStream();
+
+		table.add(bottomConsole).top().left();
+
 		//Create new random carddeck
 		deck = new DequeCardDeckImpl(
 				ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
@@ -109,7 +115,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 					if (!orderCards.contains(cards) && orderCards.size() < 5) {
 						orderCards.add(cards);
 						System.out.println(cards.toString() + " added to order.");
-					} else {
+					} else if (orderCards.contains(cards))  {
 						orderCards.remove(cards);
 						System.out.println(cards.toString() + " removed from order.");
 					}
@@ -143,7 +149,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 		System.out.println(player.getName() + " is at " + player.getPos() + " and is facing " + player.getDir());
 
 		//Comment line below out to move around with WASD and debug
-		Gdx.input.setInputProcessor(stage);
+		//Gdx.input.setInputProcessor(stage);
 
 		//Create a new playerCell
 		board.updatePlayerView();
@@ -320,7 +326,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 			case Keys.S -> {
 				player.setDir(Orientation.SOUTH);
 				performAction(new MoveForward(1));
-				out.println("s-Pressed: " + player.getName()
+				out.println("S-Pressed: " + player.getName()
 						+ " moved down. Current pos: " + player.getPos());
 				yield true;
 			}
