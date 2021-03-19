@@ -7,15 +7,20 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
@@ -53,6 +58,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 
 	private Stage stage;
 	private Skin skin;
+	private Texture card;
 
 	private PrintStream out;
 
@@ -67,7 +73,6 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 		board = new BoardClientImpl(ImmutableList.of(player), "example.tmx");
 
 		var viewport = new ScalingViewport(Scaling.fit, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		//var viewport = new ScreenViewport();
 
 		stage = new Stage(viewport);
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
@@ -80,44 +85,48 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 		table.add(new MapRendererWidget(board, 100));
 		table.row();
 
-		var bottomConsole = new PrintStreamLabel(10, System.out, skin, "default-font", Color.WHITE);
-		out = bottomConsole.getStream();
-
-		table.add(bottomConsole).top().left();
-
 		//Create new random carddeck
 		deck = new DequeCardDeckImpl(
 				ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
 						Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.U_TURN),
 				new Random() //Chosen randomly, by a set of dice
 		);
-		givenCards = deck.grabCards(5);
+		givenCards = deck.grabCards(8);
 		orderCards = new ArrayList<>();
-		//out.println("Given cards: " + givenCards);
-		//out.println("Current order: " + orderCards);
 
-		Table register = new Table(skin);
-		register.setHeight(270);
-		register.setWidth(Gdx.graphics.getWidth());
-		//register.bottom().debug();
+		//Adds buttons with the graphic of the card
+		int x = -50;
+		for(CardType cards : givenCards) {
+			card = new Texture(cards.toString() +".jpg");
+			Button.ButtonStyle tbs = new Button.ButtonStyle();
+			tbs.up = new TextureRegionDrawable(new TextureRegion(card));
 
-		//Sets up the card menu
-		Dialog dialog = new Dialog("Card menu", skin);
-		dialog.setSize(Gdx.graphics.getWidth() / 2, 185);
-		dialog.setPosition(5, 5);
+			Button b = new Button(tbs);
+			b.setSize(64,89);
+			b.addListener(new ChangeListener() {
+				@Override
+				public void changed(ChangeEvent event, Actor actor) {
+					if (!orderCards.contains(cards) && orderCards.size() < 5) {
+						orderCards.add(cards);
+						System.out.println(cards.toString() + " added to order.");
+					}
+					else {
+						orderCards.remove(cards);
+						System.out.println(cards.toString() + " removed from order.");
+					}
+				}
+			});
+			b.setPosition(x+=70, 10);
 
-		//Sets up the dropdown menu
-		SelectBox<CardType> selectBox = new SelectBox<>(skin);
-		Array<CardType> a = new Array<>();
-		for (CardType card : givenCards) {
-			a.add(card);
+			stage.addActor(b);
 		}
-		selectBox.setItems(a);
 
 		//Create button for performing moves from cards
-		TextButton button = new TextButton("Start round", skin);
-		button.addListener(new ChangeListener() {
+		TextButton tB = new TextButton("Start round", skin);
 
+		tB.setSize(100,30);
+		tB.setColor(Color.ROYAL);
+		tB.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent changeEvent, Actor actor) {
 				//moves the robot for each card in list
@@ -130,36 +139,16 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 				}
 			}
 		});
+		tB.setPosition(Gdx.graphics.getWidth()-118, 10);
+		stage.addActor(tB);
 
-		selectBox.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent changeEvent, Actor actor) {
-				if (orderCards.size() < 5) {
-					orderCards.add(selectBox.getSelected());
-				}
-			}
-		});
-		dialog.getContentTable().defaults().pad(10);
-		dialog.getContentTable().add(selectBox);
-		dialog.add(button);
-
-		stage.addActor(dialog);
-		stage.addActor(register);
+		System.out.println(player.getName() + " is at " + player.getPos() + " and is facing " + player.getDir());
 
 		//Comment line below out to move around with WASD and debug
 		Gdx.input.setInputProcessor(stage);
 
 		//Create a new playerCell
 		board.updatePlayerView();
-
-		/*
-		out.println("------------| How to play |------------");
-		out.println("G: Get 5 cards.");
-		out.println("1-5: Change order of cards.");
-		out.println("X: Remove card from order.");
-		out.println("C: Perform actions from cards.");
-		out.println(player.getName() + " pos: " + player.getPos() + ", dir: " + player.getDir());
-		out.flush(); */
 	}
 
 	/**
@@ -189,9 +178,11 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerDiedCell);
 		}
 
-		Label label = new Label("Cards: " + orderCards, skin);
-		label.setPosition(Gdx.graphics.getWidth() / 2 + 10, 5);
-		stage.addActor(label);
+		TextField tF = new TextField("Cards: " + orderCards, skin);
+		tF.setPosition(19, 105);
+		tF.setSize(Gdx.graphics.getWidth() - 38, 30);
+		tF.setColor(Color.ROYAL);
+		stage.addActor(tF);
 		stage.act(Gdx.graphics.getDeltaTime());
 
 		//stage.act();
