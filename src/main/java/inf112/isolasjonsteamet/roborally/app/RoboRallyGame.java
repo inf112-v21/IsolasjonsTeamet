@@ -43,6 +43,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 	private CardDeck deck;
 	private List<CardType> givenCards;
 	private List<CardType> orderCards;
+	private int playerNum;
 
 
 	/**
@@ -86,11 +87,12 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		mapRenderer.setView(camera);
 	}
 
-	public void showPlayer() {
-		this.activePlayer = activePlayer;
-			for (int i = 0; i < 9; i++){
-				board.updatePlayerView();
-				System.out.println(activePlayer.getName() + " pos: " + activePlayer.getPos() + ", dir: " + activePlayer.getDir());
+	public void showPlayer(int playerNum){
+		PlayerImpl player = players.get(playerNum - 1);
+		this.playerNum = playerNum;
+		if (playerNum <= 9) {
+			Coordinate playerPos = player.getPos();
+			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerCell);
 		}
 	}
 
@@ -146,7 +148,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		Coordinate oldPos = activePlayer.getPos();
 
 		boolean handled;
-		if (switch (keycode) {
+		if (switch(keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
 				activePlayer.setDir(activePlayer.getDir().rotateRight());
@@ -210,47 +212,40 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			}
 			case Keys.F1 -> {
 				switchToPlayer(1);
-				showPlayer();
+				showPlayer(1);
 				yield true;
 			}
 			case Keys.F2 -> {
 				switchToPlayer(2);
-				showPlayer();
+				showPlayer(2);
 				yield true;
 			}
 			case Keys.F3 -> {
 				switchToPlayer(3);
-				showPlayer();
 				yield true;
 			}
 			case Keys.F4 -> {
 				switchToPlayer(4);
-				showPlayer();
 				yield true;
 			}
 			case Keys.F5 -> {
 				switchToPlayer(5);
-				showPlayer();
 				yield true;
 			}
 			case Keys.F6 -> {
 				switchToPlayer(6);
-				showPlayer();
 				yield true;
 			}
 			case Keys.F7 -> {
 				switchToPlayer(7);
-				showPlayer();
 				yield true;
 			}
 			case Keys.F8 -> {
 				switchToPlayer(8);
-				showPlayer();
 				yield true;
 			}
 			case Keys.F9 -> {
 				switchToPlayer(9);
-				showPlayer();
 				yield true;
 			}
 			//Perform 1-5 actions from orderCards
