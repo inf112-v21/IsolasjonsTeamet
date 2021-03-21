@@ -90,9 +90,10 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 	public void showPlayer(int playerNum){
 		PlayerImpl player = players.get(playerNum - 1);
 		this.playerNum = playerNum;
-		if (playerNum <= 9) {
+		for (int i = 0; i < 9; i++) {
 			Coordinate playerPos = player.getPos();
 			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerCell);
+			board.updatePlayerView();
 		}
 	}
 
@@ -173,7 +174,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 
 			//Lets player grab cards
 			case Keys.G -> {
-				//Create new random carddeck
+				//Create new random card deck
 				deck = new DequeCardDeckImpl(
 						ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
 								Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.U_TURN),
@@ -222,30 +223,37 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			}
 			case Keys.F3 -> {
 				switchToPlayer(3);
+				showPlayer(3);
 				yield true;
 			}
 			case Keys.F4 -> {
 				switchToPlayer(4);
+				showPlayer(4);
 				yield true;
 			}
 			case Keys.F5 -> {
 				switchToPlayer(5);
+				showPlayer(5);
 				yield true;
 			}
 			case Keys.F6 -> {
 				switchToPlayer(6);
+				showPlayer(6);
 				yield true;
 			}
 			case Keys.F7 -> {
 				switchToPlayer(7);
+				showPlayer(7);
 				yield true;
 			}
 			case Keys.F8 -> {
 				switchToPlayer(8);
+				showPlayer(8);
 				yield true;
 			}
 			case Keys.F9 -> {
 				switchToPlayer(9);
+				showPlayer(9);
 				yield true;
 			}
 			//Perform 1-5 actions from orderCards
