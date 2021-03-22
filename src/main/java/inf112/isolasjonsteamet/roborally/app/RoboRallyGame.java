@@ -88,16 +88,6 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		mapRenderer.setView(camera);
 	}
 
-	private void showPlayer(int playerNum) {
-		PlayerImpl player = players.get(playerNum - 1);
-		this.playerNum = playerNum;
-		for (int i = 0; i < 9; i++) {
-			Coordinate playerPos = player.getPos();
-			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerCell);
-			board.updatePlayerView();
-		}
-	}
-
 	/**
 	 * Method for disposal of items.
 	 */
@@ -215,47 +205,38 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			}
 			case Keys.F1 -> {
 				switchToPlayer(1);
-				showPlayer(1);
 				yield true;
 			}
 			case Keys.F2 -> {
 				switchToPlayer(2);
-				showPlayer(2);
 				yield true;
 			}
 			case Keys.F3 -> {
 				switchToPlayer(3);
-				showPlayer(3);
 				yield true;
 			}
 			case Keys.F4 -> {
 				switchToPlayer(4);
-				showPlayer(4);
 				yield true;
 			}
 			case Keys.F5 -> {
 				switchToPlayer(5);
-				showPlayer(5);
 				yield true;
 			}
 			case Keys.F6 -> {
 				switchToPlayer(6);
-				showPlayer(6);
 				yield true;
 			}
 			case Keys.F7 -> {
 				switchToPlayer(7);
-				showPlayer(7);
 				yield true;
 			}
 			case Keys.F8 -> {
 				switchToPlayer(8);
-				showPlayer(8);
 				yield true;
 			}
 			case Keys.F9 -> {
 				switchToPlayer(9);
-				showPlayer(9);
 				yield true;
 			}
 			//Perform 1-5 actions from orderCards
@@ -322,7 +303,11 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			Coordinate newPos = activePlayer.getPos();
 
 			if (!oldPos.equals(newPos)) {
-				board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
+				if (board.getPlayerAt(oldPos) == null) {
+					//Only one player was standing on the old position, so we clear the cell
+					board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
+				}
+
 				board.playerLayer.setCell(newPos.getX(), newPos.getY(), board.playerCell);
 			}
 		}
