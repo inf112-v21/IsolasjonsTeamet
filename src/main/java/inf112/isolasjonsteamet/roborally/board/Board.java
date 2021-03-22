@@ -3,6 +3,7 @@ package inf112.isolasjonsteamet.roborally.board;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
+import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -42,4 +43,12 @@ public interface Board {
 	 * @return height
 	 */
 	int getHeight();
+
+	/**
+	 *
+	 * @param coord1
+	 * @param dir
+	 * @return
+	 */
+	boolean hasWallInDir (Coordinate coord1, Orientation dir);
 }

@@ -5,6 +5,7 @@ import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
+import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -50,6 +51,12 @@ public class BoardImpl implements Board {
 	 */
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public boolean hasWallInDir(Coordinate coord1, Orientation dir) {
+		//TODO
+		return false;
 	}
 
 	/**
@@ -133,4 +140,6 @@ public class BoardImpl implements Board {
 			}
 		}
 	}
+
+
 }
