@@ -81,13 +81,14 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		System.out.println("1-5: Change order of cards.");
 		System.out.println("X: Remove card from order.");
 		System.out.println("C: Perform actions from cards.");
-		System.out.println(activePlayer.getName() + " pos: " + activePlayer.getPos() + ", dir: " + activePlayer.getDir());
+		System.out.println(
+				activePlayer.getName() + " pos: " + activePlayer.getPos() + ", dir: " + activePlayer.getDir());
 
 		//Set our current view to camera
 		mapRenderer.setView(camera);
 	}
 
-	public void showPlayer(int playerNum){
+	private void showPlayer(int playerNum) {
 		PlayerImpl player = players.get(playerNum - 1);
 		this.playerNum = playerNum;
 		for (int i = 0; i < 9; i++) {
@@ -143,13 +144,12 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 	/**
 	 * keyUp method that listens for keys released on the keyboard, and performs wanted action based on conditions.
 	 */
-	@SuppressWarnings("checkstyle:Indentation")
+	@SuppressWarnings({"checkstyle:Indentation", "checkstyle:WhitespaceAround"})
 	@Override
 	public boolean keyDown(int keycode) {
 		Coordinate oldPos = activePlayer.getPos();
 
-		boolean handled;
-		if (switch(keycode) {
+		boolean handled = switch(keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
 				activePlayer.setDir(activePlayer.getDir().rotateRight());
@@ -161,14 +161,16 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 
 				//player.move(board, playerVec, 0, 1);
 				performAction(new MoveForward(1));
-				System.out.println("E-Pressed: " + activePlayer.getName() + " moved forward to: " + activePlayer.getPos());
+				System.out.println(
+						"E-Pressed: " + activePlayer.getName() + " moved forward to: " + activePlayer.getPos());
 				yield true;
 			}
 			// If Q on the keyboard is pressed, the robot moves 1 step backwards in the direction it is facing
 			case Keys.Q -> {
 
 				performAction(new MoveForward(-1));
-				System.out.println("Q-Pressed: " + activePlayer.getName() + " moved backwards to: " + activePlayer.getPos());
+				System.out.println(
+						"Q-Pressed: " + activePlayer.getName() + " moved backwards to: " + activePlayer.getPos());
 				yield true;
 			}
 
@@ -314,8 +316,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			}
 
 			default -> false;
-		}) handled = true;
-		else handled = false;
+		};
 
 		if (handled) {
 			Coordinate newPos = activePlayer.getPos();
