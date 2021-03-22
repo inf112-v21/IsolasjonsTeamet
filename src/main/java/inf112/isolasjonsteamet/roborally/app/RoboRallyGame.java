@@ -50,7 +50,6 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 	private CardDeck deck;
 	private List<CardType> givenCards;
 	private List<CardType> orderCards;
-	private int playerNum;
 
 	private Stage stage;
 	private Skin skin;
