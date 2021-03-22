@@ -10,6 +10,7 @@ import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateLeft;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.actions.Uturn;
+import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.board.BoardImpl;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
@@ -24,7 +25,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Class to test player code, and see if it is successful.
  */
-public class PlayerSpec {
+public class PlayerSpec implements ActionProcessor {
 
 	private static final String BOARD_GIVEN = "Given a simple 5x5 board with flag at 4,4 and hole at 2,2";
 
@@ -37,7 +38,7 @@ public class PlayerSpec {
 	 * @return PlayerImpl
 	 */
 	private PlayerImpl createSimplePlayer(Coordinate coordinate, Orientation orientation) {
-		return new PlayerImpl("dummy", coordinate, orientation);
+		return new PlayerImpl(this, "dummy", coordinate, orientation);
 	}
 
 	private PlayerImpl createSimplePlayer() {
@@ -88,12 +89,17 @@ public class PlayerSpec {
 		assertEquals(player, board.getPlayerAt(coord));
 	}
 
+	@Override
+	public void performActionNow(Player player, Action action) {
+		action.perform(this, board, player);
+		board.checkValid();
+	}
+
 	/**
 	 * Runs an action on our testboard.
 	 */
 	private void runAction(Action action) {
-		action.perform(board, activePlayer);
-		board.checkValid();
+		performActionNow(activePlayer, action);
 	}
 
 	/**

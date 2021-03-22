@@ -1,5 +1,7 @@
 package inf112.isolasjonsteamet.roborally.players;
 
+import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
+import inf112.isolasjonsteamet.roborally.actions.KillRobot;
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
@@ -10,6 +12,8 @@ import inf112.isolasjonsteamet.roborally.util.Orientation;
  */
 public class PlayerImpl implements Player {
 
+	private final ActionProcessor actionProcessor;
+
 	private final String playerName;
 	private Orientation direction;
 	private int life;
@@ -19,7 +23,8 @@ public class PlayerImpl implements Player {
 	/**
 	 * Constructor of a new player.
 	 */
-	public PlayerImpl(String playerName, Coordinate pos, Orientation orientation) {
+	public PlayerImpl(ActionProcessor actionProcessor, String playerName, Coordinate pos, Orientation orientation) {
+		this.actionProcessor = actionProcessor;
 		this.playerName = playerName;
 		this.life = 5;
 		this.direction = orientation;
@@ -81,6 +86,7 @@ public class PlayerImpl implements Player {
 	@Override
 	public void damageRobot() {
 		if (++this.damageToken >= 10) {
+			actionProcessor.performActionNow(this, new KillRobot());
 			killRobot();
 		}
 	}

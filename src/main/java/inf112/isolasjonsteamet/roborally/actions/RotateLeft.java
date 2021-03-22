@@ -9,7 +9,7 @@ import inf112.isolasjonsteamet.roborally.players.Player;
 public class RotateLeft implements Action {
 
 	@Override
-	public void perform(Board board, Player player) {
+	public void perform(ActionProcessor processor, Board board, Player player) {
 		player.setDir(player.getDir().rotateLeft());
 		System.out.println(player.getName() + " rotated left. Current dir: " + player.getDir());
 	}

@@ -21,6 +21,7 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
+import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
@@ -31,6 +32,7 @@ import inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
 import inf112.isolasjonsteamet.roborally.gui.MapRendererWidget;
 import inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel;
+import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
@@ -42,7 +44,9 @@ import java.util.Random;
 /**
  * Game class that starts a new game.
  */
-public class RoboRallyGame extends InputAdapter implements ApplicationListener, DelegatingInputProcessor {
+public class RoboRallyGame
+		extends InputAdapter
+		implements ApplicationListener, DelegatingInputProcessor, ActionProcessor {
 
 	private BoardClientImpl board;
 	private final List<PlayerImpl> players = new ArrayList<>();
@@ -129,7 +133,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 				if (orderCards != null) {
 					for (CardType card : orderCards) {
 						for (Action act : card.getActions()) {
-							performAction(act);
+							performActionActivePlayer(act);
 						}
 					}
 				}
@@ -209,11 +213,14 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 		stage.draw();
 	}
 
-	private void performAction(Action action) {
+	/**
+	 * {@inheritDoc}
+	 */
+	public void performActionNow(Player player, Action action) {
 		Coordinate oldPos = activePlayer.getPos();
 		final Orientation oldDir = activePlayer.getDir();
 
-		action.perform(board, activePlayer);
+		action.perform(this, board, activePlayer);
 		board.checkValid();
 
 		Coordinate newPos = activePlayer.getPos();
@@ -236,6 +243,10 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 		}
 	}
 
+	private void performActionActivePlayer(Action action) {
+		performActionNow(activePlayer, action);
+	}
+
 	@Override
 	public InputProcessor delegateInputsTo() {
 		return stage;
@@ -247,22 +258,22 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 	@SuppressWarnings({"checkstyle:Indentation", "checkstyle:WhitespaceAround"})
 	@Override
 	public boolean keyDown(int keycode) {
-		boolean handled = switch(keycode) {
+		boolean handled = switch (keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
-				performAction(new RotateRight());
+				performActionActivePlayer(new RotateRight());
 				out.println("R-Pressed: " + activePlayer.getName() + " is now facing " + activePlayer.getDir());
 				yield true;
 			}
 			// If E on the keyboard is pressed, the robot moves 1 step forward in the direction it is facing
 			case Keys.E -> {
-				performAction(new MoveForward(1));
+				performActionActivePlayer(new MoveForward(1));
 				out.println("E-Pressed: " + activePlayer.getName() + " moved forward to: " + activePlayer.getPos());
 				yield true;
 			}
 			// If Q on the keyboard is pressed, the robot moves 1 step backwards in the direction it is facing
 			case Keys.Q -> {
-				performAction(new MoveForward(-1));
+				performActionActivePlayer(new MoveForward(-1));
 				out.println("Q-Pressed: " + activePlayer.getName() + " moved backwards to: " + activePlayer.getPos());
 				yield true;
 			}
@@ -347,7 +358,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 				if (orderCards != null) {
 					for (CardType card : orderCards) {
 						for (Action act : card.getActions()) {
-							performAction(act);
+							performActionActivePlayer(act);
 						}
 					}
 				}
@@ -364,7 +375,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 			}
 			case Keys.W -> {
 				activePlayer.setDir(Orientation.NORTH);
-				performAction(new MoveForward(1));
+				performActionActivePlayer(new MoveForward(1));
 				out.println("W-Pressed: " + activePlayer.getName()
 						+ " moved up. Current pos: " + activePlayer.getPos());
 				yield true;
@@ -372,7 +383,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 
 			case Keys.A -> {
 				activePlayer.setDir(Orientation.WEST);
-				performAction(new MoveForward(1));
+				performActionActivePlayer(new MoveForward(1));
 				out.println("A-Pressed: " + activePlayer.getName()
 						+ " moved left. Current pos: " + activePlayer.getPos());
 				yield true;
@@ -380,7 +391,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 
 			case Keys.S -> {
 				activePlayer.setDir(Orientation.SOUTH);
-				performAction(new MoveForward(1));
+				performActionActivePlayer(new MoveForward(1));
 				out.println("s-Pressed: " + activePlayer.getName()
 						+ " moved down. Current pos: " + activePlayer.getPos());
 				yield true;
@@ -388,7 +399,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 
 			case Keys.D -> {
 				activePlayer.setDir(Orientation.EAST);
-				performAction(new MoveForward(1));
+				performActionActivePlayer(new MoveForward(1));
 				out.println("D-Pressed: " + activePlayer.getName()
 						+ " moved right. Current pos: " + activePlayer.getPos());
 				yield true;
@@ -410,7 +421,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 
 		PlayerImpl player = players.get(playerNum - 1);
 		if (player == null) {
-			player = new PlayerImpl("Player" + playerNum, new Coordinate(0, 0), Orientation.EAST);
+			player = new PlayerImpl(this, "Player" + playerNum, new Coordinate(0, 0), Orientation.EAST);
 			players.set(playerNum - 1, player);
 		}
 
