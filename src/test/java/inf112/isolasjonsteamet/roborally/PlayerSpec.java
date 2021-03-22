@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -32,8 +33,7 @@ public class PlayerSpec {
 
 	/**
 	 * Creates a new simple player for testing.
-	 * @param coordinate
-	 * @param orientation
+	 *
 	 * @return PlayerImpl
 	 */
 	private PlayerImpl createSimplePlayer(Coordinate coordinate, Orientation orientation) {
@@ -46,8 +46,7 @@ public class PlayerSpec {
 
 	/**
 	 * Method for making a new player active.
-	 * @param coordinate
-	 * @param orientation
+	 *
 	 * @return player
 	 */
 	private PlayerImpl createSimpleActivePlayer(Coordinate coordinate, Orientation orientation) {
@@ -64,7 +63,6 @@ public class PlayerSpec {
 
 	/**
 	 * Method for creating a new simple board we will be running our tests on.
-	 * @param player
 	 */
 	private void createSimpleBoard(Player player) {
 		var charMap =
@@ -84,8 +82,6 @@ public class PlayerSpec {
 
 	/**
 	 * Assert current playerpos with wanted pos.
-	 * @param player
-	 * @param coord
 	 */
 	private void assertPlayerPos(Player player, Coordinate coord) {
 		assertEquals(coord, player.getPos());
@@ -94,7 +90,6 @@ public class PlayerSpec {
 
 	/**
 	 * Runs an action on our testboard.
-	 * @param action
 	 */
 	private void runAction(Action action) {
 		action.perform(board, activePlayer);
@@ -142,6 +137,49 @@ public class PlayerSpec {
 		runAction(new MoveForward(2));
 
 		assertPlayerPos(player, new Coordinate(0, 0));
+	}
+
+	/**
+	 * Test method for checking that robots can take damage
+	 */
+	@Test
+	public void testDamageRobot() {
+		var player = createSimplePlayer();
+		player.damageRobot();
+		assertEquals(1, player.getDamageTokens());
+	}
+
+	/**
+	 * Test method to check that an robot not can get negative damage tokens
+	 */
+	@Test
+	public void testNotNegativeDamageToken() {
+		var player = createSimplePlayer();
+		assertThrows(IllegalStateException.class, () -> player.repairRobot());
+	}
+
+	/**
+	 * Test method to check than an robot can get repaired
+	 */
+	@Test
+	public void testRepairRobot() {
+		var player = createSimplePlayer();
+		player.damageRobot();
+		player.repairRobot();
+		assertEquals(0, player.getDamageTokens());
+	}
+
+	/**
+	 * Test method to check if Robots gets killed when it reaches 10 damage tokens and damage tokens
+	 */
+	@Test
+	public void testKillRobot() {
+		var player = createSimplePlayer();
+		for (int i = 0; i < 10; i++) {
+			player.damageRobot();
+		}
+		assertEquals(0, player.getDamageTokens());
+		assertEquals(4, player.getLife());
 	}
 
 	/**

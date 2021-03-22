@@ -13,7 +13,7 @@ public class MoveForward implements Action {
 	public MoveForward(int numMoves) {
 		this.numMoves = numMoves;
 	}
-  
+
 	@Override
 	public void perform(Board board, Player player) {
 		new Move(player.getDir(), numMoves).perform(board, player);

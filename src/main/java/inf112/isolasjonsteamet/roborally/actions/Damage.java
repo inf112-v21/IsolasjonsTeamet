@@ -8,8 +8,11 @@ import inf112.isolasjonsteamet.roborally.players.Player;
  */
 public class Damage implements Action {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void perform(Board board, Player player) {
-
+		player.damageRobot();
 	}
 }
