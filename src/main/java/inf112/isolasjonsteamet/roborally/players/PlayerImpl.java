@@ -87,7 +87,6 @@ public class PlayerImpl implements Player {
 	public void damageRobot() {
 		if (++this.damageToken >= 10) {
 			actionProcessor.performActionNow(this, new KillRobot());
-			killRobot();
 		}
 	}
 
