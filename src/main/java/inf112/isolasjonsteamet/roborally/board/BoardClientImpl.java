@@ -106,10 +106,20 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		return ImmutableList.copyOf(accX);
 	}
 
+	private void clearLayer(TiledMapTileLayer layer) {
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				layer.setCell(x, y, null);
+			}
+		}
+	}
+
 	/**
 	 * Update the playerview.
 	 */
 	public void updatePlayerView() {
+		clearLayer(playerLayer);
+
 		for (Player player : players) {
 			Coordinate pos = player.getPos();
 			playerLayer.setCell(pos.getX(), pos.getX(), playerCell);

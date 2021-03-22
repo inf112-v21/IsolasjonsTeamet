@@ -19,7 +19,6 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
@@ -46,7 +45,8 @@ import java.util.Random;
 public class RoboRallyGame extends InputAdapter implements ApplicationListener, DelegatingInputProcessor {
 
 	private BoardClientImpl board;
-	private PlayerImpl player;
+	private final List<PlayerImpl> players = new ArrayList<>();
+	private PlayerImpl activePlayer;
 	private CardDeck deck;
 	private List<CardType> givenCards;
 	private List<CardType> orderCards;
@@ -61,10 +61,15 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 	 */
 	@Override
 	public void create() {
-		//Create new player
-		player = new PlayerImpl("player1", new Coordinate(0, 0), Orientation.NORTH);
+		for (int i = 0; i < 9; i++) {
+			players.add(null);
+			switchToPlayer(i + 1);
+		}
 
-		board = new BoardClientImpl(ImmutableList.of(player), "example.tmx");
+		//Create new player
+		switchToPlayer(1);
+
+		board = new BoardClientImpl(ImmutableList.copyOf(players), "example.tmx");
 
 		var viewport = new ScalingViewport(Scaling.fit, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 		//var viewport = new ScreenViewport();
@@ -179,14 +184,20 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
-		//Check if a win condition is met
-		Coordinate playerPos = player.getPos();
-		if (player.checkWinCondition(board)) {
-			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerWonCell);
-		}
+		for (var player : players) {
+			if (player == null) {
+				continue;
+			}
 
-		if (player.checkLossCondition(board)) {
-			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerDiedCell);
+			//Check if a win condition is met
+			Coordinate playerPos = player.getPos();
+			if (player.checkWinCondition(board)) {
+				board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerWonCell);
+			}
+
+			if (player.checkLossCondition(board)) {
+				board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerDiedCell);
+			}
 		}
 
 		Label label = new Label("Cards: " + orderCards, skin);
@@ -199,17 +210,21 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 	}
 
 	private void performAction(Action action) {
-		Coordinate oldPos = player.getPos();
-		final Orientation oldDir = player.getDir();
+		Coordinate oldPos = activePlayer.getPos();
+		final Orientation oldDir = activePlayer.getDir();
 
-		action.perform(board, player);
+		action.perform(board, activePlayer);
 		board.checkValid();
 
-		Coordinate newPos = player.getPos();
-		final Orientation newDir = player.getDir();
+		Coordinate newPos = activePlayer.getPos();
+		final Orientation newDir = activePlayer.getDir();
 
 		if (!oldPos.equals(newPos)) {
-			board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
+			if (board.getPlayerAt(newPos) == null) {
+				//Only one player was standing on the old position, so we clear the cell
+				board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
+			}
+
 			board.playerLayer.setCell(newPos.getX(), newPos.getY(), board.playerCell);
 		}
 
@@ -229,33 +244,32 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 	/**
 	 * keyUp method that listens for keys released on the keyboard, and performs wanted action based on conditions.
 	 */
-	@SuppressWarnings("checkstyle:Indentation")
+	@SuppressWarnings({"checkstyle:Indentation", "checkstyle:WhitespaceAround"})
 	@Override
 	public boolean keyDown(int keycode) {
-
-		boolean handled = switch (keycode) {
+		boolean handled = switch(keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
 				performAction(new RotateRight());
-				out.println("R-Pressed: " + player.getName() + " is now facing " + player.getDir());
+				out.println("R-Pressed: " + activePlayer.getName() + " is now facing " + activePlayer.getDir());
 				yield true;
 			}
 			// If E on the keyboard is pressed, the robot moves 1 step forward in the direction it is facing
 			case Keys.E -> {
 				performAction(new MoveForward(1));
-				out.println("E-Pressed: " + player.getName() + " moved forward to: " + player.getPos());
+				out.println("E-Pressed: " + activePlayer.getName() + " moved forward to: " + activePlayer.getPos());
 				yield true;
 			}
 			// If Q on the keyboard is pressed, the robot moves 1 step backwards in the direction it is facing
 			case Keys.Q -> {
 				performAction(new MoveForward(-1));
-				out.println("Q-Pressed: " + player.getName() + " moved backwards to: " + player.getPos());
+				out.println("Q-Pressed: " + activePlayer.getName() + " moved backwards to: " + activePlayer.getPos());
 				yield true;
 			}
 
 			//Lets player grab cards
 			case Keys.G -> {
-				//Create new random carddeck
+				//Create new random card deck
 				deck = new DequeCardDeckImpl(
 						ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
 								Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.U_TURN),
@@ -292,6 +306,42 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 				out.println("Current order: " + orderCards);
 				yield true;
 			}
+			case Keys.F1 -> {
+				switchToPlayer(1);
+				yield true;
+			}
+			case Keys.F2 -> {
+				switchToPlayer(2);
+				yield true;
+			}
+			case Keys.F3 -> {
+				switchToPlayer(3);
+				yield true;
+			}
+			case Keys.F4 -> {
+				switchToPlayer(4);
+				yield true;
+			}
+			case Keys.F5 -> {
+				switchToPlayer(5);
+				yield true;
+			}
+			case Keys.F6 -> {
+				switchToPlayer(6);
+				yield true;
+			}
+			case Keys.F7 -> {
+				switchToPlayer(7);
+				yield true;
+			}
+			case Keys.F8 -> {
+				switchToPlayer(8);
+				yield true;
+			}
+			case Keys.F9 -> {
+				switchToPlayer(9);
+				yield true;
+			}
 			//Perform 1-5 actions from orderCards
 			case Keys.C -> {
 				if (orderCards != null) {
@@ -313,34 +363,34 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 				yield true;
 			}
 			case Keys.W -> {
-				player.setDir(Orientation.NORTH);
+				activePlayer.setDir(Orientation.NORTH);
 				performAction(new MoveForward(1));
-				out.println("W-Pressed: " + player.getName()
-						+ " moved up. Current pos: " + player.getPos());
+				out.println("W-Pressed: " + activePlayer.getName()
+						+ " moved up. Current pos: " + activePlayer.getPos());
 				yield true;
 			}
 
 			case Keys.A -> {
-				player.setDir(Orientation.WEST);
+				activePlayer.setDir(Orientation.WEST);
 				performAction(new MoveForward(1));
-				out.println("A-Pressed: " + player.getName()
-						+ " moved left. Current pos: " + player.getPos());
+				out.println("A-Pressed: " + activePlayer.getName()
+						+ " moved left. Current pos: " + activePlayer.getPos());
 				yield true;
 			}
 
 			case Keys.S -> {
-				player.setDir(Orientation.SOUTH);
+				activePlayer.setDir(Orientation.SOUTH);
 				performAction(new MoveForward(1));
-				out.println("s-Pressed: " + player.getName()
-						+ " moved down. Current pos: " + player.getPos());
+				out.println("s-Pressed: " + activePlayer.getName()
+						+ " moved down. Current pos: " + activePlayer.getPos());
 				yield true;
 			}
 
 			case Keys.D -> {
-				player.setDir(Orientation.EAST);
+				activePlayer.setDir(Orientation.EAST);
 				performAction(new MoveForward(1));
-				out.println("D-Pressed: " + player.getName()
-						+ " moved right. Current pos: " + player.getPos());
+				out.println("D-Pressed: " + activePlayer.getName()
+						+ " moved right. Current pos: " + activePlayer.getPos());
 				yield true;
 			}
 
@@ -349,6 +399,22 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener, 
 		out.flush();
 
 		return handled;
+	}
+
+	private void switchToPlayer(int playerNum) {
+		System.out.println("Switching to player " + playerNum);
+
+		if (playerNum > players.size()) {
+			throw new IllegalStateException("Not enough player slots to add player " + playerNum);
+		}
+
+		PlayerImpl player = players.get(playerNum - 1);
+		if (player == null) {
+			player = new PlayerImpl("Player" + playerNum, new Coordinate(0, 0), Orientation.EAST);
+			players.set(playerNum - 1, player);
+		}
+
+		activePlayer = player;
 	}
 
 	private int orientationToCellRotation(Orientation orientation) {
