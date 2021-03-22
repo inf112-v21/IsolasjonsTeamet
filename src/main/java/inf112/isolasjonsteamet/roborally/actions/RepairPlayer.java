@@ -12,7 +12,7 @@ public class RepairPlayer implements Action {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void perform(Board board, Player player) {
+	public void perform(ActionProcessor processor, Board board, Player player) {
 		player.repairRobot();
 	}
 }
