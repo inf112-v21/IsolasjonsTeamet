@@ -181,6 +181,8 @@ public class PlayerSpec implements ActionProcessor {
 	@Test
 	public void testKillRobot() {
 		var player = createSimplePlayer();
+		createSimpleBoard(player);
+
 		for (int i = 0; i < 10; i++) {
 			player.damageRobot();
 		}
