@@ -266,7 +266,6 @@
             <message key="ws.notPreceded"
                 value="GenericWhitespace ''{0}'' is not preceded with whitespace."/>
         </module>
-
         <module name="Indentation">
             <property name="basicOffset" value="4"/>
             <property name="braceAdjustment" value="4"/>
@@ -329,7 +328,11 @@
         </module>
         <module name="NonEmptyAtclauseDescription"/>
         <module name="InvalidJavadocPosition"/>
+
+        <!-- IsolasjonsTeamet edit. Doesn't seem to play nice with IntelliJ.
         <module name="JavadocTagContinuationIndentation"/>
+        -->
+
         <module name="SummaryJavadoc">
             <property name="forbiddenSummaryFragments"
                 value="^@return the *|^This method returns |^A [{]@code [a-zA-Z0-9]+[}]( is a )"/>
