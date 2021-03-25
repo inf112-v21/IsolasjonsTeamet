@@ -8,9 +8,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import inf112.isolasjonsteamet.roborally.gui.ScreenController;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
+import inf112.isolasjonsteamet.roborally.network.Client;
 
 /**
  * A screen allowing users to join a multiplayer game.
@@ -21,6 +19,7 @@ public class JoinMultiplayerScreen extends StageScreen {
 
 	private TextField hostField;
 	private TextField portField;
+	private TextField usernameField;
 	private Label statusLabel;
 
 	public JoinMultiplayerScreen(ScreenController screenController) {
@@ -33,6 +32,7 @@ public class JoinMultiplayerScreen extends StageScreen {
 		hostField = new TextField("", skin);
 		portField = new TextField("", skin);
 		portField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
+		usernameField = new TextField("", skin);
 		statusLabel = new Label("", skin);
 
 		var table = createRootTable();
@@ -45,6 +45,10 @@ public class JoinMultiplayerScreen extends StageScreen {
 
 		table.add("Port:");
 		table.add(portField).width(100).spaceLeft(10);
+		table.row();
+
+		table.add("Username:");
+		table.add(usernameField).width(100).spaceLeft(10);
 		table.row();
 
 		table.add(statusLabel).colspan(2);
@@ -86,22 +90,7 @@ public class JoinMultiplayerScreen extends StageScreen {
 					return;
 				}
 
-				//TODO: Try to actually connect to the server
-				statusLabel.setText("Connecting to server");
-				statusLabel.setColor(Color.YELLOW);
-
-				Executor delayedExecutor = CompletableFuture.delayedExecutor(3, TimeUnit.SECONDS);
-				var serverConnected = CompletableFuture.supplyAsync(() -> null, delayedExecutor);
-
-				serverConnected.whenComplete((v, e) -> {
-					if (e != null) {
-						statusLabel.setText("Failed to connect to server: " + e.getMessage());
-						statusLabel.setColor(Color.RED);
-					} else {
-						//Pass client to game somehow
-						Gdx.app.postRunnable(screenController::startGame);
-					}
-				});
+				joinMultiplayer(port);
 			}
 		});
 	}
@@ -110,6 +99,47 @@ public class JoinMultiplayerScreen extends StageScreen {
 	public void hide() {
 		hostField.setText("");
 		portField.setText("");
+		usernameField.setText("");
 		statusLabel.setText("");
+	}
+
+	private void joinMultiplayer(int port) {
+		statusLabel.setText("Connecting to server");
+		statusLabel.setColor(Color.YELLOW);
+
+		Client.connectAndVerify(hostField.getText(), port).whenComplete((t, e) -> {
+			if (e != null) {
+				Gdx.app.postRunnable(() -> {
+					statusLabel.setText("Failed to connect to server: " + e.getMessage());
+					statusLabel.setColor(Color.RED);
+				});
+			} else {
+				Gdx.app.postRunnable(() -> statusLabel.setText("Connected..."));
+				Client client = t.getKey();
+
+				client.joinGame(usernameField.getText()).thenAccept(result -> {
+					switch (result) {
+						case DENIED -> {
+							Gdx.app.postRunnable(() -> {
+								statusLabel.setText("Can't join server. Denied");
+								statusLabel.setColor(Color.RED);
+							});
+							client.disconnect("Denied access to the server");
+						}
+						case NAME_IN_USE -> {
+							Gdx.app.postRunnable(() -> {
+								statusLabel.setText("Can't join server. Name in use");
+								statusLabel.setColor(Color.RED);
+							});
+							client.disconnect("Desired name was in use");
+						}
+						case SUCCESS -> Gdx.app.postRunnable(() ->
+								screenController.setInputScreen(new LobbyScreen(screenController, client))
+						);
+						default -> throw new IllegalArgumentException("Unknown join result " + result);
+					}
+				});
+			}
+		});
 	}
 }

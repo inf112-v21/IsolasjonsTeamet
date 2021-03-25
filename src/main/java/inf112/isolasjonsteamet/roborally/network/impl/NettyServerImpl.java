@@ -14,6 +14,7 @@ import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -104,5 +105,15 @@ public class NettyServerImpl extends Thread implements Server {
 
 		rootChannel.closeFuture().addListener((ChannelFutureListener) future1 -> promise.complete(null));
 		return promise;
+	}
+
+	@Override
+	public void kickPlayer(String player, String reason) {
+		serverHandler.kickPlayer(player, reason);
+	}
+
+	@Override
+	public List<String> getPlayers() {
+		return serverHandler.getPlayers();
 	}
 }

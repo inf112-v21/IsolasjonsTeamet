@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally.network;
 
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
+import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -35,4 +36,14 @@ public interface Server {
 	 * reason.
 	 */
 	CompletableFuture<Void> close(@Nullable String reason);
+
+	/**
+	 * Kicks the specified player from the game with a reason.
+	 *
+	 * @param player The player to kick.
+	 * @param reason Why the player was kicked.
+	 */
+	void kickPlayer(String player, String reason);
+
+	List<String> getPlayers();
 }

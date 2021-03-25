@@ -8,6 +8,8 @@ import inf112.isolasjonsteamet.roborally.network.c2spackets.GameJoinPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameInfoPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket.JoinResult;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
@@ -89,6 +91,21 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 		sendToAllPlayers(new ServerClosingPacket(reason))
 				.addListener((ChannelGroupFutureListener) future -> future.group().close());
 		return allClosedFuture;
+	}
+
+	void kickPlayer(String player, String reason) {
+		Channel channel = playersToChannel.get(player);
+		if (channel == null) {
+			throw new IllegalArgumentException("No player found named " + player);
+		}
+
+		channel.writeAndFlush(new KickedPacket(reason)).addListener(ChannelFutureListener.CLOSE);
+		gamePlayers.remove(channel);
+		sendToAllPlayers(new OtherPlayerKickedPacket(player, reason));
+	}
+
+	List<String> getPlayers() {
+		return ImmutableList.copyOf(playersToChannel.keySet());
 	}
 
 	@Override

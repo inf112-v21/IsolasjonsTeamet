@@ -73,6 +73,10 @@ public class StageScreen implements Screen, DelegatingInputProcessor {
 
 	@Override
 	public void show() {
+		if (stage == null) {
+			create();
+		}
+
 		stage.getViewport().apply();
 	}
 

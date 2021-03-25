@@ -3,6 +3,7 @@ package inf112.isolasjonsteamet.roborally.network.impl;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.network.Client;
 import inf112.isolasjonsteamet.roborally.network.ClientPacketListener;
 import inf112.isolasjonsteamet.roborally.network.Server;
@@ -118,5 +119,15 @@ public class SingleplayerClientServer implements Client, Server {
 		players.clear();
 		isClosed = true;
 		return CompletableFuture.completedFuture(null);
+	}
+
+	@Override
+	public void kickPlayer(String player, String reason) {
+		players.remove(player);
+	}
+
+	@Override
+	public List<String> getPlayers() {
+		return ImmutableList.copyOf(players);
 	}
 }
