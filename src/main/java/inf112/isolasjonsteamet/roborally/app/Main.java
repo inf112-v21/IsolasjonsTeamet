@@ -15,7 +15,8 @@ public class Main {
 	public static void main(String[] args) {
 		Lwjgl3ApplicationConfiguration cfg = new Lwjgl3ApplicationConfiguration();
 		cfg.setTitle("RoboRally");
-		cfg.setWindowedMode(500, 500);
+		cfg.setWindowedMode(700, 700);
+
 		//Creates a new instance of HelloWorld, our game
 		new Lwjgl3Application(new RoboRallyScreenController(), cfg);
 	}

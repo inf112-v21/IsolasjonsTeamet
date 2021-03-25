@@ -20,7 +20,7 @@ public interface Board {
 	List<Player> getPlayers();
 
 	/**
-	 * Get player at a given osition.
+	 * Get player at a given position.
 	 */
 	@Nullable
 	Player getPlayerAt(Coordinate pos);
@@ -48,7 +48,9 @@ public interface Board {
 	 *
 	 * @param coord1
 	 * @param dir
-	 * @return
+	 * @return true if there is an wall in direction thats given
 	 */
 	boolean hasWallInDir (Coordinate coord1, Orientation dir);
 }
+
+

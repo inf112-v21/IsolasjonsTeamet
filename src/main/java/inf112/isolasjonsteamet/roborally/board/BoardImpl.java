@@ -56,6 +56,8 @@ public class BoardImpl implements Board {
 	@Override
 	public boolean hasWallInDir(Coordinate coord1, Orientation dir) {
 		//TODO
+		if (coord1.add(dir.toCoord()) == coord1) {
+		}
 		return false;
 	}
 

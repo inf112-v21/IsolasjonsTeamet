@@ -17,9 +17,9 @@ import java.util.List;
 /**
  * Class for our boards that hold all the client related code (libgdbx).
  */
-public class BoardClientImpl extends BoardImpl {
+public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
-	public TiledMap map;
+	private final TiledMap map;
 	public TiledMapTileLayer boardLayer;
 	public TiledMapTileLayer playerLayer;
 	public TiledMapTileLayer holeLayer;
@@ -51,11 +51,13 @@ public class BoardClientImpl extends BoardImpl {
 		holeLayer = (TiledMapTileLayer) map.getLayers().get("Hole");
 		flagLayer = (TiledMapTileLayer) map.getLayers().get("Flag");
 
+		var tileSize = getTextureTileSize();
+
 		Texture playerTx = new Texture("player.png");
-		final TextureRegion[][] tReg = TextureRegion.split(playerTx, 300, 300);
+		final TextureRegion[][] tReg = TextureRegion.split(playerTx, tileSize, tileSize);
 
 		Texture defTx = new Texture("tiles.png");
-		final TextureRegion[][] tReg2 = TextureRegion.split(defTx, 300, 300);
+		final TextureRegion[][] tReg2 = TextureRegion.split(defTx, tileSize, tileSize);
 
 		//Static tiles for playing, dead and winning player cells
 		var transparentTile = new StaticTiledMapTile(tReg2[15][4]);
@@ -104,13 +106,33 @@ public class BoardClientImpl extends BoardImpl {
 		return ImmutableList.copyOf(accX);
 	}
 
+	private void clearLayer(TiledMapTileLayer layer) {
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < height; y++) {
+				layer.setCell(x, y, null);
+			}
+		}
+	}
+
 	/**
 	 * Update the playerview.
 	 */
 	public void updatePlayerView() {
+		clearLayer(playerLayer);
+
 		for (Player player : players) {
 			Coordinate pos = player.getPos();
 			playerLayer.setCell(pos.getX(), pos.getX(), playerCell);
 		}
+	}
+
+	@Override
+	public TiledMap getMap() {
+		return map;
+	}
+
+	@Override
+	public int getTextureTileSize() {
+		return 300; //TODO: Make configurable somehow
 	}
 }
