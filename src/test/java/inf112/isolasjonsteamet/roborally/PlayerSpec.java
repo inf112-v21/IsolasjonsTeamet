@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -9,6 +10,7 @@ import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateLeft;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.actions.Uturn;
+import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.board.BoardImpl;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
@@ -23,7 +25,7 @@ import org.junit.jupiter.api.Test;
 /**
  * Class to test player code, and see if it is successful.
  */
-public class PlayerSpec {
+public class PlayerSpec implements ActionProcessor {
 
 	private static final String BOARD_GIVEN = "Given a simple 5x5 board with flag at 4,4 and hole at 2,2";
 
@@ -32,12 +34,11 @@ public class PlayerSpec {
 
 	/**
 	 * Creates a new simple player for testing.
-	 * @param coordinate
-	 * @param orientation
+	 *
 	 * @return PlayerImpl
 	 */
 	private PlayerImpl createSimplePlayer(Coordinate coordinate, Orientation orientation) {
-		return new PlayerImpl("dummy", coordinate, orientation);
+		return new PlayerImpl(this, "dummy", coordinate, orientation);
 	}
 
 	private PlayerImpl createSimplePlayer() {
@@ -46,8 +47,7 @@ public class PlayerSpec {
 
 	/**
 	 * Method for making a new player active.
-	 * @param coordinate
-	 * @param orientation
+	 *
 	 * @return player
 	 */
 	private PlayerImpl createSimpleActivePlayer(Coordinate coordinate, Orientation orientation) {
@@ -64,7 +64,6 @@ public class PlayerSpec {
 
 	/**
 	 * Method for creating a new simple board we will be running our tests on.
-	 * @param player
 	 */
 	private void createSimpleBoard(Player player) {
 		var charMap =
@@ -84,21 +83,23 @@ public class PlayerSpec {
 
 	/**
 	 * Assert current playerpos with wanted pos.
-	 * @param player
-	 * @param coord
 	 */
 	private void assertPlayerPos(Player player, Coordinate coord) {
 		assertEquals(coord, player.getPos());
 		assertEquals(player, board.getPlayerAt(coord));
 	}
 
+	@Override
+	public void performActionNow(Player player, Action action) {
+		action.perform(this, board, player);
+		board.checkValid();
+	}
+
 	/**
 	 * Runs an action on our testboard.
-	 * @param action
 	 */
 	private void runAction(Action action) {
-		action.perform(board, activePlayer);
-		board.checkValid();
+		performActionNow(activePlayer, action);
 	}
 
 	/**
@@ -142,6 +143,51 @@ public class PlayerSpec {
 		runAction(new MoveForward(2));
 
 		assertPlayerPos(player, new Coordinate(0, 0));
+	}
+
+	/**
+	 * Test method for checking that robots can take damage
+	 */
+	@Test
+	public void testDamageRobot() {
+		var player = createSimplePlayer();
+		player.damageRobot();
+		assertEquals(1, player.getDamageTokens());
+	}
+
+	/**
+	 * Test method to check that an robot not can get negative damage tokens
+	 */
+	@Test
+	public void testNotNegativeDamageToken() {
+		var player = createSimplePlayer();
+		assertThrows(IllegalStateException.class, () -> player.repairRobot());
+	}
+
+	/**
+	 * Test method to check than an robot can get repaired
+	 */
+	@Test
+	public void testRepairRobot() {
+		var player = createSimplePlayer();
+		player.damageRobot();
+		player.repairRobot();
+		assertEquals(0, player.getDamageTokens());
+	}
+
+	/**
+	 * Test method to check if Robots gets killed when it reaches 10 damage tokens and damage tokens
+	 */
+	@Test
+	public void testKillRobot() {
+		var player = createSimplePlayer();
+		createSimpleBoard(player);
+
+		for (int i = 0; i < 10; i++) {
+			player.damageRobot();
+		}
+		assertEquals(0, player.getDamageTokens());
+		assertEquals(4, player.getLife());
 	}
 
 	/**

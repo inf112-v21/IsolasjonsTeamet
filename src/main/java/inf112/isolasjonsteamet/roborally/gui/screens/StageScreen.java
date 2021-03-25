@@ -10,6 +10,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.viewport.FitViewport;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
 import inf112.isolasjonsteamet.roborally.util.Environment;
 
@@ -30,7 +31,7 @@ public class StageScreen implements Screen, DelegatingInputProcessor {
 			skin.dispose();
 		}
 
-		stage = new Stage();
+		stage = new Stage(new FitViewport(Gdx.graphics.getWidth(), Gdx.graphics.getHeight()));
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
 
 		if (Environment.IS_DEV) {

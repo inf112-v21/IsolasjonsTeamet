@@ -10,7 +10,7 @@ import inf112.isolasjonsteamet.roborally.util.Orientation;
 public class Uturn implements Action {
 
 	@Override
-	public void perform(Board board, Player player) {
+	public void perform(ActionProcessor processor, Board board, Player player) {
 		Orientation currentDir = player.getDir();
 		player.setDir(currentDir.getOpposingDir());
 		System.out.println(player.getName() + " rotated to " + player.getDir());

@@ -13,10 +13,10 @@ public class MoveForward implements Action {
 	public MoveForward(int numMoves) {
 		this.numMoves = numMoves;
 	}
-  
+
 	@Override
-	public void perform(Board board, Player player) {
-		new Move(player.getDir(), numMoves).perform(board, player);
+	public void perform(ActionProcessor processor, Board board, Player player) {
+		processor.performActionNow(player, new Move(player.getDir(), numMoves));
 		System.out.println(player.getName() + " moved " + numMoves + " forward. Current pos: " + player.getPos());
 	}
 

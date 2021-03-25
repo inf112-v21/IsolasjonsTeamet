@@ -11,5 +11,5 @@ public interface Action {
 	/**
 	 * Perform an action on the board.
 	 */
-	void perform(Board board, Player player);
+	void perform(ActionProcessor processor, Board board, Player player);
 }
