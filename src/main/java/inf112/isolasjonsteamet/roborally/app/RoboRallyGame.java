@@ -55,6 +55,9 @@ public class RoboRallyGame
 	private CardDeck deck;
 	private List<CardType> givenCards;
 	private List<CardType> orderCards;
+	private Action showingAction;
+	private Player showingPlayer;
+	private int framesSinceStartedShowingAction = 0;
 
 	private Stage stage;
 	private Skin skin;
@@ -191,6 +194,13 @@ public class RoboRallyGame
 			}
 		}
 
+		if (showingAction != null) {
+			if (showingAction.show(showingPlayer, board, framesSinceStartedShowingAction++)) {
+				showingAction = null;
+				framesSinceStartedShowingAction = 0;
+			}
+		}
+
 		TextField textF = new TextField("Cards: " + orderCards, skin);
 		textF.setPosition(19, 105);
 		textF.setSize(Gdx.graphics.getWidth() - 38, 30);
@@ -230,6 +240,9 @@ public class RoboRallyGame
 			board.playerDiedCell.setRotation(rotation);
 			board.playerWonCell.setRotation(rotation);
 		}
+
+		showingAction = action;
+		showingPlayer = player;
 	}
 
 	private void performActionActivePlayer(Action action) {
