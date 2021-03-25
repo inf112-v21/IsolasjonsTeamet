@@ -3,11 +3,9 @@ package inf112.isolasjonsteamet.roborally.app;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -46,7 +44,6 @@ import java.util.Random;
  * Game class that starts a new game.
  */
 public class RoboRallyGame
-		extends InputAdapter
 		implements ApplicationListener, DelegatingInputProcessor, ActionProcessor {
 
 	private BoardClientImpl board;
@@ -58,7 +55,6 @@ public class RoboRallyGame
 
 	private Stage stage;
 	private Skin skin;
-	private Texture card;
 
 	private PrintStream out;
 
@@ -107,22 +103,21 @@ public class RoboRallyGame
 
 		//Adds buttons with the graphic of the card
 		int x = -50;
-		for (CardType cards : givenCards) {
-			card = new Texture(cards.toString() + ".jpg");
+		for (CardType card : givenCards) {
 			Button.ButtonStyle tbs = new Button.ButtonStyle();
-			tbs.up = new TextureRegionDrawable(new TextureRegion(card));
+			tbs.up = new TextureRegionDrawable(new TextureRegion(card.getTexture()));
 
 			Button b = new Button(tbs);
 			b.setSize(64, 89);
 			b.addListener(new ChangeListener() {
 				@Override
 				public void changed(ChangeEvent event, Actor actor) {
-					if (!orderCards.contains(cards) && orderCards.size() < 5) {
-						orderCards.add(cards);
-						System.out.println(cards.toString() + " added to order.");
-					} else if (orderCards.contains(cards))  {
-						orderCards.remove(cards);
-						System.out.println(cards.toString() + " removed from order.");
+					if (!orderCards.contains(card) && orderCards.size() < 5) {
+						orderCards.add(card);
+						System.out.println(card.getName() + " added to order.");
+					} else if (orderCards.contains(card))  {
+						orderCards.remove(card);
+						System.out.println(card.getName() + " removed from order.");
 					}
 				}
 			});
@@ -150,9 +145,6 @@ public class RoboRallyGame
 		});
 		textB.setPosition(Gdx.graphics.getWidth() - 118, 10);
 		stage.addActor(textB);
-
-		//Comment line below out to move around with WASD and debug
-		Gdx.input.setInputProcessor(stage);
 
 		//Create a new playerCell
 		board.updatePlayerView();
@@ -216,7 +208,7 @@ public class RoboRallyGame
 		final Orientation newDir = activePlayer.getDir();
 
 		if (!oldPos.equals(newPos)) {
-			if (board.getPlayerAt(newPos) == null) {
+			if (board.getPlayerAt(oldPos) == null) {
 				//Only one player was standing on the old position, so we clear the cell
 				board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
 			}
@@ -398,7 +390,7 @@ public class RoboRallyGame
 		};
 		out.flush();
 
-		return handled;
+		return handled || stage.keyDown(keycode);
 	}
 
 	private void switchToPlayer(int playerNum) {
