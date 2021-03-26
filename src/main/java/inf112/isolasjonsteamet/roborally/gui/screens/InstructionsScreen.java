@@ -28,9 +28,15 @@ public class InstructionsScreen extends StageScreen {
 		table.add("How to play").colspan(2);
 		table.row();
 
-		var instruction =
-				new Label("This is the board. Your goal is to get to the flag, "
-						+ "and avoid the hole. You move with WASD.", skin);
+		@SuppressWarnings("TextBlockMigration")
+		var instruction = new Label(
+				"This is the board. Your goal is to get to the flag, and avoid the hole. You move with WASD.\n"
+				+ "\n"
+				+ "You can also move by clicking on the cards on the bottom of the screen, and clicking run round to "
+				+ "run all the cards you have selected.\n"
+				+ "\n"
+				+ "You can switch the player piece you control with F1-F9.", skin
+		);
 		instruction.setWrap(true);
 		table.add(instruction).width(200);
 

@@ -23,7 +23,6 @@ import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
-import inf112.isolasjonsteamet.roborally.actions.Damage;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
@@ -42,13 +41,11 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import org.lwjgl.system.CallbackI.D;
 
 /**
  * Game class that starts a new game.
  */
 public class RoboRallyGame
-		extends InputAdapter
 		implements ApplicationListener, DelegatingInputProcessor, ActionProcessor {
 
 	private BoardClientImpl board;
@@ -157,9 +154,6 @@ public class RoboRallyGame
 		});
 		textB.setPosition(Gdx.graphics.getWidth() - 118, 10);
 		stage.addActor(textB);
-
-		//Comment line below out to move around with WASD and debug
-		Gdx.input.setInputProcessor(stage);
 
 		//Create a new playerCell
 		board.updatePlayerView();
@@ -416,7 +410,7 @@ public class RoboRallyGame
 		};
 		out.flush();
 
-		return handled;
+		return handled || stage.keyDown(keycode);
 	}
 
 	private void switchToPlayer(int playerNum) {
@@ -428,7 +422,7 @@ public class RoboRallyGame
 
 		PlayerImpl player = players.get(playerNum - 1);
 		if (player == null) {
-			player = new PlayerImpl(this, "Player" + playerNum, new Coordinate(0, 0), Orientation.EAST);
+			player = new PlayerImpl(this, "Player" + playerNum, new Coordinate(0, 0), Orientation.NORTH);
 			players.set(playerNum - 1, player);
 		}
 
