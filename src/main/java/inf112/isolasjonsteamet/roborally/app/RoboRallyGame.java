@@ -216,7 +216,7 @@ public class RoboRallyGame
 		final Orientation newDir = activePlayer.getDir();
 
 		if (!oldPos.equals(newPos)) {
-			if (board.getPlayerAt(newPos) == null) {
+			if (board.getPlayerAt(oldPos) == null) {
 				//Only one player was standing on the old position, so we clear the cell
 				board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
 			}
