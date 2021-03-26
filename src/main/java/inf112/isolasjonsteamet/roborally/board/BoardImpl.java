@@ -54,11 +54,14 @@ public class BoardImpl implements Board {
 	}
 
 	@Override
-	public boolean hasWallInDir(Coordinate coord1, Orientation dir) {
-		//TODO
-		if (coord1.add(dir.toCoord()) == coord1) {
-		}
-		return false;
+	public boolean hasWallInDir(Coordinate coord, Orientation dir) {
+		var coordTiles = new ArrayList<>(getTilesAt(coord));
+		var nextCoordTiles = new ArrayList<>(getTilesAt(coord.add(dir.toCoord())));
+
+		var dirWalls = getWallTypesForDir(dir);
+		var oppositeDirWalls = getWallTypesForDir(dir.getOpposingDir());
+
+		return coordTiles.removeAll(dirWalls) || nextCoordTiles.removeAll(oppositeDirWalls);
 	}
 
 	/**
