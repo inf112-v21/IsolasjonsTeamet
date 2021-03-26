@@ -20,7 +20,7 @@ public class PowerDown implements Action {
 		if (framesSinceStarted != 3) {
 			Coordinate effPos = player.getPos();
 			PowerDownEffect eff = new PowerDownEffect(effPos);
-			eff.setEffect(effPos);
+			eff.setEffect(effPos, player);
 			return false;
 		}
 		return true;

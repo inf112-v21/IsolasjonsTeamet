@@ -24,7 +24,7 @@ public class RepairPlayer implements Action {
 		if (framesSinceStarted != 3) {
 			Coordinate effPos = player.getPos();
 			RepairEffect eff = new RepairEffect(effPos);
-			eff.setEffect(effPos);
+			eff.setEffect(effPos, player);
 			return false;
 		}
 		return true;

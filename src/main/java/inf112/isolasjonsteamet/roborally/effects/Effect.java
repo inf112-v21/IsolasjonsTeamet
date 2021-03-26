@@ -1,5 +1,6 @@
 package inf112.isolasjonsteamet.roborally.effects;
 
+import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 
 /**
@@ -7,5 +8,5 @@ import inf112.isolasjonsteamet.roborally.util.Coordinate;
  */
 public interface Effect {
 
-	void setEffect(Coordinate pos);
+	void setEffect(Coordinate pos, Player player);
 }

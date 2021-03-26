@@ -27,7 +27,7 @@ public class KillRobot implements Action {
 		if (framesSinceStarted != 2) {
 			Coordinate effPos = player.getPos();
 			KillEffect eff = new KillEffect(effPos);
-			eff.setEffect(effPos);
+			eff.setEffect(effPos, player);
 			return false;
 		}
 		return true;

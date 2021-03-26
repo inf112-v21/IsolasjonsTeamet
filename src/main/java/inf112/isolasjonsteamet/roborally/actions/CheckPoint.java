@@ -22,7 +22,7 @@ public class CheckPoint implements Action {
 		if (framesSinceStarted != 2) {
 			Coordinate effPos = player.getPos();
 			CheckPointEffect eff = new CheckPointEffect(effPos);
-			eff.setEffect(effPos);
+			eff.setEffect(effPos, player);
 			return false;
 		}
 		return true;

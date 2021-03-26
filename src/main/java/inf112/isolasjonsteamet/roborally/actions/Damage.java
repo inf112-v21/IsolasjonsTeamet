@@ -23,7 +23,7 @@ public class Damage implements Action {
 		if (framesSinceStarted != 4) {
 			Coordinate effPos = player.getPos();
 			DamageEffect eff = new DamageEffect(effPos);
-			eff.setEffect(effPos);
+			eff.setEffect(effPos, player);
 			return false;
 		}
 		return true;
