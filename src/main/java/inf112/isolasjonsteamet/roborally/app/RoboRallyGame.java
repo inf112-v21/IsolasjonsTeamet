@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
+import inf112.isolasjonsteamet.roborally.actions.Damage;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
@@ -41,6 +42,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import org.lwjgl.system.CallbackI.D;
 
 /**
  * Game class that starts a new game.
@@ -55,6 +57,9 @@ public class RoboRallyGame
 	private CardDeck deck;
 	private List<CardType> givenCards;
 	private List<CardType> orderCards;
+	private Action showingAction;
+	private Player showingPlayer;
+	private int framesSinceStartedShowingAction = 0;
 
 	private Stage stage;
 	private Skin skin;
@@ -138,11 +143,13 @@ public class RoboRallyGame
 		textB.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent changeEvent, Actor actor) {
+
 				//Moves the robot for each card in list
 				if (orderCards != null) {
 					for (CardType card : orderCards) {
 						for (Action act : card.getActions()) {
 							performActionActivePlayer(act);
+
 						}
 					}
 				}
@@ -172,6 +179,7 @@ public class RoboRallyGame
 	 */
 	@Override
 	public void render() {
+
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
@@ -188,6 +196,13 @@ public class RoboRallyGame
 
 			if (player.checkLossCondition(board)) {
 				board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerDiedCell);
+			}
+		}
+
+		if (showingAction != null) {
+			if (showingAction.show(showingPlayer, board, framesSinceStartedShowingAction++)) {
+				showingAction = null;
+				framesSinceStartedShowingAction = 0;
 			}
 		}
 
@@ -216,7 +231,7 @@ public class RoboRallyGame
 		final Orientation newDir = activePlayer.getDir();
 
 		if (!oldPos.equals(newPos)) {
-			if (board.getPlayerAt(newPos) == null) {
+			if (board.getPlayerAt(oldPos) == null) {
 				//Only one player was standing on the old position, so we clear the cell
 				board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
 			}
@@ -230,6 +245,9 @@ public class RoboRallyGame
 			board.playerDiedCell.setRotation(rotation);
 			board.playerWonCell.setRotation(rotation);
 		}
+
+		showingAction = action;
+		showingPlayer = player;
 	}
 
 	private void performActionActivePlayer(Action action) {
