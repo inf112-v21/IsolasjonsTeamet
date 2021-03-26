@@ -2,7 +2,6 @@ package inf112.isolasjonsteamet.roborally.app;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.graphics.Color;
@@ -10,7 +9,9 @@ import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
+import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
@@ -25,7 +26,6 @@ import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.Scanner;
 
 /**
  * Game class that starts a new game.
@@ -38,10 +38,12 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 	private final OrthographicCamera camera = new OrthographicCamera();
 
 	private BoardClientImpl board;
-	private PlayerImpl player;
+	private final List<PlayerImpl> players = new ArrayList<>();
+	private PlayerImpl activePlayer;
 	private CardDeck deck;
 	private List<CardType> givenCards;
 	private List<CardType> orderCards;
+	private int playerNum;
 
 
 	/**
@@ -53,12 +55,17 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		font = new BitmapFont();
 		font.setColor(Color.RED);
 
+		for (int i = 0; i < 9; i++) {
+			players.add(null);
+			switchToPlayer(i + 1);
+		}
+
 		//Create new player
-		player = new PlayerImpl("player1", new Coordinate(0, 0), Orientation.EAST);
+		switchToPlayer(1);
 
 		//board = new BoardImpl("example2.tmx")
 		//board = new BoardImpl("example3.tmx")
-		board = new BoardClientImpl(ImmutableList.of(player), "example.tmx");
+		board = new BoardClientImpl(ImmutableList.copyOf(players), "example.tmx");
 
 		//Code for our camera on the board, positions and view-angle
 		mapRenderer = new OrthogonalTiledMapRenderer(board.map, (float) 1 / 300);
@@ -74,10 +81,20 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		System.out.println("1-5: Change order of cards.");
 		System.out.println("X: Remove card from order.");
 		System.out.println("C: Perform actions from cards.");
-		System.out.println(player.getName() + " pos: " + player.getPos() + ", dir: " + player.getDir());
+		System.out.println(activePlayer.getName() + " pos: " + activePlayer.getPos() + ", dir: " + activePlayer.getDir());
 
 		//Set our current view to camera
 		mapRenderer.setView(camera);
+	}
+
+	public void showPlayer(int playerNum){
+		PlayerImpl player = players.get(playerNum - 1);
+		this.playerNum = playerNum;
+		for (int i = 0; i < 9; i++) {
+			Coordinate playerPos = player.getPos();
+			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerCell);
+			board.updatePlayerView();
+		}
 	}
 
 	/**
@@ -97,14 +114,20 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		Gdx.gl.glClearColor(1, 1, 1, 1);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
-		//Check if a win condition is met
-		Coordinate playerPos = player.getPos();
-		if (player.checkWinCondition(board)) {
-			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerWonCell);
-		}
+		for (var player : players) {
+			if (player == null) {
+				continue;
+			}
 
-		if (player.checkLossCondition(board)) {
-			board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerDiedCell);
+			//Check if a win condition is met
+			Coordinate playerPos = player.getPos();
+			if (player.checkWinCondition(board)) {
+				board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerWonCell);
+			}
+
+			if (player.checkLossCondition(board)) {
+				board.playerLayer.setCell(playerPos.getX(), playerPos.getY(), board.playerDiedCell);
+			}
 		}
 
 		//Render changes
@@ -112,7 +135,7 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 	}
 
 	private void performAction(Action action) {
-		action.perform(board, player);
+		action.perform(board, activePlayer);
 		board.checkValid();
 	}
 
@@ -123,13 +146,14 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 	@SuppressWarnings("checkstyle:Indentation")
 	@Override
 	public boolean keyDown(int keycode) {
-		Coordinate oldPos = player.getPos();
+		Coordinate oldPos = activePlayer.getPos();
 
-		boolean handled = switch (keycode) {
+		boolean handled;
+		if (switch(keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
-				player.setDir(player.getDir().rotateRight());
-				System.out.println("R-Pressed: " + player.getName() + " is now facing " + player.getDir());
+				activePlayer.setDir(activePlayer.getDir().rotateRight());
+				System.out.println("R-Pressed: " + activePlayer.getName() + " is now facing " + activePlayer.getDir());
 				yield true;
 			}
 			// If E on the keyboard is pressed, the robot moves 1 step forward in the direction it is facing
@@ -137,20 +161,20 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 
 				//player.move(board, playerVec, 0, 1);
 				performAction(new MoveForward(1));
-				System.out.println("E-Pressed: " + player.getName() + " moved forward to: " + player.getPos());
+				System.out.println("E-Pressed: " + activePlayer.getName() + " moved forward to: " + activePlayer.getPos());
 				yield true;
 			}
 			// If Q on the keyboard is pressed, the robot moves 1 step backwards in the direction it is facing
 			case Keys.Q -> {
 
 				performAction(new MoveForward(-1));
-				System.out.println("Q-Pressed: " + player.getName() + " moved backwards to: " + player.getPos());
+				System.out.println("Q-Pressed: " + activePlayer.getName() + " moved backwards to: " + activePlayer.getPos());
 				yield true;
 			}
 
 			//Lets player grab cards
 			case Keys.G -> {
-				//Create new random carddeck
+				//Create new random card deck
 				deck = new DequeCardDeckImpl(
 						ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
 								Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.U_TURN),
@@ -187,6 +211,51 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 				System.out.println("Current order: " + orderCards);
 				yield true;
 			}
+			case Keys.F1 -> {
+				switchToPlayer(1);
+				showPlayer(1);
+				yield true;
+			}
+			case Keys.F2 -> {
+				switchToPlayer(2);
+				showPlayer(2);
+				yield true;
+			}
+			case Keys.F3 -> {
+				switchToPlayer(3);
+				showPlayer(3);
+				yield true;
+			}
+			case Keys.F4 -> {
+				switchToPlayer(4);
+				showPlayer(4);
+				yield true;
+			}
+			case Keys.F5 -> {
+				switchToPlayer(5);
+				showPlayer(5);
+				yield true;
+			}
+			case Keys.F6 -> {
+				switchToPlayer(6);
+				showPlayer(6);
+				yield true;
+			}
+			case Keys.F7 -> {
+				switchToPlayer(7);
+				showPlayer(7);
+				yield true;
+			}
+			case Keys.F8 -> {
+				switchToPlayer(8);
+				showPlayer(8);
+				yield true;
+			}
+			case Keys.F9 -> {
+				switchToPlayer(9);
+				showPlayer(9);
+				yield true;
+			}
 			//Perform 1-5 actions from orderCards
 			case Keys.C -> {
 				if (orderCards != null) {
@@ -210,45 +279,46 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 			}
 			case Keys.W -> {
 				if (oldPos.getY() < board.boardLayer.getHeight() - 1) {
-					player.move(Coordinate.NORTH);
-					System.out.println("W-Pressed: " + player.getName()
-							+ " moved up. Current pos: " + player.getPos());
+					activePlayer.move(Coordinate.NORTH);
+					System.out.println("W-Pressed: " + activePlayer.getName()
+							+ " moved up. Current pos: " + activePlayer.getPos());
 				}
 				yield true;
 			}
 
 			case Keys.A -> {
 				if (oldPos.getX() >= 1) {
-					player.move(Coordinate.WEST);
-					System.out.println("A-Pressed: " + player.getName()
-							+ " moved left. Current pos: " + player.getPos());
+					activePlayer.move(Coordinate.WEST);
+					System.out.println("A-Pressed: " + activePlayer.getName()
+							+ " moved left. Current pos: " + activePlayer.getPos());
 				}
 				yield true;
 			}
 
 			case Keys.S -> {
 				if (oldPos.getY() >= 1) {
-					player.move(Coordinate.SOUTH);
-					System.out.println("s-Pressed: " + player.getName()
-							+ " moved down. Current pos: " + player.getPos());
+					activePlayer.move(Coordinate.SOUTH);
+					System.out.println("s-Pressed: " + activePlayer.getName()
+							+ " moved down. Current pos: " + activePlayer.getPos());
 				}
 				yield true;
 			}
 
 			case Keys.D -> {
 				if (oldPos.getX() < board.boardLayer.getWidth() - 1) {
-					player.move(Coordinate.EAST);
-					System.out.println("D-Pressed: " + player.getName()
-							+ " moved right. Current pos: " + player.getPos());
+					activePlayer.move(Coordinate.EAST);
+					System.out.println("D-Pressed: " + activePlayer.getName()
+							+ " moved right. Current pos: " + activePlayer.getPos());
 				}
 				yield true;
 			}
 
 			default -> false;
-		};
+		}) handled = true;
+		else handled = false;
 
 		if (handled) {
-			Coordinate newPos = player.getPos();
+			Coordinate newPos = activePlayer.getPos();
 
 			if (!oldPos.equals(newPos)) {
 				board.playerLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
@@ -257,6 +327,22 @@ public class RoboRallyGame extends InputAdapter implements ApplicationListener {
 		}
 
 		return handled;
+	}
+
+	private void switchToPlayer(int playerNum) {
+		System.out.println("Switching to player " + playerNum);
+
+		if (playerNum > players.size()) {
+			throw new IllegalStateException("Not enough player slots to add player " + playerNum);
+		}
+
+		PlayerImpl player = players.get(playerNum - 1);
+		if (player == null) {
+			player = new PlayerImpl("Player" + playerNum, new Coordinate(0, 0), Orientation.EAST);
+			players.set(playerNum - 1, player);
+		}
+
+		activePlayer = player;
 	}
 
 	/**

@@ -5,12 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import inf112.isolasjonsteamet.roborally.actions.Action;
-import inf112.isolasjonsteamet.roborally.actions.MoveForward;
-import inf112.isolasjonsteamet.roborally.actions.RotateLeft;
-import inf112.isolasjonsteamet.roborally.actions.RotateRight;
-import inf112.isolasjonsteamet.roborally.actions.Uturn;
-import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
+import inf112.isolasjonsteamet.roborally.actions.*;
 import inf112.isolasjonsteamet.roborally.board.BoardImpl;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
@@ -18,6 +13,7 @@ import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
+import inf112.isolasjonsteamet.roborally.actions.Damage;
 import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -71,6 +67,7 @@ public class PlayerSpec implements ActionProcessor {
 						.put('o', ImmutableList.of(Tiles.GROUND))
 						.put('x', ImmutableList.of(Tiles.HOLE))
 						.put('f', ImmutableList.of(Tiles.FLAG))
+						.put('l', ImmutableList.of(Tiles.LASER))
 						.build();
 
 		board = new BoardImpl(ImmutableList.of(player), charMap, """
@@ -230,5 +227,15 @@ public class PlayerSpec implements ActionProcessor {
 		runAction(new RotateLeft());
 
 		assertEquals(player.getDir(), Orientation.NORTH);
+	}
+
+	@Test
+	public void Laser() {
+		var player = createSimplePlayer();
+		createSimpleBoard(player);
+
+		runAction(new Damage());
+
+		assertEquals(0, player.getDamageTokens());
 	}
 }

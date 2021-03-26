@@ -2,6 +2,7 @@ package inf112.isolasjonsteamet.roborally.board;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.tiled.TideMapLoader;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
@@ -24,6 +25,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	public TiledMapTileLayer playerLayer;
 	public TiledMapTileLayer holeLayer;
 	public TiledMapTileLayer flagLayer;
+	public TiledMapTileLayer laserLayer;
 
 	public TiledMapTileLayer.Cell playerWonCell;
 	public TiledMapTileLayer.Cell playerDiedCell;
@@ -50,6 +52,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		playerLayer = (TiledMapTileLayer) map.getLayers().get("Player");
 		holeLayer = (TiledMapTileLayer) map.getLayers().get("Hole");
 		flagLayer = (TiledMapTileLayer) map.getLayers().get("Flag");
+		laserLayer = (TiledMapTileLayer) map.getLayers().get("Laser");
 
 		var tileSize = getTextureTileSize();
 
@@ -71,6 +74,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
 		var playerDiedTile = new StaticTiledMapTile(tReg[0][1]);
 		playerDiedCell = new TiledMapTileLayer.Cell().setTile(playerDiedTile);
+
 	}
 
 	/**
@@ -97,6 +101,9 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 				if (flagLayer.getCell(x, y) != null) {
 					acc.add(Tiles.FLAG);
 				}
+				if (laserLayer.getCell(x, y) != null) {
+					acc.add(Tiles.LASER);
+				}
 
 				accY.add(ImmutableList.copyOf(acc));
 			}
@@ -113,6 +120,22 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 			}
 		}
 	}
+
+	/**
+	 *
+	 */
+//	public boolean fireLaser(int x, int y) {
+//		TiledMapTileLayer laserLayer = (TiledMapTileLayer) getMap().getLayers().get("Laser");
+//
+//		if (laserLayer.getCell(x, y) != null) {
+//			for (Player player : players) {
+//				if (player.getPos().getX() == x && player.getPos().getY() == y) {
+//					player.damageRobot();
+//				}
+//			} for some reason this method works in the board client class but should be in the damage action class
+//		}
+//		return true;
+//	}
 
 	/**
 	 * Update the playerview.
