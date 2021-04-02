@@ -6,13 +6,13 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
@@ -23,12 +23,16 @@ import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
 import inf112.isolasjonsteamet.roborally.cards.CardDeck;
+import inf112.isolasjonsteamet.roborally.cards.CardRow;
 import inf112.isolasjonsteamet.roborally.cards.CardType;
 import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl;
+import inf112.isolasjonsteamet.roborally.gui.CardArea;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
 import inf112.isolasjonsteamet.roborally.gui.MapRendererWidget;
 import inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel;
+import inf112.isolasjonsteamet.roborally.players.ClientPlayer;
+import inf112.isolasjonsteamet.roborally.players.ClientPlayerImpl;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.players.Robot;
@@ -49,8 +53,8 @@ public class RoboRallyGame extends GameLoop
 		implements ApplicationListener, DelegatingInputProcessor {
 
 	private BoardClientImpl board;
-	private final List<Player> players = new ArrayList<>();
-	private Player activePlayer;
+	private final List<ClientPlayer> players = new ArrayList<>();
+	private ClientPlayer activePlayer;
 	private CardDeck deck;
 
 	private Action showingAction;
@@ -59,8 +63,10 @@ public class RoboRallyGame extends GameLoop
 
 	private Stage stage;
 	private Skin skin;
+	private CardArea cardArea;
 
 	private final Map<CardType, TextureRegionDrawable> drawableCards = new HashMap<>();
+	private List<DragAndDrop> dragAndDrops = new ArrayList<>();
 
 	private PrintStream out;
 
@@ -74,8 +80,27 @@ public class RoboRallyGame extends GameLoop
 			switchToPlayer(i + 1);
 		}
 
-		//Create new robot
-		switchToPlayer(1);
+		var allCards = ImmutableList.of(
+				Cards.BACK_UP,
+				Cards.ROTATE_RIGHT,
+				Cards.ROTATE_LEFT,
+				Cards.MOVE_ONE,
+				Cards.MOVE_ONE,
+				Cards.MOVE_TWO,
+				Cards.MOVE_THREE,
+				Cards.U_TURN
+		);
+
+		var allCardsRepeated = ImmutableList.<CardType>builder();
+		for (int i = 0; i < 20; i++) {
+			allCardsRepeated.addAll(allCards);
+		}
+
+		for (CardType card : new HashSet<>(allCards)) {
+			drawableCards.put(card, new TextureRegionDrawable(card.getTexture()));
+		}
+		//Create new random carddeck
+		deck = new DequeCardDeckImpl(allCardsRepeated.build());
 
 		board = new BoardClientImpl(players.stream().map(Player::getRobot).collect(Collectors.toList()), "example.tmx");
 
@@ -87,33 +112,29 @@ public class RoboRallyGame extends GameLoop
 		var table = new Table(skin);
 		table.setFillParent(true);
 		stage.addActor(table);
-
 		table.top();
+
+		var leftGroup = new Table(skin);
+
+		table.add(leftGroup).top().left().expandY().padRight(10F);
 		table.add(new MapRendererWidget(board, 100));
 		table.row();
 
-		var bottomConsole = new PrintStreamLabel(3, System.out, skin, "default-font", Color.WHITE);
-		bottomConsole.setColor(Color.ROYAL);
+		var bottomConsole = new PrintStreamLabel(6, System.out, skin, "default-font", Color.WHITE);
 		out = bottomConsole.getStream();
+		bottomConsole.setColor(Color.ROYAL);
+		leftGroup.add(bottomConsole).top().left().padBottom(10F);
+		leftGroup.row();
 
-		table.add(bottomConsole).top().left();
-		table.row();
+		cardArea = new CardArea(skin, this::movePlayerCard);
+		leftGroup.add(cardArea.getTable());
 
-		var allCards = ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
-				Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.U_TURN);
-
-		for (CardType card : new HashSet<>(allCards)) {
-			drawableCards.put(card, new TextureRegionDrawable(new TextureRegion(card.getTexture())));
-		}
-
-		//Create new random carddeck
-		deck = new DequeCardDeckImpl(allCards);
-		prepareRound();
+		//table.debug();
+		//leftGroup.debug();
+		//chosenCardsGroup.debug();
+		//givenCardsGroup.debug();
 
 		/*
-		var cardGroup = new HorizontalGroup();
-		table.add(cardGroup);
-
 		//Adds buttons with the graphic of the card
 		int x = -50;
 		for (CardType card : givenCards) {
@@ -155,8 +176,23 @@ public class RoboRallyGame extends GameLoop
 		textB.setPosition(Gdx.graphics.getWidth() - 118, 10);
 		stage.addActor(textB);
 
-		//Create a new robotCell
-		board.updateRobotView();
+		prepareRound();
+		switchToPlayer(1);
+	}
+
+	private void movePlayerCard(CardRow fromRow, int fromCol, CardRow toRow, int toCol) {
+		activePlayer.swapCards(fromRow, fromCol, toRow, toCol);
+		refreshShownCards();
+	}
+
+	private void refreshShownCards() {
+		if (cardArea == null) {
+			return;
+		}
+
+		//We're lazy for now
+		cardArea.setChosenCards(activePlayer.getCards(CardRow.CHOSEN));
+		cardArea.setGivenCards(activePlayer.getCards(CardRow.GIVEN));
 	}
 
 	/**
@@ -173,7 +209,6 @@ public class RoboRallyGame extends GameLoop
 	 */
 	@Override
 	public void render() {
-
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
@@ -186,22 +221,13 @@ public class RoboRallyGame extends GameLoop
 			}
 		}
 
-		/*
-		TextField textF = new TextField("Cards: " + orderCards, skin);
-		textF.setPosition(19, 105);
-		textF.setSize(Gdx.graphics.getWidth() - 38, 30);
-		textF.setColor(Color.ROYAL);
-		stage.addActor(textF);
-		stage.act(Gdx.graphics.getDeltaTime());
-		*/
-
-		//stage.act();
+		stage.act();
 		stage.draw();
 	}
 
 	@Override
 	protected List<Player> players() {
-		return players;
+		return ImmutableList.copyOf(players);
 	}
 
 	@Override
@@ -335,6 +361,12 @@ public class RoboRallyGame extends GameLoop
 		return handled || stage.keyDown(keycode);
 	}
 
+	@Override
+	public void prepareRound() {
+		super.prepareRound();
+		refreshShownCards();
+	}
+
 	private void switchToPlayer(int playerNum) {
 		System.out.println("Switching to player " + playerNum);
 
@@ -342,13 +374,14 @@ public class RoboRallyGame extends GameLoop
 			throw new IllegalStateException("Not enough player slots to add player " + playerNum);
 		}
 
-		Player player = players.get(playerNum - 1);
+		ClientPlayer player = players.get(playerNum - 1);
 		if (player == null) {
-			player = new PlayerImpl("Player" + playerNum, this, new Coordinate(0, 0), Orientation.NORTH);
+			player = new ClientPlayerImpl("Player" + playerNum, this, new Coordinate(0, 0), Orientation.NORTH);
 			players.set(playerNum - 1, player);
 		}
 
 		activePlayer = player;
+		refreshShownCards();
 	}
 
 	/**

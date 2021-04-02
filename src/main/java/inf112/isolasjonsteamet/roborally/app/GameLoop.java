@@ -4,6 +4,9 @@ import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.cards.CardDeck;
+import inf112.isolasjonsteamet.roborally.cards.CardRow;
+import inf112.isolasjonsteamet.roborally.cards.CardType;
+import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import java.util.List;
@@ -17,11 +20,11 @@ public abstract class GameLoop implements ActionProcessor {
 
 	private void dealCards() {
 		for (Player player : players()) {
-			player.giveCards(deck().grabCards(9));
+			player.giveCards(deck().grabCards(8 - player.getStuckCardAmount()));
 		}
 	}
 
-	private void takeCardsPack() {
+	private void takeCardsBack() {
 		for (Player player : players()) {
 			deck().discardCards(player.takeNonStuckCardsBack());
 		}
@@ -36,13 +39,20 @@ public abstract class GameLoop implements ActionProcessor {
 	}
 
 	protected void processPlayerCard(Player player, int cardNum) {
-		for (Action action : player.getPickedCard(cardNum).getActions()) {
+		List<CardType> chosenCards = player.getCards(CardRow.CHOSEN);
+		CardType card = Cards.NO_CARD;
+
+		if (chosenCards.size() > cardNum) {
+			card = chosenCards.get(cardNum);
+		}
+
+		for (Action action : card.getActions()) {
 			performActionNow(player.getRobot(), action);
 		}
 	}
 
 	public void prepareRound() {
-		takeCardsPack();
+		takeCardsBack();
 		deck().shuffle();
 		dealCards();
 	}
