@@ -7,7 +7,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.google.common.collect.ImmutableList;
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
@@ -21,25 +21,25 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
 	private final TiledMap map;
 	public TiledMapTileLayer boardLayer;
-	public TiledMapTileLayer playerLayer;
+	public TiledMapTileLayer robotLayer;
 	public TiledMapTileLayer holeLayer;
 	public TiledMapTileLayer flagLayer;
 
-	public TiledMapTileLayer.Cell playerWonCell;
-	public TiledMapTileLayer.Cell playerDiedCell;
-	public TiledMapTileLayer.Cell playerCell;
+	public TiledMapTileLayer.Cell robotWonCell;
+	public TiledMapTileLayer.Cell robotDiedCell;
+	public TiledMapTileLayer.Cell robotCell;
 	public TiledMapTileLayer.Cell transparentCell;
 
 	/**
 	 * Create a new instance of BoardClientImpl.
 	 */
-	public BoardClientImpl(List<Player> players, String boardFilename) {
-		super(players, new ArrayList<>());
+	public BoardClientImpl(List<Robot> robots, String boardFilename) {
+		super(robots, new ArrayList<>());
 		map = new TmxMapLoader().load(boardFilename);
 		loadCells();
 		tiles = tilesFromMap(boardFilename);
-		height = playerLayer.getHeight();
-		width = playerLayer.getWidth();
+		height = robotLayer.getHeight();
+		width = robotLayer.getWidth();
 	}
 
 	/**
@@ -47,38 +47,38 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	 */
 	private void loadCells() {
 		boardLayer = (TiledMapTileLayer) map.getLayers().get("Board");
-		playerLayer = (TiledMapTileLayer) map.getLayers().get("Player");
+		robotLayer = (TiledMapTileLayer) map.getLayers().get("Player");
 		holeLayer = (TiledMapTileLayer) map.getLayers().get("Hole");
 		flagLayer = (TiledMapTileLayer) map.getLayers().get("Flag");
 
 		var tileSize = getTextureTileSize();
 
-		Texture playerTx = new Texture("player.png");
-		final TextureRegion[][] tReg = TextureRegion.split(playerTx, tileSize, tileSize);
+		Texture robotTx = new Texture("player.png");
+		final TextureRegion[][] tReg = TextureRegion.split(robotTx, tileSize, tileSize);
 
 		Texture defTx = new Texture("tiles.png");
 		final TextureRegion[][] tReg2 = TextureRegion.split(defTx, tileSize, tileSize);
 
-		//Static tiles for playing, dead and winning player cells
+		//Static tiles for playing, dead and winning robot cells
 		var transparentTile = new StaticTiledMapTile(tReg2[15][4]);
 		transparentCell = new TiledMapTileLayer.Cell().setTile(transparentTile);
 
-		var playerTile = new StaticTiledMapTile(tReg[0][0]);
-		playerCell = new TiledMapTileLayer.Cell().setTile(playerTile);
+		var robotTile = new StaticTiledMapTile(tReg[0][0]);
+		robotCell = new TiledMapTileLayer.Cell().setTile(robotTile);
 
-		var playerWonTile = new StaticTiledMapTile(tReg[0][2]);
-		playerWonCell = new TiledMapTileLayer.Cell().setTile(playerWonTile);
+		var robotWonTile = new StaticTiledMapTile(tReg[0][2]);
+		robotWonCell = new TiledMapTileLayer.Cell().setTile(robotWonTile);
 
-		var playerDiedTile = new StaticTiledMapTile(tReg[0][1]);
-		playerDiedCell = new TiledMapTileLayer.Cell().setTile(playerDiedTile);
+		var robotDiedTile = new StaticTiledMapTile(tReg[0][1]);
+		robotDiedCell = new TiledMapTileLayer.Cell().setTile(robotDiedTile);
 	}
 
 	/**
 	 * Get tiles from the map.
 	 */
 	private ImmutableList<List<List<TileType>>> tilesFromMap(String boardFilename) {
-		int width = playerLayer.getWidth();
-		int height = playerLayer.getHeight();
+		int width = robotLayer.getWidth();
+		int height = robotLayer.getHeight();
 
 		List<List<List<TileType>>> accX = new ArrayList<>(width);
 		for (int x = 0; x < width; x++) {
@@ -117,12 +117,12 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	/**
 	 * Update the playerview.
 	 */
-	public void updatePlayerView() {
-		clearLayer(playerLayer);
+	public void updateRobotView() {
+		clearLayer(robotLayer);
 
-		for (Player player : players) {
-			Coordinate pos = player.getPos();
-			playerLayer.setCell(pos.getX(), pos.getX(), playerCell);
+		for (Robot robot : robots) {
+			Coordinate pos = robot.getPos();
+			robotLayer.setCell(pos.getX(), pos.getX(), robotCell);
 		}
 	}
 

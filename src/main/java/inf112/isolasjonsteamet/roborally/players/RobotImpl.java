@@ -8,13 +8,12 @@ import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
 /**
- * Player class that holds player methods.
+ * Robot class that holds robot methods.
  */
-public class PlayerImpl implements Player {
+public class RobotImpl implements Robot {
 
 	private final ActionProcessor actionProcessor;
 
-	private final String playerName;
 	private Orientation direction;
 	private int life;
 	private int damageToken;
@@ -23,9 +22,8 @@ public class PlayerImpl implements Player {
 	/**
 	 * Constructor of a new player.
 	 */
-	public PlayerImpl(ActionProcessor actionProcessor, String playerName, Coordinate pos, Orientation orientation) {
+	public RobotImpl(ActionProcessor actionProcessor, Coordinate pos, Orientation orientation) {
 		this.actionProcessor = actionProcessor;
-		this.playerName = playerName;
 		this.life = 5;
 		this.direction = orientation;
 		this.pos = pos;
@@ -33,7 +31,7 @@ public class PlayerImpl implements Player {
 	}
 
 	/**
-	 * Get the position of a player.
+	 * Get the position of a robot.
 	 */
 	@Override
 	public Coordinate getPos() {
@@ -41,7 +39,7 @@ public class PlayerImpl implements Player {
 	}
 
 	/**
-	 * Move the player on the board.
+	 * Move the robot on the board.
 	 */
 	@Override
 	public void move(Coordinate offset) {
@@ -58,15 +56,7 @@ public class PlayerImpl implements Player {
 	}
 
 	/**
-	 * Returns the name of the player.
-	 */
-	@Override
-	public String getName() {
-		return playerName;
-	}
-
-	/**
-	 * Gets direction of the player.
+	 * Gets direction of the robot.
 	 *
 	 * @return direction
 	 */
@@ -76,7 +66,7 @@ public class PlayerImpl implements Player {
 	}
 
 	/**
-	 * Sets direction of the player.
+	 * Sets direction of the robot.
 	 */
 	@Override
 	public void setDir(Orientation dir) {

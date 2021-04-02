@@ -1,6 +1,6 @@
 package inf112.isolasjonsteamet.roborally.board;
 
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import java.util.List;
@@ -12,17 +12,15 @@ import javax.annotation.Nullable;
 public interface Board {
 
 	/**
-	 * Get a list of the Players on the Board.
-	 *
-	 * @return playerList
+	 * Get a list of the robots on the Board.
 	 */
-	List<Player> getPlayers();
+	List<Robot> getRobots();
 
 	/**
-	 * Get player at a given osition.
+	 * Get robot at a given position.
 	 */
 	@Nullable
-	Player getPlayerAt(Coordinate pos);
+	Robot getRobotAt(Coordinate pos);
 
 	/**
 	 * Get tiles at a given position.
@@ -42,4 +40,9 @@ public interface Board {
 	 * @return height
 	 */
 	int getHeight();
+
+	/**
+	 * Check if the board is in a valid state.
+	 */
+	void checkValid();
 }

@@ -2,12 +2,12 @@ package inf112.isolasjonsteamet.roborally.actions;
 
 import com.badlogic.gdx.math.MathUtils;
 import inf112.isolasjonsteamet.roborally.board.Board;
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
 /**
- * An action which indicates the player will move forward.
+ * An action which indicates the robot will move forward.
  */
 public class Move implements Action {
 
@@ -20,16 +20,16 @@ public class Move implements Action {
 	}
 
 	@Override
-	public void perform(ActionProcessor processor, Board board, Player player) {
+	public void perform(ActionProcessor processor, Board board, Robot robot) {
 		final Coordinate offset = direction.toCoord().mult(numMoves);
-		final Coordinate pos = player.getPos().add(offset);
+		final Coordinate pos = robot.getPos().add(offset);
 
 		int clampedX = MathUtils.clamp(pos.getX(), 0, board.getWidth() - 1);
 		int clampedY = MathUtils.clamp(pos.getY(), 0, board.getHeight() - 1);
 
 		var moveTo = new Coordinate(clampedX, clampedY);
-		var clampedOffset = moveTo.sub(player.getPos());
+		var clampedOffset = moveTo.sub(robot.getPos());
 
-		player.move(clampedOffset);
+		robot.move(clampedOffset);
 	}
 }

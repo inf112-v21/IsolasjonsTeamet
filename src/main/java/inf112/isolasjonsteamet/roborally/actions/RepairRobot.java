@@ -4,12 +4,15 @@ import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 
 /**
- * Is an Action that let's the robot destroy things on the board.
+ * Repair robot is an action that repairs a robot.
  */
-public class Destruction implements Action {
+public class RepairRobot implements Action {
 
+	/**
+	 * {@inheritDoc}
+	 */
 	@Override
 	public void perform(ActionProcessor processor, Board board, Robot robot) {
-
+		robot.repairRobot();
 	}
 }

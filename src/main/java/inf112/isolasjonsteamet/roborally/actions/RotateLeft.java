@@ -1,17 +1,17 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 
 /**
- * An action which indicates the player will rotate to the left.
+ * An action which indicates the robot will rotate to the left.
  */
 public class RotateLeft implements Action {
 
 	@Override
-	public void perform(ActionProcessor processor, Board board, Player player) {
-		player.setDir(player.getDir().rotateLeft());
-		System.out.println(player.getName() + " rotated left. Current dir: " + player.getDir());
+	public void perform(ActionProcessor processor, Board board, Robot robot) {
+		robot.setDir(robot.getDir().rotateLeft());
+		System.out.println(robot.getName() + " rotated left. Current dir: " + robot.getDir());
 	}
 
 	@Override

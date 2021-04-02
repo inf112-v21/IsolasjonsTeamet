@@ -1,7 +1,7 @@
 package inf112.isolasjonsteamet.roborally.board;
 
 import com.google.common.collect.ImmutableList;
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -18,7 +17,7 @@ import javax.annotation.Nullable;
  */
 public class BoardImpl implements Board {
 
-	protected final List<Player> players;
+	protected final List<Robot> robots;
 	protected List<List<List<TileType>>> tiles;
 
 	protected int width;
@@ -27,15 +26,15 @@ public class BoardImpl implements Board {
 	/**
 	 * New instance of BoardImpl.
 	 */
-	protected BoardImpl(List<Player> players, List<List<List<TileType>>> tiles) {
-		this.players = ImmutableList.copyOf(players);
+	protected BoardImpl(List<Robot> robots, List<List<List<TileType>>> tiles) {
+		this.robots = ImmutableList.copyOf(robots);
 		this.tiles = tiles;
 		width = tiles.size();
 		height = tiles.isEmpty() ? 0 : tiles.get(0).size();
 	}
 
-	public BoardImpl(List<Player> players, Map<Character, List<TileType>> charMap, String board) {
-		this(players, tilesFromString(charMap, board));
+	public BoardImpl(List<Robot> robots, Map<Character, List<TileType>> charMap, String board) {
+		this(robots, tilesFromString(charMap, board));
 	}
 
 	/**
@@ -77,25 +76,15 @@ public class BoardImpl implements Board {
 		return ImmutableList.copyOf(accX);
 	}
 
-	/**
-	 * Get a list of the Players on the Board.
-	 *
-	 * @return playerList
-	 */
 	@Override
-	public List<Player> getPlayers() {
-		return this.players;
+	public List<Robot> getRobots() {
+		return this.robots;
 	}
 
-	/**
-	 * Get a player at a given pos.
-	 *
-	 * @return Player
-	 */
 	@Nullable
 	@Override
-	public Player getPlayerAt(Coordinate pos) {
-		return players.stream().filter(p -> p.getPos().equals(pos)).findAny().orElse(null);
+	public Robot getRobotAt(Coordinate pos) {
+		return robots.stream().filter(p -> p.getPos().equals(pos)).findAny().orElse(null);
 	}
 
 	/**
@@ -116,20 +105,17 @@ public class BoardImpl implements Board {
 		return tilesX.get(pos.getY());
 	}
 
-	/**
-	 * Check if the board is in a valid state.
-	 */
 	public void checkValid() {
-		for (Player player : players) {
-			int x = player.getPos().getX();
-			int y = player.getPos().getY();
+		for (Robot robot : robots) {
+			int x = robot.getPos().getX();
+			int y = robot.getPos().getY();
 
 			if (x < 0 || x >= width) {
-				throw new IllegalStateException("Player out of bounds " + player.getPos());
+				throw new IllegalStateException("Robot out of bounds " + robot.getPos());
 			}
 
 			if (y < 0 || y >= height) {
-				throw new IllegalStateException("Player out of bounds " + player.getPos());
+				throw new IllegalStateException("Robot out of bounds " + robot.getPos());
 			}
 		}
 	}

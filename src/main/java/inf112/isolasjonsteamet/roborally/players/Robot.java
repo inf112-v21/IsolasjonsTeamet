@@ -6,7 +6,7 @@ import inf112.isolasjonsteamet.roborally.util.Orientation;
 /**
  * A player on the board.
  */
-public interface Player {
+public interface Robot {
 
 	/**
 	 * Get the position of a player.
@@ -17,11 +17,6 @@ public interface Player {
 	 * Move the player on the board.
 	 */
 	void move(Coordinate offset);
-
-	/**
-	 * Returns the name of the player.
-	 */
-	String getName();
 
 	/**
 	 * Gets direction of the player.
