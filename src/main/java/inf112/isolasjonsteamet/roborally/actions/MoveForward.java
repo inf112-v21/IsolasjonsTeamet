@@ -17,7 +17,7 @@ public class MoveForward implements Action {
 	@Override
 	public void perform(ActionProcessor processor, Board board, Robot robot) {
 		processor.performActionNow(robot, new Move(robot.getDir(), numMoves));
-		System.out.println(robot.getName() + " moved " + numMoves + " forward. Current pos: " + robot.getPos());
+		System.out.println(robot.getDebugName() + " moved " + numMoves + " forward. Current pos: " + robot.getPos());
 	}
 
 	@Override

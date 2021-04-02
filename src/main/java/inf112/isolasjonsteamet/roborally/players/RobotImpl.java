@@ -12,12 +12,16 @@ import inf112.isolasjonsteamet.roborally.util.Orientation;
  */
 public class RobotImpl implements Robot {
 
+	private static int instances = 0;
+
 	private final ActionProcessor actionProcessor;
 
 	private Orientation direction;
 	private int life;
 	private int damageToken;
 	private Coordinate pos;
+
+	private final int instanceNum;
 
 	/**
 	 * Constructor of a new player.
@@ -28,6 +32,7 @@ public class RobotImpl implements Robot {
 		this.direction = orientation;
 		this.pos = pos;
 		this.damageToken = 0;
+		this.instanceNum = instances++;
 	}
 
 	/**
@@ -47,10 +52,12 @@ public class RobotImpl implements Robot {
 	}
 
 
+	@Override
 	public boolean checkWinCondition(Board board) {
 		return board.getTilesAt(pos).contains(Tiles.FLAG);
 	}
 
+	@Override
 	public boolean checkLossCondition(Board board) {
 		return board.getTilesAt(pos).contains(Tiles.HOLE);
 	}
@@ -101,5 +108,10 @@ public class RobotImpl implements Robot {
 
 	public int getDamageTokens() {
 		return damageToken;
+	}
+
+	@Override
+	public String getDebugName() {
+		return "Robot" + instanceNum;
 	}
 }

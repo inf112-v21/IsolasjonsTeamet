@@ -26,6 +26,8 @@ public class Cards {
 	public static final CardType U_TURN =
 			new CardType("U-Turn", 6, texture("u_turn.jpg"), new RotateRight());
 
+	public static final CardType NO_CARD = new CardType("", 0, texture("transparent1px.png"));
+
 	private static Supplier<Texture> texture(String file) {
 		return () -> new Texture(file);
 	}

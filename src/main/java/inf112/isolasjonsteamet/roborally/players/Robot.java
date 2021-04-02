@@ -1,5 +1,6 @@
 package inf112.isolasjonsteamet.roborally.players;
 
+import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
@@ -44,4 +45,19 @@ public interface Robot {
 	 * Decrements life from player and rests damage token for robot.
 	 */
 	void killRobot();
+
+	/**
+	 * Checks if the player is in a winning condition. Temporarily here to bridge the graphical gap.
+	 */
+	boolean checkWinCondition(Board board);
+
+	/**
+	 * Checks if the player is in a loosing condition. Temporarily here to bridge the graphical gap.
+	 */
+	boolean checkLossCondition(Board board);
+
+	/**
+	 * A name used for debugging.
+	 */
+	String getDebugName();
 }

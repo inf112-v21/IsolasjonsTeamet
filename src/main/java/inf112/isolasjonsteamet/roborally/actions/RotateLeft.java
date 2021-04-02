@@ -11,7 +11,7 @@ public class RotateLeft implements Action {
 	@Override
 	public void perform(ActionProcessor processor, Board board, Robot robot) {
 		robot.setDir(robot.getDir().rotateLeft());
-		System.out.println(robot.getName() + " rotated left. Current dir: " + robot.getDir());
+		System.out.println(robot.getDebugName() + " rotated left. Current dir: " + robot.getDir());
 	}
 
 	@Override

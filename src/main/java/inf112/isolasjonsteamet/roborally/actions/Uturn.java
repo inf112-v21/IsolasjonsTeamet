@@ -13,6 +13,6 @@ public class Uturn implements Action {
 	public void perform(ActionProcessor processor, Board board, Robot robot) {
 		Orientation currentDir = robot.getDir();
 		robot.setDir(currentDir.getOpposingDir());
-		System.out.println(robot.getName() + " rotated to " + robot.getDir());
+		System.out.println(robot.getDebugName() + " rotated to " + robot.getDir());
 	}
 }

@@ -2,8 +2,10 @@ package inf112.isolasjonsteamet.roborally.board;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.google.common.collect.ImmutableList;
@@ -11,6 +13,7 @@ import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
+import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,14 +24,12 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
 	private final TiledMap map;
 	public TiledMapTileLayer boardLayer;
-	public TiledMapTileLayer robotLayer;
 	public TiledMapTileLayer holeLayer;
 	public TiledMapTileLayer flagLayer;
 
-	public TiledMapTileLayer.Cell robotWonCell;
-	public TiledMapTileLayer.Cell robotDiedCell;
-	public TiledMapTileLayer.Cell robotCell;
 	public TiledMapTileLayer.Cell transparentCell;
+
+	private final List<BoardRobot> boardRobots = new ArrayList<>();
 
 	/**
 	 * Create a new instance of BoardClientImpl.
@@ -37,19 +38,20 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		super(robots, new ArrayList<>());
 		map = new TmxMapLoader().load(boardFilename);
 		loadCells();
-		tiles = tilesFromMap(boardFilename);
-		height = robotLayer.getHeight();
-		width = robotLayer.getWidth();
+		tiles = tilesFromMap();
+		height = boardLayer.getHeight();
+		width = boardLayer.getWidth();
 	}
 
 	/**
 	 * Load cells needed to build the board.
 	 */
 	private void loadCells() {
-		boardLayer = (TiledMapTileLayer) map.getLayers().get("Board");
-		robotLayer = (TiledMapTileLayer) map.getLayers().get("Player");
-		holeLayer = (TiledMapTileLayer) map.getLayers().get("Hole");
-		flagLayer = (TiledMapTileLayer) map.getLayers().get("Flag");
+		MapLayers layers = map.getLayers();
+
+		boardLayer = (TiledMapTileLayer) layers.get("Board");
+		holeLayer = (TiledMapTileLayer) layers.get("Hole");
+		flagLayer = (TiledMapTileLayer) layers.get("Flag");
 
 		var tileSize = getTextureTileSize();
 
@@ -64,21 +66,31 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		transparentCell = new TiledMapTileLayer.Cell().setTile(transparentTile);
 
 		var robotTile = new StaticTiledMapTile(tReg[0][0]);
-		robotCell = new TiledMapTileLayer.Cell().setTile(robotTile);
-
 		var robotWonTile = new StaticTiledMapTile(tReg[0][2]);
-		robotWonCell = new TiledMapTileLayer.Cell().setTile(robotWonTile);
-
 		var robotDiedTile = new StaticTiledMapTile(tReg[0][1]);
-		robotDiedCell = new TiledMapTileLayer.Cell().setTile(robotDiedTile);
+
+		int width = boardLayer.getWidth();
+		int height = boardLayer.getHeight();
+		int tileWidth = boardLayer.getTileWidth();
+		int tileHeight = boardLayer.getTileHeight();
+
+		for (Robot robot : robots) {
+			var robotCell = new Cell().setTile(robotTile);
+			var robotWonCell = new Cell().setTile(robotWonTile);
+			var robotDiedCell = new Cell().setTile(robotDiedTile);
+			var layer = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
+			layers.add(layer);
+
+			boardRobots.add(new BoardRobot(robot, robotCell, robotWonCell, robotDiedCell, layer));
+		}
 	}
 
 	/**
 	 * Get tiles from the map.
 	 */
-	private ImmutableList<List<List<TileType>>> tilesFromMap(String boardFilename) {
-		int width = robotLayer.getWidth();
-		int height = robotLayer.getHeight();
+	private ImmutableList<List<List<TileType>>> tilesFromMap() {
+		int width = boardLayer.getWidth();
+		int height = boardLayer.getHeight();
 
 		List<List<List<TileType>>> accX = new ArrayList<>(width);
 		for (int x = 0; x < width; x++) {
@@ -118,11 +130,8 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	 * Update the playerview.
 	 */
 	public void updateRobotView() {
-		clearLayer(robotLayer);
-
-		for (Robot robot : robots) {
-			Coordinate pos = robot.getPos();
-			robotLayer.setCell(pos.getX(), pos.getX(), robotCell);
+		for (BoardRobot robot : boardRobots) {
+			robot.draw();
 		}
 	}
 
@@ -134,5 +143,59 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	@Override
 	public int getTextureTileSize() {
 		return 300; //TODO: Make configurable somehow
+	}
+
+	private class BoardRobot {
+
+		private final Robot robot;
+		private final TiledMapTileLayer.Cell robotCell;
+		private final TiledMapTileLayer.Cell robotWonCell;
+		private final TiledMapTileLayer.Cell robotDiedCell;
+		private final TiledMapTileLayer layer;
+
+		private BoardRobot(
+				Robot robot,
+				Cell robotCell,
+				Cell robotWonCell,
+				Cell robotDiedCell,
+				TiledMapTileLayer layer
+		) {
+			this.robot = robot;
+			this.robotCell = robotCell;
+			this.robotWonCell = robotWonCell;
+			this.robotDiedCell = robotDiedCell;
+			this.layer = layer;
+		}
+
+		private void draw() {
+			clearLayer(layer);
+
+			Coordinate pos = robot.getPos();
+			Orientation dir = robot.getDir();
+
+			TiledMapTileLayer.Cell cell;
+
+			if (robot.checkWinCondition(BoardClientImpl.this)) {
+				cell = robotWonCell;
+			} else if (robot.checkLossCondition(BoardClientImpl.this)) {
+				cell = robotDiedCell;
+			} else {
+				cell = robotCell;
+			}
+
+			layer.setCell(pos.getX(), pos.getY(), cell);
+
+			int rotation = orientationToCellRotation(dir);
+			cell.setRotation(rotation);
+		}
+
+		private int orientationToCellRotation(Orientation orientation) {
+			return switch (orientation) {
+				case NORTH -> 0;
+				case WEST -> 1;
+				case SOUTH -> 2;
+				case EAST -> 3;
+			};
+		}
 	}
 }

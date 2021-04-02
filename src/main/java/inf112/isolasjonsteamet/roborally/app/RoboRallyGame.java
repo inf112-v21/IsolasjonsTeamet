@@ -9,20 +9,18 @@ import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
-import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
+import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
 import inf112.isolasjonsteamet.roborally.cards.CardDeck;
 import inf112.isolasjonsteamet.roborally.cards.CardType;
@@ -31,31 +29,33 @@ import inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
 import inf112.isolasjonsteamet.roborally.gui.MapRendererWidget;
 import inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel;
-import inf112.isolasjonsteamet.roborally.players.Robot;
-import inf112.isolasjonsteamet.roborally.players.RobotImpl;
+import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.io.PrintStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Game class that starts a new game.
  */
-public class RoboRallyGame
-		implements ApplicationListener, DelegatingInputProcessor, ActionProcessor {
+public class RoboRallyGame extends GameLoop
+		implements ApplicationListener, DelegatingInputProcessor {
 
 	private BoardClientImpl board;
-	private final List<RobotImpl> robots = new ArrayList<>();
-	private RobotImpl activeRobot;
-	private int activeRobotNum;
+	private final List<Player> players = new ArrayList<>();
+	private Player activePlayer;
 	private CardDeck deck;
-	private List<CardType> givenCards;
-	private List<CardType> orderCards;
 
 	private Stage stage;
 	private Skin skin;
+
+	private final Map<CardType, TextureRegionDrawable> drawableCards = new HashMap<>();
 
 	private PrintStream out;
 
@@ -65,14 +65,14 @@ public class RoboRallyGame
 	@Override
 	public void create() {
 		for (int i = 0; i < 9; i++) {
-			robots.add(null);
-			switchToRobot(i + 1);
+			players.add(null);
+			switchToPlayer(i + 1);
 		}
 
 		//Create new robot
-		switchToRobot(1);
+		switchToPlayer(1);
 
-		board = new BoardClientImpl(ImmutableList.copyOf(robots), "example.tmx");
+		board = new BoardClientImpl(players.stream().map(Player::getRobot).collect(Collectors.toList()), "example.tmx");
 
 		var viewport = new ScalingViewport(Scaling.fit, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -92,21 +92,28 @@ public class RoboRallyGame
 		out = bottomConsole.getStream();
 
 		table.add(bottomConsole).top().left();
+		table.row();
+
+		var allCards = ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
+				Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.U_TURN);
+
+		for (CardType card : new HashSet<>(allCards)) {
+			drawableCards.put(card, new TextureRegionDrawable(new TextureRegion(card.getTexture())));
+		}
 
 		//Create new random carddeck
-		deck = new DequeCardDeckImpl(
-				ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
-						Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.U_TURN),
-				new Random() //Chosen randomly, by a set of dice
-		);
-		givenCards = deck.grabCards(8);
-		orderCards = new ArrayList<>();
+		deck = new DequeCardDeckImpl(allCards);
+		prepareRound();
+
+		/*
+		var cardGroup = new HorizontalGroup();
+		table.add(cardGroup);
 
 		//Adds buttons with the graphic of the card
 		int x = -50;
 		for (CardType card : givenCards) {
 			Button.ButtonStyle tbs = new Button.ButtonStyle();
-			tbs.up = new TextureRegionDrawable(new TextureRegion(card.getTexture()));
+			tbs.up = drawableCards.get(card);
 
 			Button b = new Button(tbs);
 			b.setSize(64, 89);
@@ -126,6 +133,7 @@ public class RoboRallyGame
 
 			stage.addActor(b);
 		}
+		*/
 		//Create button for performing moves from cards
 		TextButton textB = new TextButton("Start round", skin);
 
@@ -135,13 +143,8 @@ public class RoboRallyGame
 			@Override
 			public void changed(ChangeEvent changeEvent, Actor actor) {
 				//Moves the robot for each card in list
-				if (orderCards != null) {
-					for (CardType card : orderCards) {
-						for (Action act : card.getActions()) {
-							performActionActiveRobot(act);
-						}
-					}
-				}
+				startRound();
+				prepareRound();
 			}
 		});
 		textB.setPosition(Gdx.graphics.getWidth() - 118, 10);
@@ -168,65 +171,38 @@ public class RoboRallyGame
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
-		for (var robot : robots) {
-			if (robot == null) {
-				continue;
-			}
+		board.updateRobotView();
 
-			//Check if a win condition is met
-			Coordinate robotPos = robot.getPos();
-			if (robot.checkWinCondition(board)) {
-				board.robotLayer.setCell(robotPos.getX(), robotPos.getY(), board.robotWonCell);
-			}
-
-			if (robot.checkLossCondition(board)) {
-				board.robotLayer.setCell(robotPos.getX(), robotPos.getY(), board.robotDiedCell);
-			}
-		}
-
+		/*
 		TextField textF = new TextField("Cards: " + orderCards, skin);
 		textF.setPosition(19, 105);
 		textF.setSize(Gdx.graphics.getWidth() - 38, 30);
 		textF.setColor(Color.ROYAL);
 		stage.addActor(textF);
 		stage.act(Gdx.graphics.getDeltaTime());
+		*/
 
 		//stage.act();
 		stage.draw();
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
-	public void performActionNow(Robot robot, Action action) {
-		Coordinate oldPos = activeRobot.getPos();
-		final Orientation oldDir = activeRobot.getDir();
+	@Override
+	protected List<Player> players() {
+		return players;
+	}
 
-		action.perform(this, board, activeRobot);
-		board.checkValid();
+	@Override
+	protected CardDeck deck() {
+		return deck;
+	}
 
-		Coordinate newPos = activeRobot.getPos();
-		final Orientation newDir = activeRobot.getDir();
-
-		if (!oldPos.equals(newPos)) {
-			if (board.getRobotAt(oldPos) == null) {
-				//Only one player was standing on the old position, so we clear the cell
-				board.robotLayer.setCell(oldPos.getX(), oldPos.getY(), board.transparentCell);
-			}
-
-			board.robotLayer.setCell(newPos.getX(), newPos.getY(), board.robotCell);
-		}
-
-		if (!oldDir.equals(newDir)) {
-			int rotation = orientationToCellRotation(newDir);
-			board.robotCell.setRotation(rotation);
-			board.robotDiedCell.setRotation(rotation);
-			board.robotWonCell.setRotation(rotation);
-		}
+	@Override
+	protected Board board() {
+		return board;
 	}
 
 	private void performActionActiveRobot(Action action) {
-		performActionNow(activeRobot, action);
+		performActionNow(activePlayer.getRobot(), action);
 	}
 
 	@Override
@@ -244,146 +220,91 @@ public class RoboRallyGame
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
 				performActionActiveRobot(new RotateRight());
-				out.println("R-Pressed: " + activeRobotName() + " is now facing " + activeRobot.getDir());
+				out.println("R-Pressed: " + activePlayer.getName()
+							+ " is now facing " + activePlayer.getRobot().getDir());
 				yield true;
 			}
 			// If E on the keyboard is pressed, the robot moves 1 step forward in the direction it is facing
 			case Keys.E -> {
 				performActionActiveRobot(new MoveForward(1));
-				out.println("E-Pressed: " + activeRobotName() + " moved forward to: " + activeRobot.getPos());
+				out.println("E-Pressed: " + activePlayer.getName()
+							+ " moved forward to: " + activePlayer.getRobot().getPos());
 				yield true;
 			}
 			// If Q on the keyboard is pressed, the robot moves 1 step backwards in the direction it is facing
 			case Keys.Q -> {
 				performActionActiveRobot(new MoveForward(-1));
-				out.println("Q-Pressed: " + activeRobotName() + " moved backwards to: " + activeRobot.getPos());
+				out.println("Q-Pressed: " + activePlayer.getName()
+							+ " moved backwards to: " + activePlayer.getRobot().getPos());
 				yield true;
 			}
 
-			//Lets player grab cards
-			case Keys.G -> {
-				//Create new random card deck
-				deck = new DequeCardDeckImpl(
-						ImmutableList.of(Cards.BACK_UP, Cards.ROTATE_RIGHT, Cards.ROTATE_LEFT, Cards.MOVE_ONE,
-								Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.U_TURN),
-						new Random() //Chosen randomly, by a set of dice
-				);
-				givenCards = deck.grabCards(5);
-				orderCards = new ArrayList<>();
-				out.println("Given cards: " + givenCards);
-				out.println("Current order: " + orderCards);
-				yield true;
-			}
-			case Keys.NUM_1 -> {
-				orderCards.add(givenCards.get(0));
-				out.println("Current order: " + orderCards);
-				yield true;
-			}
-			case Keys.NUM_2 -> {
-				orderCards.add(givenCards.get(1));
-				out.println("Current order: " + orderCards);
-				yield true;
-			}
-			case Keys.NUM_3 -> {
-				orderCards.add(givenCards.get(2));
-				out.println("Current order: " + orderCards);
-				yield true;
-			}
-			case Keys.NUM_4 -> {
-				orderCards.add(givenCards.get(3));
-				out.println("Current order: " + orderCards);
-				yield true;
-			}
-			case Keys.NUM_5 -> {
-				orderCards.add(givenCards.get(4));
-				out.println("Current order: " + orderCards);
-				yield true;
-			}
 			case Keys.F1 -> {
-				switchToRobot(1);
+				switchToPlayer(1);
 				yield true;
 			}
 			case Keys.F2 -> {
-				switchToRobot(2);
+				switchToPlayer(2);
 				yield true;
 			}
 			case Keys.F3 -> {
-				switchToRobot(3);
+				switchToPlayer(3);
 				yield true;
 			}
 			case Keys.F4 -> {
-				switchToRobot(4);
+				switchToPlayer(4);
 				yield true;
 			}
 			case Keys.F5 -> {
-				switchToRobot(5);
+				switchToPlayer(5);
 				yield true;
 			}
 			case Keys.F6 -> {
-				switchToRobot(6);
+				switchToPlayer(6);
 				yield true;
 			}
 			case Keys.F7 -> {
-				switchToRobot(7);
+				switchToPlayer(7);
 				yield true;
 			}
 			case Keys.F8 -> {
-				switchToRobot(8);
+				switchToPlayer(8);
 				yield true;
 			}
 			case Keys.F9 -> {
-				switchToRobot(9);
+				switchToPlayer(9);
 				yield true;
 			}
-			//Perform 1-5 actions from orderCards
-			case Keys.C -> {
-				if (orderCards != null) {
-					for (CardType card : orderCards) {
-						for (Action act : card.getActions()) {
-							performActionActiveRobot(act);
-						}
-					}
-				}
-				yield true;
-			}
-			//Remove latest card from order
-			case Keys.X -> {
-				if (orderCards.size() > 0) {
-					int lastIndex = orderCards.size() - 1;
-					orderCards.remove(lastIndex);
-					out.println("Current order: " + orderCards);
-				}
-				yield true;
-			}
+
 			case Keys.W -> {
-				activeRobot.setDir(Orientation.NORTH);
+				activePlayer.getRobot().setDir(Orientation.NORTH);
 				performActionActiveRobot(new MoveForward(1));
-				out.println("W-Pressed: " + activeRobotName()
-							+ " moved up. Current pos: " + activeRobot.getPos());
+				out.println("W-Pressed: " + activePlayer.getName()
+							+ " moved up. Current pos: " + activePlayer.getRobot().getPos());
 				yield true;
 			}
 
 			case Keys.A -> {
-				activeRobot.setDir(Orientation.WEST);
+				activePlayer.getRobot().setDir(Orientation.WEST);
 				performActionActiveRobot(new MoveForward(1));
-				out.println("A-Pressed: " + activeRobotName()
-							+ " moved left. Current pos: " + activeRobot.getPos());
+				out.println("A-Pressed: " + activePlayer.getName()
+							+ " moved left. Current pos: " + activePlayer.getRobot().getPos());
 				yield true;
 			}
 
 			case Keys.S -> {
-				activeRobot.setDir(Orientation.SOUTH);
+				activePlayer.getRobot().setDir(Orientation.SOUTH);
 				performActionActiveRobot(new MoveForward(1));
-				out.println("s-Pressed: " + activeRobotName()
-							+ " moved down. Current pos: " + activeRobot.getPos());
+				out.println("s-Pressed: " + activePlayer.getName()
+							+ " moved down. Current pos: " + activePlayer.getRobot().getPos());
 				yield true;
 			}
 
 			case Keys.D -> {
-				activeRobot.setDir(Orientation.EAST);
+				activePlayer.getRobot().setDir(Orientation.EAST);
 				performActionActiveRobot(new MoveForward(1));
-				out.println("D-Pressed: " + activeRobotName()
-							+ " moved right. Current pos: " + activeRobot.getPos());
+				out.println("D-Pressed: " + activePlayer.getName()
+							+ " moved right. Current pos: " + activePlayer.getRobot().getPos());
 				yield true;
 			}
 
@@ -394,34 +315,20 @@ public class RoboRallyGame
 		return handled || stage.keyDown(keycode);
 	}
 
-	private void switchToRobot(int robotNum) {
-		System.out.println("Switching to player " + robotNum);
+	private void switchToPlayer(int playerNum) {
+		System.out.println("Switching to player " + playerNum);
 
-		if (robotNum > robots.size()) {
-			throw new IllegalStateException("Not enough robot slots to add robot " + robotNum);
+		if (playerNum > players.size()) {
+			throw new IllegalStateException("Not enough player slots to add player " + playerNum);
 		}
 
-		RobotImpl robot = robots.get(robotNum - 1);
-		if (robot == null) {
-			robot = new RobotImpl(this, new Coordinate(0, 0), Orientation.EAST);
-			robots.set(robotNum - 1, robot);
+		Player player = players.get(playerNum - 1);
+		if (player == null) {
+			player = new PlayerImpl("Player" + playerNum, this, new Coordinate(0, 0), Orientation.EAST);
+			players.set(playerNum - 1, player);
 		}
 
-		activeRobot = robot;
-		activeRobotNum = robotNum;
-	}
-
-	private String activeRobotName() {
-		return "Robot" + activeRobotNum;
-	}
-
-	private int orientationToCellRotation(Orientation orientation) {
-		return switch (orientation) {
-			case NORTH -> 0;
-			case WEST -> 1;
-			case SOUTH -> 2;
-			case EAST -> 3;
-		};
+		activePlayer = player;
 	}
 
 	/**
