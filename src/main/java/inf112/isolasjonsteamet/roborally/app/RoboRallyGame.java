@@ -31,6 +31,7 @@ import inf112.isolasjonsteamet.roborally.gui.MapRendererWidget;
 import inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.io.PrintStream;
@@ -51,6 +52,10 @@ public class RoboRallyGame extends GameLoop
 	private final List<Player> players = new ArrayList<>();
 	private Player activePlayer;
 	private CardDeck deck;
+
+	private Action showingAction;
+	private Robot showingRobot;
+	private int framesSinceStartedShowingAction = 0;
 
 	private Stage stage;
 	private Skin skin;
@@ -168,10 +173,18 @@ public class RoboRallyGame extends GameLoop
 	 */
 	@Override
 	public void render() {
+
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
 		board.updateRobotView();
+
+		if (showingAction != null) {
+			if (showingAction.show(showingRobot, board, framesSinceStartedShowingAction++)) {
+				showingAction = null;
+				framesSinceStartedShowingAction = 0;
+			}
+		}
 
 		/*
 		TextField textF = new TextField("Cards: " + orderCards, skin);
@@ -199,6 +212,13 @@ public class RoboRallyGame extends GameLoop
 	@Override
 	protected Board board() {
 		return board;
+	}
+
+	@Override
+	public void performActionNow(Robot robot, Action action) {
+		super.performActionNow(robot, action);
+		showingAction = action;
+		showingRobot = robot;
 	}
 
 	private void performActionActiveRobot(Action action) {
@@ -324,7 +344,7 @@ public class RoboRallyGame extends GameLoop
 
 		Player player = players.get(playerNum - 1);
 		if (player == null) {
-			player = new PlayerImpl("Player" + playerNum, this, new Coordinate(0, 0), Orientation.EAST);
+			player = new PlayerImpl("Player" + playerNum, this, new Coordinate(0, 0), Orientation.NORTH);
 			players.set(playerNum - 1, player);
 		}
 

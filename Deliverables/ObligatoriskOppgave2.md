@@ -1,8 +1,8 @@
 # Obligatorisk oppgave 1: Prosjekt RoboRally
 
 Project board at 05.03.21 11:45
-![Project board 1](./images/project_board1_delivery2.png)
-![Project board 2](./images/project_board2_delivery2.png)
+![Project board 1](images/delivery2/project_board1_delivery2.png)
+![Project board 2](images/delivery2/project_board2_delivery2.png)
 
 ## Deloppgave 1: Prosjekt og prosjektstruktur
 
@@ -218,7 +218,7 @@ fra MVP og vi kommer til å implementere det.
 ## Deloppgave 3: Kode
 
 Klassediagram:
-![Class diagram](./images/classes_delivery2.png)
+![Class diagram](images/delivery2/classes_delivery2.png)
 
 Akseptansekrav til brukergrensesnittet:
 1. Gitt at menyen vises
