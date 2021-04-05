@@ -6,6 +6,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import inf112.isolasjonsteamet.roborally.gui.ScreenController;
+import inf112.isolasjonsteamet.roborally.gui.ToggleButton;
 import inf112.isolasjonsteamet.roborally.network.Client;
 import inf112.isolasjonsteamet.roborally.network.ClientPacketAdapter;
 import inf112.isolasjonsteamet.roborally.network.Server;
@@ -38,11 +39,8 @@ public class LobbyScreen extends StageScreen {
 	private final ServerLobby serverLobby;
 	private final ClientLobby clientLobby;
 
-	private boolean isReady;
-	private boolean gameStarting;
-
-	private TextButton readyButton;
-	private TextButton startGameButton;
+	private ToggleButton isReadyButton;
+	private ToggleButton gameStartingButton;
 
 	private Table playerList;
 	private Map<String, Boolean> players = new HashMap<>();
@@ -82,36 +80,20 @@ public class LobbyScreen extends StageScreen {
 		table.add(playerList);
 		table.row();
 
-		readyButton = new TextButton("Ready", skin);
-		readyButton.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent event, Actor actor) {
-				toggleClientReady();
+		isReadyButton = new ToggleButton("Not ready", "Ready", false, skin, this::setClientReady);
+		table.add(isReadyButton.getButton());
 
-				if (isReady) {
-					readyButton.setText("Not ready");
-				} else {
-					readyButton.setText("Ready");
-				}
+		// We initialize the button here, but only add it to the GUI if we're actually on the server
+		// We still use some of the state of if a game is starting on the client as well
+		gameStartingButton = new ToggleButton("Cancel start game", "Start game", false, skin, gameStarting -> {
+			if (gameStarting) {
+				broadcastCancelStartGame();
+			} else {
+				broadcastGameStarting();
 			}
 		});
-
-		table.add(readyButton);
-
 		if (server != null) {
-			startGameButton = new TextButton("Start game", skin);
-			startGameButton.addListener(new ChangeListener() {
-				@Override
-				public void changed(ChangeEvent event, Actor actor) {
-					if (gameStarting) {
-						broadcastCancelStartGame();
-					} else {
-						broadcastGameStarting();
-					}
-				}
-			});
-			table.add(startGameButton);
-
+			table.add(gameStartingButton.getButton());
 			server.addListener(serverLobby);
 		}
 
@@ -168,18 +150,15 @@ public class LobbyScreen extends StageScreen {
 	}
 
 	private void prepareStartGame() {
-		gameStarting = true;
-		if (startGameButton != null) {
-			startGameButton.setText("Cancel start game");
-		}
+		gameStartingButton.setState(false);
 		setReadyCountdownState(9);
 	}
 
 	private void setReadyCountdownState(int secondsLeft) {
 		// If the start is cancelled, then the delayed task is probably still running,
 		// so we check here if we should continue
-		if (gameStarting) {
-			readyButton.setText(Integer.toString(secondsLeft));
+		if (gameStartingButton.getState()) {
+			isReadyButton.getButton().setText(Integer.toString(secondsLeft));
 
 			if (secondsLeft > 0) {
 				CompletableFuture.delayedExecutor(1, TimeUnit.SECONDS)
@@ -197,23 +176,13 @@ public class LobbyScreen extends StageScreen {
 	}
 
 	private void cancelStartGame() {
-		gameStarting = false;
-		if (startGameButton != null) {
-			startGameButton.setText("Start game");
-		}
-
-		if (isReady) {
-			readyButton.setText("Not ready");
-		} else {
-			readyButton.setText("Ready");
-		}
+		gameStartingButton.setState(false);
+		isReadyButton.refreshText();
 	}
 
 	// ---------- Client methods ----------
 
-	private void toggleClientReady() {
-		isReady = !isReady;
-
+	private void setClientReady(boolean isReady) {
 		client.sendToServer(new LobbyReadyUpdatePacket(isReady));
 	}
 

@@ -7,7 +7,6 @@ import com.badlogic.gdx.maps.tiled.TiledMapRenderer;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.scenes.scene2d.ui.Widget;
 import com.badlogic.gdx.utils.Disposable;
-import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 
 /**
@@ -19,7 +18,7 @@ public class MapRendererWidget extends Widget {
 	private final int tileSize;
 
 	private final TiledMapRenderer mapRenderer;
-	private final Board board;
+	private final ClientBoard board;
 
 	/**
 	 * Creates a map renderer widget with an orthogonal map renderer.
@@ -29,6 +28,12 @@ public class MapRendererWidget extends Widget {
 		this.board = board;
 		mapRenderer = new OrthogonalTiledMapRenderer(board.getMap(), (float) tileSize / board.getTextureTileSize());
 		sizeChanged();
+	}
+
+	@Override
+	public void act(float delta) {
+		super.act(delta);
+		board.act();
 	}
 
 	@Override

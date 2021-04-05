@@ -8,6 +8,8 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePack
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.GameStartingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.LobbyInfoPacket;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -17,7 +19,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * such that instanceof checks are not needed.
  */
 @SuppressWarnings("unused")
-public class ClientPacketAdapter implements ClientPacketListener<Server2ClientPacket> {
+public abstract class ClientPacketAdapter implements ClientPacketListener<Server2ClientPacket> {
 
 	public void onServerClosing(ServerClosingPacket packet) {
 	}
@@ -40,6 +42,12 @@ public class ClientPacketAdapter implements ClientPacketListener<Server2ClientPa
 	public void onGameInfo(GameInfoPacket packet) {
 	}
 
+	public void onRunRound(RunRoundPacket packet) {
+	}
+
+	public void onDealNewCards(DealNewCardsPacket packet) {
+	}
+
 	public void onLobbyInfo(LobbyInfoPacket packet) {
 	}
 
@@ -52,6 +60,10 @@ public class ClientPacketAdapter implements ClientPacketListener<Server2ClientPa
 			onGameStarting((GameStartingPacket) packet);
 		} else if (packet instanceof LobbyInfoPacket) {
 			onLobbyInfo((LobbyInfoPacket) packet);
+		} else if (packet instanceof RunRoundPacket) {
+			onRunRound((RunRoundPacket) packet);
+		} else if (packet instanceof DealNewCardsPacket) {
+			onDealNewCards((DealNewCardsPacket) packet);
 		} else if (packet instanceof GameInfoPacket) {
 			onGameInfo((GameInfoPacket) packet);
 		} else if (packet instanceof GameJoinResultPacket) {

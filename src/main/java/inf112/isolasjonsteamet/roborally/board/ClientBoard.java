@@ -16,4 +16,9 @@ public interface ClientBoard extends Board {
 	 * How large the tiles in the texture atlas are in pixels.
 	 */
 	int getTextureTileSize();
+
+	/**
+	 * Updates the state of the board to how it should, before rendering it.
+	 */
+	void act();
 }

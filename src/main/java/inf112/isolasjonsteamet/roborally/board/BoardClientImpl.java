@@ -15,6 +15,7 @@ import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -23,11 +24,14 @@ import java.util.List;
 public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
 	private final TiledMap map;
-	public TiledMapTileLayer boardLayer;
-	public TiledMapTileLayer holeLayer;
-	public TiledMapTileLayer flagLayer;
+	private TiledMapTileLayer boardLayer;
+	private TiledMapTileLayer holeLayer;
+	private TiledMapTileLayer flagLayer;
 
-	public TiledMapTileLayer.Cell transparentCell;
+	private MapLayers layers;
+	private StaticTiledMapTile robotTile;
+	private StaticTiledMapTile robotWonTile;
+	private StaticTiledMapTile robotDiedTile;
 
 	private final List<BoardRobot> boardRobots = new ArrayList<>();
 
@@ -47,7 +51,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	 * Load cells needed to build the board.
 	 */
 	private void loadCells() {
-		MapLayers layers = map.getLayers();
+		layers = map.getLayers();
 
 		boardLayer = (TiledMapTileLayer) layers.get("Board");
 		holeLayer = (TiledMapTileLayer) layers.get("Hole");
@@ -58,31 +62,28 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		Texture robotTx = new Texture("player.png");
 		final TextureRegion[][] tReg = TextureRegion.split(robotTx, tileSize, tileSize);
 
-		Texture defTx = new Texture("tiles.png");
-		final TextureRegion[][] tReg2 = TextureRegion.split(defTx, tileSize, tileSize);
+		robotTile = new StaticTiledMapTile(tReg[0][0]);
+		robotWonTile = new StaticTiledMapTile(tReg[0][2]);
+		robotDiedTile = new StaticTiledMapTile(tReg[0][1]);
 
-		//Static tiles for playing, dead and winning robot cells
-		var transparentTile = new StaticTiledMapTile(tReg2[15][4]);
-		transparentCell = new TiledMapTileLayer.Cell().setTile(transparentTile);
+		for (Robot robot : robots) {
+			boardRobots.add(makeBoardRobot(robot));
+		}
+	}
 
-		var robotTile = new StaticTiledMapTile(tReg[0][0]);
-		var robotWonTile = new StaticTiledMapTile(tReg[0][2]);
-		var robotDiedTile = new StaticTiledMapTile(tReg[0][1]);
-
+	private BoardRobot makeBoardRobot(Robot robot) {
 		int width = boardLayer.getWidth();
 		int height = boardLayer.getHeight();
 		int tileWidth = boardLayer.getTileWidth();
 		int tileHeight = boardLayer.getTileHeight();
 
-		for (Robot robot : robots) {
-			var robotCell = new Cell().setTile(robotTile);
-			var robotWonCell = new Cell().setTile(robotWonTile);
-			var robotDiedCell = new Cell().setTile(robotDiedTile);
-			var layer = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
-			layers.add(layer);
+		var robotCell = new Cell().setTile(robotTile);
+		var robotWonCell = new Cell().setTile(robotWonTile);
+		var robotDiedCell = new Cell().setTile(robotDiedTile);
+		var layer = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
+		layers.add(layer);
 
-			boardRobots.add(new BoardRobot(robot, robotCell, robotWonCell, robotDiedCell, layer));
-		}
+		return new BoardRobot(robot, robotCell, robotWonCell, robotDiedCell, layer);
 	}
 
 	/**
@@ -126,12 +127,37 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		}
 	}
 
+	@Override
+	public void updateActiveRobots(List<Robot> robots) {
+		super.updateActiveRobots(robots);
+
+		var existingRobots = new ArrayList<Robot>();
+
+		Iterator<BoardRobot> boardRobotsIt = boardRobots.iterator();
+		while (boardRobotsIt.hasNext()) {
+			BoardRobot boardRobot = boardRobotsIt.next();
+
+			if (!robots.contains(boardRobot.robot)) {
+				boardRobotsIt.remove();
+			} else {
+				existingRobots.add(boardRobot.robot);
+			}
+		}
+
+		var newRobots = new ArrayList<>(robots);
+		newRobots.removeAll(existingRobots);
+
+		for (Robot newRobot : newRobots) {
+			boardRobots.add(makeBoardRobot(newRobot));
+		}
+	}
+
 	/**
 	 * Update the playerview.
 	 */
-	public void updateRobotView() {
+	public void act() {
 		for (BoardRobot robot : boardRobots) {
-			robot.draw();
+			robot.act();
 		}
 	}
 
@@ -167,7 +193,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 			this.layer = layer;
 		}
 
-		private void draw() {
+		private void act() {
 			clearLayer(layer);
 
 			Coordinate pos = robot.getPos();

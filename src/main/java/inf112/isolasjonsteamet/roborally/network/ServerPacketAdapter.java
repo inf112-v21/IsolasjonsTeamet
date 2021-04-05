@@ -3,17 +3,25 @@ package inf112.isolasjonsteamet.roborally.network;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.GameJoinPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStateDebugPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.LobbyReadyUpdatePacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.RequestLobbyInfoPacket;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 @SuppressWarnings("unused")
-public class ServerPacketAdapter implements ServerPacketListener<Client2ServerPacket> {
+public abstract class ServerPacketAdapter implements ServerPacketListener<Client2ServerPacket> {
 
 	public void onGameJoin(@Nullable String player, GameJoinPacket packet) {
 	}
 
 	public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
+	}
+
+	public void onUpdatePlayerState(@Nullable String player, UpdatePlayerStateDebugPacket packet) {
+	}
+
+	public void onUpdateRoundReady(@Nullable String player, UpdateRoundReadyPacket packet) {
 	}
 
 	public void onRequestLobbyInfo(@Nullable String player, RequestLobbyInfoPacket packet) {
@@ -28,6 +36,10 @@ public class ServerPacketAdapter implements ServerPacketListener<Client2ServerPa
 			onLobbyReadyUpdate(player, (LobbyReadyUpdatePacket) packet);
 		} else if (packet instanceof RequestLobbyInfoPacket) {
 			onRequestLobbyInfo(player, (RequestLobbyInfoPacket) packet);
+		} else if (packet instanceof UpdatePlayerStateDebugPacket) {
+			onUpdatePlayerState(player, (UpdatePlayerStateDebugPacket) packet);
+		} else if (packet instanceof UpdateRoundReadyPacket) {
+			onUpdateRoundReady(player, (UpdateRoundReadyPacket) packet);
 		} else if (packet instanceof ClientDisconnectingPacket) {
 			onClientDisconnecting(player, (ClientDisconnectingPacket) packet);
 		} else if (packet instanceof GameJoinPacket) {

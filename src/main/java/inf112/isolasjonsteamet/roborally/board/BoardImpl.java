@@ -17,7 +17,7 @@ import javax.annotation.Nullable;
  */
 public class BoardImpl implements Board {
 
-	protected final List<Robot> robots;
+	protected List<Robot> robots;
 	protected List<List<List<TileType>>> tiles;
 
 	protected int width;
@@ -118,5 +118,10 @@ public class BoardImpl implements Board {
 				throw new IllegalStateException("Robot out of bounds " + robot.getPos());
 			}
 		}
+	}
+
+	@Override
+	public void updateActiveRobots(List<Robot> robots) {
+		this.robots = ImmutableList.copyOf(robots);
 	}
 }

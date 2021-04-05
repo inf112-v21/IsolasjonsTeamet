@@ -45,4 +45,9 @@ public interface Board {
 	 * Check if the board is in a valid state.
 	 */
 	void checkValid();
+
+	/**
+	 * Updates the list of active robots still on the board.
+	 */
+	void updateActiveRobots(List<Robot> robots);
 }

@@ -6,55 +6,53 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
-import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
+import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
-import inf112.isolasjonsteamet.roborally.board.Board;
-import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
-import inf112.isolasjonsteamet.roborally.cards.CardDeck;
+import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 import inf112.isolasjonsteamet.roborally.cards.CardRow;
-import inf112.isolasjonsteamet.roborally.cards.CardType;
-import inf112.isolasjonsteamet.roborally.cards.Cards;
-import inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl;
 import inf112.isolasjonsteamet.roborally.gui.CardArea;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
 import inf112.isolasjonsteamet.roborally.gui.MapRendererWidget;
 import inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel;
+import inf112.isolasjonsteamet.roborally.gui.ScreenController;
+import inf112.isolasjonsteamet.roborally.gui.ToggleButton;
+import inf112.isolasjonsteamet.roborally.gui.screens.NotificationScreen;
+import inf112.isolasjonsteamet.roborally.network.Client;
+import inf112.isolasjonsteamet.roborally.network.ClientPacketAdapter;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStateDebugPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.players.ClientPlayer;
-import inf112.isolasjonsteamet.roborally.players.ClientPlayerImpl;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.Robot;
-import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
  * Game class that starts a new game.
  */
-public class RoboRallyGame extends GameLoop
-		implements ApplicationListener, DelegatingInputProcessor {
+public class RoboRallyGame implements ApplicationListener, DelegatingInputProcessor, ActionProcessor {
 
-	private BoardClientImpl board;
-	private final List<ClientPlayer> players = new ArrayList<>();
-	private ClientPlayer activePlayer;
-	private CardDeck deck;
+	private final Client client;
+	private final ClientBoard board;
+	private final ClientPlayer clientPlayer;
+	private final List<Player> players;
+	private final ScreenController screenController;
 
 	private Action showingAction;
 	private Robot showingRobot;
@@ -64,46 +62,29 @@ public class RoboRallyGame extends GameLoop
 	private Skin skin;
 	private CardArea cardArea;
 
-	private final Map<CardType, TextureRegionDrawable> drawableCards = new HashMap<>();
-	private List<DragAndDrop> dragAndDrops = new ArrayList<>();
-
 	private PrintStream out;
+
+	public RoboRallyGame(
+			Client client,
+			ClientBoard board,
+			ClientPlayer clientPlayer,
+			List<Player> players, ScreenController screenController
+	) {
+		this.client = client;
+		this.board = board;
+		this.clientPlayer = clientPlayer;
+		this.players = new ArrayList<>(players);
+		this.screenController = screenController;
+	}
 
 	/**
 	 * Create method used to create new items and elements used in the game.
 	 */
 	@Override
 	public void create() {
-		for (int i = 0; i < 9; i++) {
-			players.add(null);
-			switchToPlayer(i + 1);
-		}
-
-		var allCards = ImmutableList.of(
-				Cards.BACK_UP,
-				Cards.ROTATE_RIGHT,
-				Cards.ROTATE_LEFT,
-				Cards.MOVE_ONE,
-				Cards.MOVE_ONE,
-				Cards.MOVE_TWO,
-				Cards.MOVE_THREE,
-				Cards.U_TURN
-		);
-
-		var allCardsRepeated = ImmutableList.<CardType>builder();
-		for (int i = 0; i < 20; i++) {
-			allCardsRepeated.addAll(allCards);
-		}
-
-		for (CardType card : new HashSet<>(allCards)) {
-			drawableCards.put(card, new TextureRegionDrawable(card.getTexture()));
-		}
-		//Create new random carddeck
-		deck = new DequeCardDeckImpl(allCardsRepeated.build());
-
-		board = new BoardClientImpl(players.stream().map(Player::getRobot).collect(Collectors.toList()), "example.tmx");
-
 		var viewport = new ScalingViewport(Scaling.fit, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		var packetAdapter = new PacketAdapter();
+		client.addListener(packetAdapter);
 
 		stage = new Stage(viewport);
 		skin = new Skin(Gdx.files.internal("data/uiskin.json"));
@@ -133,65 +114,25 @@ public class RoboRallyGame extends GameLoop
 		//chosenCardsGroup.debug();
 		//givenCardsGroup.debug();
 
-		/*
-		//Adds buttons with the graphic of the card
-		int x = -50;
-		for (CardType card : givenCards) {
-			Button.ButtonStyle tbs = new Button.ButtonStyle();
-			tbs.up = drawableCards.get(card);
-
-			Button b = new Button(tbs);
-			b.setSize(64, 89);
-			b.addListener(new ChangeListener() {
-				@Override
-				public void changed(ChangeEvent event, Actor actor) {
-					if (!orderCards.contains(card) && orderCards.size() < 5) {
-						orderCards.add(card);
-						System.out.println(card.getName() + " added to order.");
-					} else if (orderCards.contains(card))  {
-						orderCards.remove(card);
-						System.out.println(card.getName() + " removed from order.");
-					}
-				}
-			});
-			b.setPosition(x += 70, 10);
-
-			stage.addActor(b);
-		}
-		*/
 		//Create button for performing moves from cards
-		TextButton textB = new TextButton("Start round", skin);
+		var roundReadyButton = new ToggleButton("Not ready", "Ready", false, skin, this::sendRoundReady);
+		var textB = roundReadyButton.getButton();
 
 		textB.setSize(100, 30);
 		textB.setColor(Color.ROYAL);
-		textB.addListener(new ChangeListener() {
-			@Override
-			public void changed(ChangeEvent changeEvent, Actor actor) {
-				//Moves the robot for each card in list
-				startRound();
-				prepareRound();
-			}
-		});
 		textB.setPosition(Gdx.graphics.getWidth() - 118, 10);
 		stage.addActor(textB);
-
-		prepareRound();
-		switchToPlayer(1);
 	}
 
 	private void movePlayerCard(CardRow fromRow, int fromCol, CardRow toRow, int toCol) {
-		activePlayer.swapCards(fromRow, fromCol, toRow, toCol);
+		clientPlayer.swapCards(fromRow, fromCol, toRow, toCol);
 		refreshShownCards();
 	}
 
 	private void refreshShownCards() {
-		if (cardArea == null) {
-			return;
-		}
-
 		//We're lazy for now
-		cardArea.setChosenCards(activePlayer.getCards(CardRow.CHOSEN));
-		cardArea.setGivenCards(activePlayer.getCards(CardRow.GIVEN));
+		cardArea.setChosenCards(clientPlayer.getCards(CardRow.CHOSEN));
+		cardArea.setGivenCards(clientPlayer.getCards(CardRow.GIVEN));
 	}
 
 	/**
@@ -211,7 +152,7 @@ public class RoboRallyGame extends GameLoop
 		Gdx.gl.glClearColor(0, 0, 0, 0);
 		Gdx.gl.glClear(GL30.GL_COLOR_BUFFER_BIT);
 
-		board.updateRobotView();
+		stage.act();
 
 		if (showingAction != null) {
 			if (showingAction.show(showingRobot, board, framesSinceStartedShowingAction++)) {
@@ -220,34 +161,20 @@ public class RoboRallyGame extends GameLoop
 			}
 		}
 
-		stage.act();
 		stage.draw();
 	}
 
 	@Override
-	protected List<Player> players() {
-		return ImmutableList.copyOf(players);
-	}
-
-	@Override
-	protected CardDeck deck() {
-		return deck;
-	}
-
-	@Override
-	protected Board board() {
-		return board;
-	}
-
-	@Override
 	public void performActionNow(Robot robot, Action action) {
-		super.performActionNow(robot, action);
+		action.perform(this, board, robot);
+		board.checkValid();
+
 		showingAction = action;
 		showingRobot = robot;
 	}
 
-	private void performActionActiveRobot(Action action) {
-		performActionNow(activePlayer.getRobot(), action);
+	private void performClientAction(Action action) {
+		performActionNow(clientPlayer.getRobot(), action);
 	}
 
 	@Override
@@ -264,92 +191,62 @@ public class RoboRallyGame extends GameLoop
 		boolean handled = switch (keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
-				performActionActiveRobot(new RotateRight());
-				out.println("R-Pressed: " + activePlayer.getName()
-							+ " is now facing " + activePlayer.getRobot().getDir());
+				performClientAction(new RotateRight());
+				sendPlayerStateToServer();
+				out.println("R-Pressed: " + clientPlayer.getName()
+							+ " is now facing " + clientPlayer.getRobot().getDir());
 				yield true;
 			}
 			// If E on the keyboard is pressed, the robot moves 1 step forward in the direction it is facing
 			case Keys.E -> {
-				performActionActiveRobot(new MoveForward(1));
-				out.println("E-Pressed: " + activePlayer.getName()
-							+ " moved forward to: " + activePlayer.getRobot().getPos());
+				performClientAction(new MoveForward(1));
+				sendPlayerStateToServer();
+				out.println("E-Pressed: " + clientPlayer.getName()
+							+ " moved forward to: " + clientPlayer.getRobot().getPos());
 				yield true;
 			}
 			// If Q on the keyboard is pressed, the robot moves 1 step backwards in the direction it is facing
 			case Keys.Q -> {
-				performActionActiveRobot(new MoveForward(-1));
-				out.println("Q-Pressed: " + activePlayer.getName()
-							+ " moved backwards to: " + activePlayer.getRobot().getPos());
-				yield true;
-			}
-
-			case Keys.F1 -> {
-				switchToPlayer(1);
-				yield true;
-			}
-			case Keys.F2 -> {
-				switchToPlayer(2);
-				yield true;
-			}
-			case Keys.F3 -> {
-				switchToPlayer(3);
-				yield true;
-			}
-			case Keys.F4 -> {
-				switchToPlayer(4);
-				yield true;
-			}
-			case Keys.F5 -> {
-				switchToPlayer(5);
-				yield true;
-			}
-			case Keys.F6 -> {
-				switchToPlayer(6);
-				yield true;
-			}
-			case Keys.F7 -> {
-				switchToPlayer(7);
-				yield true;
-			}
-			case Keys.F8 -> {
-				switchToPlayer(8);
-				yield true;
-			}
-			case Keys.F9 -> {
-				switchToPlayer(9);
+				performClientAction(new MoveForward(-1));
+				sendPlayerStateToServer();
+				out.println("Q-Pressed: " + clientPlayer.getName()
+							+ " moved backwards to: " + clientPlayer.getRobot().getPos());
 				yield true;
 			}
 
 			case Keys.W -> {
-				activePlayer.getRobot().setDir(Orientation.NORTH);
-				performActionActiveRobot(new MoveForward(1));
-				out.println("W-Pressed: " + activePlayer.getName()
-							+ " moved up. Current pos: " + activePlayer.getRobot().getPos());
+				clientPlayer.getRobot().setDir(Orientation.NORTH);
+				performClientAction(new MoveForward(1));
+				sendPlayerStateToServer();
+				out.println("W-Pressed: " + clientPlayer.getName()
+							+ " moved up. Current pos: " + clientPlayer.getRobot().getPos());
 				yield true;
 			}
 
 			case Keys.A -> {
-				activePlayer.getRobot().setDir(Orientation.WEST);
-				performActionActiveRobot(new MoveForward(1));
-				out.println("A-Pressed: " + activePlayer.getName()
-							+ " moved left. Current pos: " + activePlayer.getRobot().getPos());
+				clientPlayer.getRobot().setDir(Orientation.WEST);
+				performClientAction(new MoveForward(1));
+				sendPlayerStateToServer();
+				out.println("A-Pressed: " + clientPlayer.getName()
+							+ " moved left. Current pos: " + clientPlayer.getRobot().getPos());
 				yield true;
 			}
 
 			case Keys.S -> {
-				activePlayer.getRobot().setDir(Orientation.SOUTH);
-				performActionActiveRobot(new MoveForward(1));
-				out.println("s-Pressed: " + activePlayer.getName()
-							+ " moved down. Current pos: " + activePlayer.getRobot().getPos());
+				clientPlayer.getRobot().setDir(Orientation.SOUTH);
+				performClientAction(new MoveForward(1));
+				sendPlayerStateToServer();
+				out.println("s-Pressed: " + clientPlayer.getName()
+							+ " moved down. Current pos: " + clientPlayer.getRobot().getPos());
 				yield true;
 			}
 
 			case Keys.D -> {
-				activePlayer.getRobot().setDir(Orientation.EAST);
-				performActionActiveRobot(new MoveForward(1));
-				out.println("D-Pressed: " + activePlayer.getName()
-							+ " moved right. Current pos: " + activePlayer.getRobot().getPos());
+				clientPlayer.getRobot().setDir(Orientation.EAST);
+				performClientAction(new MoveForward(1));
+				sendPlayerStateToServer();
+				out.println("D-Pressed: " + clientPlayer.getName()
+							+ " moved right. Current pos: " + clientPlayer.getRobot().getPos());
 				yield true;
 			}
 
@@ -360,27 +257,15 @@ public class RoboRallyGame extends GameLoop
 		return handled || stage.keyDown(keycode);
 	}
 
-	@Override
-	public void prepareRound() {
-		super.prepareRound();
-		refreshShownCards();
+	private void sendPlayerStateToServer() {
+		var robot = clientPlayer.getRobot();
+		var packet = new UpdatePlayerStateDebugPacket(robot.getPos(), robot.getDir());
+		client.sendToServer(packet);
 	}
 
-	private void switchToPlayer(int playerNum) {
-		System.out.println("Switching to player " + playerNum);
-
-		if (playerNum > players.size()) {
-			throw new IllegalStateException("Not enough player slots to add player " + playerNum);
-		}
-
-		ClientPlayer player = players.get(playerNum - 1);
-		if (player == null) {
-			player = new ClientPlayerImpl("Player" + playerNum, this, new Coordinate(0, 0), Orientation.NORTH);
-			players.set(playerNum - 1, player);
-		}
-
-		activePlayer = player;
-		refreshShownCards();
+	private void sendRoundReady(boolean ready) {
+		var packet = new UpdateRoundReadyPacket(ready, clientPlayer.getCards(CardRow.CHOSEN));
+		client.sendToServer(packet);
 	}
 
 	/**
@@ -403,5 +288,76 @@ public class RoboRallyGame extends GameLoop
 	 */
 	@Override
 	public void resume() {
+	}
+
+	private class PacketAdapter extends ClientPacketAdapter {
+
+		@Override
+		public void onRunRound(RunRoundPacket packet) {
+			Gdx.app.postRunnable(() -> {
+				var cards = packet.getPlayedCards();
+
+				for (int i = 0; i < 8; i++) {
+					for (Player player : players) {
+						var chosenCard = cards.get(player.getName()).get(i);
+						for (Action action : chosenCard.getActions()) {
+							performActionNow(player.getRobot(), action);
+						}
+					}
+				}
+			});
+		}
+
+		@Override
+		public void onDealNewCards(DealNewCardsPacket packet) {
+			Gdx.app.postRunnable(() -> {
+				clientPlayer.takeNonStuckCardsBack();
+				clientPlayer.giveCards(packet.getCards());
+				refreshShownCards();
+			});
+		}
+
+		@Override
+		public void onKicked(KickedPacket packet) {
+			Gdx.app.postRunnable(() -> {
+				screenController.returnToMainMenu();
+				screenController.pushInputScreen(
+						new NotificationScreen(screenController, "Kicked: " + packet.getReason())
+				);
+			});
+		}
+
+		@Override
+		public void onOtherPlayerKicked(OtherPlayerKickedPacket packet) {
+			Gdx.app.postRunnable(() -> {
+				out.printf("%s was kicked for %s%n", packet.getPlayerName(), packet.getReason());
+				out.flush();
+
+				removePlayer(packet.getPlayerName());
+			});
+		}
+
+		@Override
+		public void onPlayerLeftGame(PlayerLeftGamePacket packet) {
+			Gdx.app.postRunnable(() -> {
+				out.printf("%s left the game%n", packet.getPlayerName());
+				out.flush();
+
+				removePlayer(packet.getPlayerName());
+			});
+		}
+
+		private void removePlayer(String playerName) {
+			players.removeIf(player -> player.getName().equals(playerName));
+			board.updateActiveRobots(players.stream().map(Player::getRobot).collect(Collectors.toList()));
+		}
+
+		@Override
+		public void onServerClosing(ServerClosingPacket packet) {
+			Gdx.app.postRunnable(() -> {
+				screenController.returnToMainMenu();
+				screenController.pushInputScreen(new NotificationScreen(screenController, "Server closed"));
+			});
+		}
 	}
 }
