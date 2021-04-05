@@ -6,11 +6,11 @@ import com.badlogic.gdx.Screen;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
-import inf112.isolasjonsteamet.roborally.app.RoboRallyGame;
+import inf112.isolasjonsteamet.roborally.app.RoboRallyClient;
 import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
-import inf112.isolasjonsteamet.roborally.players.ClientPlayerImpl;
 import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
@@ -23,13 +23,13 @@ import java.util.stream.Collectors;
  */
 public class GameScreen implements Screen, DelegatingInputProcessor {
 
-	private final List<RoboRallyGame> games = new ArrayList<>();
-	private RoboRallyGame activeGame;
+	private final List<RoboRallyClient> games = new ArrayList<>();
+	private RoboRallyClient activeGame;
 
 	public GameScreen(String boardFileName, int localPlayers) {
 		var playersBuilder = ImmutableList.<Player>builder();
 		//playersBuilder.addAll(remotePlayers);
-		var localPlayersOnly = new ArrayList<ClientPlayerImpl>();
+		var localPlayersOnly = new ArrayList<PlayerImpl>();
 
 		// We need to give an action processor to the player when we construct it,
 		// but we need to game for that
@@ -50,7 +50,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 		for (int i = 0; i < localPlayers; i++) {
 			var actionProcessor = new LateConstructedActionProcessor();
 			lateActionProcessors.add(actionProcessor);
-			var player = new ClientPlayerImpl("Player" + i, actionProcessor, new Coordinate(0, 0), Orientation.NORTH);
+			var player = new PlayerImpl("Player" + i, actionProcessor, new Coordinate(0, 0), Orientation.NORTH);
 			playersBuilder.add(player);
 			localPlayersOnly.add(player);
 		}
@@ -60,7 +60,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 			var board = new BoardClientImpl(
 					players.stream().map(Player::getRobot).collect(Collectors.toList()), boardFileName
 			);
-			var game = new RoboRallyGame(board, localPlayersOnly.get(i));
+			var game = new RoboRallyClient(board, localPlayersOnly.get(i));
 			lateActionProcessors.get(i).delegateTo = game;
 
 			game.create();

@@ -7,10 +7,11 @@ import inf112.isolasjonsteamet.roborally.cards.CardType;
 import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 
-public class DealNewCardsPacket {
+public class DealNewCardsPacket implements Server2ClientPacket {
 
 	private final List<CardType> cards;
 

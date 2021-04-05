@@ -27,6 +27,11 @@ public interface Robot {
 	Orientation getDir();
 
 	/**
+	 * Sets the absolute position of the robot, with no concerns for the environment.
+	 */
+	void setPos(Coordinate position);
+
+	/**
 	 * Sets direction of the player.
 	 */
 	void setDir(Orientation dir);

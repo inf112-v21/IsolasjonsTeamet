@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.cards.CardRow;
 import inf112.isolasjonsteamet.roborally.cards.CardType;
+import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
@@ -11,7 +12,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class PlayerImpl implements Player {
+public class PlayerImpl implements ClientPlayer, ServerPlayer {
 
 	private final Robot robot;
 	private final String name;
@@ -66,5 +67,29 @@ public class PlayerImpl implements Player {
 	@Override
 	public List<CardType> getCards(CardRow row) {
 		return ImmutableList.copyOf(cards.get(row));
+	}
+
+	@Override
+	public void swapCards(CardRow fromRow, int fromCol, CardRow toRow, int toCol) {
+		List<CardType> fromCards = cards.get(fromRow);
+		List<CardType> toCards = cards.get(toRow);
+
+		while (fromCards.size() <= fromCol) {
+			fromCards.add(Cards.NO_CARD);
+		}
+		var from = fromCards.get(fromCol);
+
+		while (toCards.size() <= toCol) {
+			toCards.add(Cards.NO_CARD);
+		}
+		var to = toCards.get(toCol);
+
+		toCards.set(toCol, from);
+		fromCards.set(fromCol, to);
+	}
+
+	@Override
+	public void setCards(CardRow row, List<CardType> cards) {
+		this.cards.put(row, ImmutableList.copyOf(cards));
 	}
 }

@@ -14,19 +14,25 @@ import java.util.List;
 public class UpdateRoundReadyPacket implements Client2ServerPacket {
 
 	private final boolean isReady;
-	private final List<CardType> cards;
+	private final List<CardType> chosenCards;
+	private final List<CardType> givenCards;
 
-	public UpdateRoundReadyPacket(boolean isReady, List<CardType> cards) {
+	public UpdateRoundReadyPacket(boolean isReady, List<CardType> chosenCards, List<CardType> givenCards) {
 		this.isReady = isReady;
-		this.cards = ImmutableList.copyOf(cards);
+		this.chosenCards = ImmutableList.copyOf(chosenCards);
+		this.givenCards = ImmutableList.copyOf(givenCards);
 	}
 
 	public boolean isReady() {
 		return isReady;
 	}
 
-	public List<CardType> getCards() {
-		return cards;
+	public List<CardType> getChosenCards() {
+		return chosenCards;
+	}
+
+	public List<CardType> getGivenCards() {
+		return givenCards;
 	}
 
 	@Override
@@ -38,19 +44,20 @@ public class UpdateRoundReadyPacket implements Client2ServerPacket {
 			return false;
 		}
 		UpdateRoundReadyPacket that = (UpdateRoundReadyPacket) o;
-		return isReady == that.isReady && Objects.equal(cards, that.cards);
+		return isReady == that.isReady && Objects.equal(chosenCards, that.chosenCards) && Objects.equal(givenCards, that.givenCards);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(isReady, cards);
+		return Objects.hashCode(isReady, chosenCards, givenCards);
 	}
 
 	@Override
 	public String toString() {
 		return MoreObjects.toStringHelper(this)
 				.add("isReady", isReady)
-				.add("cards", cards)
+				.add("chosenCards", chosenCards)
+				.add("givenCards", givenCards)
 				.toString();
 	}
 
@@ -62,21 +69,31 @@ public class UpdateRoundReadyPacket implements Client2ServerPacket {
 			boolean isReady = in.readBoolean();
 			byte countChosenCards = in.readByte();
 
-			var builder = ImmutableList.<CardType>builder();
-
+			var chosenBuilder = ImmutableList.<CardType>builder();
 			for (int i = 0; i < countChosenCards; i++) {
-				builder.add(Cards.getCardFromRegistry(in.readUnsignedByte()));
+				chosenBuilder.add(Cards.getCardFromRegistry(in.readUnsignedByte()));
 			}
 
-			return new UpdateRoundReadyPacket(isReady, builder.build());
+			var givenBuilder = ImmutableList.<CardType>builder();
+			for (int i = 0; i < countChosenCards; i++) {
+				givenBuilder.add(Cards.getCardFromRegistry(in.readUnsignedByte()));
+			}
+
+
+			return new UpdateRoundReadyPacket(isReady, chosenBuilder.build(), givenBuilder.build());
 		}
 
 		@Override
 		public void write(UpdateRoundReadyPacket msg, ByteBuf buf) {
 			buf.writeBoolean(msg.isReady);
 
-			buf.writeByte(msg.cards.size());
-			for (CardType card : msg.cards) {
+			buf.writeByte(msg.chosenCards.size());
+			for (CardType card : msg.chosenCards) {
+				ByteBufHelper.writeUnsignedByte((short) Cards.getIdForCard(card), buf);
+			}
+
+			buf.writeByte(msg.givenCards.size());
+			for (CardType card : msg.givenCards) {
 				ByteBufHelper.writeUnsignedByte((short) Cards.getIdForCard(card), buf);
 			}
 		}

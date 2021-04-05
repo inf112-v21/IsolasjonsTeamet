@@ -46,7 +46,7 @@ import java.util.stream.Collectors;
 /**
  * Game class that starts a new game.
  */
-public class RoboRallyGame implements ApplicationListener, DelegatingInputProcessor, ActionProcessor {
+public class RoboRallyClient implements ApplicationListener, DelegatingInputProcessor, ActionProcessor {
 
 	private final Client client;
 	private final ClientBoard board;
@@ -64,7 +64,7 @@ public class RoboRallyGame implements ApplicationListener, DelegatingInputProces
 
 	private PrintStream out;
 
-	public RoboRallyGame(
+	public RoboRallyClient(
 			Client client,
 			ClientBoard board,
 			ClientPlayer clientPlayer,
@@ -264,7 +264,11 @@ public class RoboRallyGame implements ApplicationListener, DelegatingInputProces
 	}
 
 	private void sendRoundReady(boolean ready) {
-		var packet = new UpdateRoundReadyPacket(ready, clientPlayer.getCards(CardRow.CHOSEN));
+		var packet = new UpdateRoundReadyPacket(
+				ready,
+				clientPlayer.getCards(CardRow.CHOSEN),
+				clientPlayer.getCards(CardRow.GIVEN)
+		);
 		client.sendToServer(packet);
 	}
 
