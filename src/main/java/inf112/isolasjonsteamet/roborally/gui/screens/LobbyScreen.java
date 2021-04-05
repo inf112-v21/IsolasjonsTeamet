@@ -7,9 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import inf112.isolasjonsteamet.roborally.gui.ScreenController;
 import inf112.isolasjonsteamet.roborally.network.Client;
-import inf112.isolasjonsteamet.roborally.network.ClientPacketListener;
+import inf112.isolasjonsteamet.roborally.network.ClientPacketAdapter;
 import inf112.isolasjonsteamet.roborally.network.Server;
-import inf112.isolasjonsteamet.roborally.network.ServerPacketListener;
+import inf112.isolasjonsteamet.roborally.network.ServerPacketAdapter;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.LobbyReadyUpdatePacket;
@@ -18,7 +18,6 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
-import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.GameStartingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.LobbyInfoPacket;
@@ -232,7 +231,7 @@ public class LobbyScreen extends StageScreen {
 		Objects.requireNonNull(server).sendToAllPlayers(new GameStartingPacket(false));
 	}
 
-	private class ServerLobby implements ServerPacketListener<Client2ServerPacket> {
+	private class ServerLobby extends ServerPacketAdapter {
 
 		private final Map<String, Boolean> isPlayerReady = new HashMap<>();
 		private final String hostPlayer;
@@ -254,15 +253,24 @@ public class LobbyScreen extends StageScreen {
 				isPlayerReady.put(player, false);
 			}
 
-			if (packet instanceof LobbyReadyUpdatePacket) {
-				isPlayerReady.put(player, ((LobbyReadyUpdatePacket) packet).isReady());
-				server.sendToAllPlayers(new LobbyInfoPacket(isPlayerReady, hostPlayer));
-			} else if (packet instanceof RequestLobbyInfoPacket) {
-				server.sendToPlayer(player, new LobbyInfoPacket(isPlayerReady, hostPlayer));
-			} else if (packet instanceof ClientDisconnectingPacket) {
-				isPlayerReady.remove(player);
-				server.sendToAllPlayers(new PlayerLeftGamePacket(player));
-			}
+			super.handle(player, packet);
+		}
+
+		@Override
+		public void onLobbyReadyUpdate(@Nullable String player, LobbyReadyUpdatePacket packet) {
+			isPlayerReady.put(player, packet.isReady());
+			server.sendToAllPlayers(new LobbyInfoPacket(isPlayerReady, hostPlayer));
+		}
+
+		@Override
+		public void onRequestLobbyInfo(@Nullable String player, RequestLobbyInfoPacket packet) {
+			server.sendToPlayer(player, new LobbyInfoPacket(isPlayerReady, hostPlayer));
+		}
+
+		@Override
+		public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
+			isPlayerReady.remove(player);
+			server.sendToAllPlayers(new PlayerLeftGamePacket(player));
 		}
 
 		@Override
@@ -271,41 +279,56 @@ public class LobbyScreen extends StageScreen {
 		}
 	}
 
-	private class ClientLobby implements ClientPacketListener<Server2ClientPacket> {
+	private class ClientLobby extends ClientPacketAdapter {
 
 		@Override
-		public void handle(Server2ClientPacket packet) {
-			if (packet instanceof GameStartingPacket) {
-				if (((GameStartingPacket) packet).isGameStarting()) {
-					prepareStartGame();
-				} else {
-					cancelStartGame();
-				}
-			} else if (packet instanceof LobbyInfoPacket) {
-				players = new HashMap<>(((LobbyInfoPacket) packet).getIsPlayerReady());
-				System.out.println(players);
-				currentHost = ((LobbyInfoPacket) packet).getHost();
-				refreshPlayerList();
-			} else if (packet instanceof PlayerJoinedGamePacket) {
-				addPlayerToListing(((PlayerJoinedGamePacket) packet).getPlayerName());
-			} else if (packet instanceof PlayerLeftGamePacket) {
-				removePlayerFromListing(((PlayerLeftGamePacket) packet).getPlayerName());
-			} else if (packet instanceof KickedPacket) {
-				screenController.returnToMainMenu();
-				screenController.pushInputScreen(
-						new NotificationScreen(screenController, "Kicked: " + ((KickedPacket) packet).getReason())
-				);
-			} else if (packet instanceof OtherPlayerKickedPacket) {
-				removePlayerFromListing(((OtherPlayerKickedPacket) packet).getPlayerName());
-			} else if (packet instanceof ServerClosingPacket) {
-				screenController.returnToMainMenu();
-				screenController.pushInputScreen(new NotificationScreen(screenController, "Server closed"));
+		public void onGameStarting(GameStartingPacket packet) {
+			if (packet.isGameStarting()) {
+				prepareStartGame();
+			} else {
+				cancelStartGame();
 			}
 		}
 
 		@Override
-		public @Nullable Server2ClientPacket refine(Server2ClientPacket packet) {
-			return packet;
+		public void onLobbyInfo(LobbyInfoPacket packet) {
+			players = new HashMap<>(packet.getIsPlayerReady());
+			System.out.println(players);
+			currentHost = packet.getHost();
+			refreshPlayerList();
+		}
+
+		@Override
+		public void onPlayerJoinedGame(PlayerJoinedGamePacket packet) {
+			addPlayerToListing(packet.getPlayerName());
+		}
+
+		@Override
+		public void onPlayerLeftGame(PlayerLeftGamePacket packet) {
+			removePlayerFromListing(packet.getPlayerName());
+		}
+
+		@Override
+		public void onKicked(KickedPacket packet) {
+			Gdx.app.postRunnable(() -> {
+				screenController.returnToMainMenu();
+				screenController.pushInputScreen(
+						new NotificationScreen(screenController, "Kicked: " + packet.getReason())
+				);
+			});
+		}
+
+		@Override
+		public void onOtherPlayerKicked(OtherPlayerKickedPacket packet) {
+			removePlayerFromListing(packet.getPlayerName());
+		}
+
+		@Override
+		public void onServerClosing(ServerClosingPacket packet) {
+			Gdx.app.postRunnable(() -> {
+				screenController.returnToMainMenu();
+				screenController.pushInputScreen(new NotificationScreen(screenController, "Server closed"));
+			});
 		}
 	}
 }

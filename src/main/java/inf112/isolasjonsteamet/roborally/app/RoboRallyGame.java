@@ -34,7 +34,6 @@ import inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel;
 import inf112.isolasjonsteamet.roborally.players.ClientPlayer;
 import inf112.isolasjonsteamet.roborally.players.ClientPlayerImpl;
 import inf112.isolasjonsteamet.roborally.players.Player;
-import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
