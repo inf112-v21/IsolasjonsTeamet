@@ -44,10 +44,7 @@ public class PlayerImpl implements ClientPlayer, ServerPlayer {
 
 	@Override
 	public void giveCards(List<CardType> cards) {
-		List<CardType> givenCards = this.cards.get(CardRow.GIVEN);
-
-		givenCards.clear();
-		givenCards.addAll(cards);
+		this.cards.put(CardRow.GIVEN, ImmutableList.copyOf(cards));
 	}
 
 	@Override
@@ -58,8 +55,8 @@ public class PlayerImpl implements ClientPlayer, ServerPlayer {
 		ImmutableList.Builder<CardType> builder = ImmutableList.builder();
 		builder.addAll(givenCards);
 		builder.addAll(chosenCards);
-		givenCards.clear();
-		chosenCards.clear();
+		this.cards.put(CardRow.GIVEN, ImmutableList.of());
+		this.cards.put(CardRow.CHOSEN, ImmutableList.of());
 
 		return builder.build();
 	}
@@ -71,8 +68,8 @@ public class PlayerImpl implements ClientPlayer, ServerPlayer {
 
 	@Override
 	public void swapCards(CardRow fromRow, int fromCol, CardRow toRow, int toCol) {
-		List<CardType> fromCards = cards.get(fromRow);
-		List<CardType> toCards = cards.get(toRow);
+		List<CardType> fromCards = new ArrayList<>(cards.get(fromRow));
+		List<CardType> toCards = new ArrayList<>(cards.get(toRow));
 
 		while (fromCards.size() <= fromCol) {
 			fromCards.add(Cards.NO_CARD);
@@ -86,6 +83,9 @@ public class PlayerImpl implements ClientPlayer, ServerPlayer {
 
 		toCards.set(toCol, from);
 		fromCards.set(fromCol, to);
+
+		this.cards.put(fromRow, ImmutableList.copyOf(fromCards));
+		this.cards.put(toRow, ImmutableList.copyOf(toCards));
 	}
 
 	@Override

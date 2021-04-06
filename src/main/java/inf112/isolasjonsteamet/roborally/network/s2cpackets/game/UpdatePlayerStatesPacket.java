@@ -13,19 +13,19 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class InitializePlayerStatesPacket implements Server2ClientPacket {
+public class UpdatePlayerStatesPacket implements Server2ClientPacket {
 
 	private final List<State> states;
 
-	public InitializePlayerStatesPacket(List<State> states) {
+	public UpdatePlayerStatesPacket(List<State> states) {
 		this.states = states;
 	}
 
-	public static InitializePlayerStatesPacket fromPlayers(List<Player> players) {
+	public static UpdatePlayerStatesPacket fromPlayers(List<Player> players) {
 		var states = players.stream().map(p ->
 				new State(p.getName(), p.getRobot().getPos(), p.getRobot().getDir())
 		).collect(Collectors.toList());
-		return new InitializePlayerStatesPacket(states);
+		return new UpdatePlayerStatesPacket(states);
 	}
 
 	public List<State> getStates() {
@@ -40,7 +40,7 @@ public class InitializePlayerStatesPacket implements Server2ClientPacket {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		InitializePlayerStatesPacket that = (InitializePlayerStatesPacket) o;
+		UpdatePlayerStatesPacket that = (UpdatePlayerStatesPacket) o;
 		return Objects.equal(states, that.states);
 	}
 
@@ -107,11 +107,11 @@ public class InitializePlayerStatesPacket implements Server2ClientPacket {
 		}
 	}
 
-	public enum PacketCodec implements Codec<InitializePlayerStatesPacket> {
+	public enum PacketCodec implements Codec<UpdatePlayerStatesPacket> {
 		INSTANCE;
 
 		@Override
-		public InitializePlayerStatesPacket read(ByteBuf in) {
+		public UpdatePlayerStatesPacket read(ByteBuf in) {
 			var count = in.readUnsignedByte();
 
 			var states = ImmutableList.<State>builder();
@@ -123,11 +123,11 @@ public class InitializePlayerStatesPacket implements Server2ClientPacket {
 				states.add(new State(name, new Coordinate(x, y), dir));
 			}
 
-			return new InitializePlayerStatesPacket(states.build());
+			return new UpdatePlayerStatesPacket(states.build());
 		}
 
 		@Override
-		public void write(InitializePlayerStatesPacket msg, ByteBuf buf) {
+		public void write(UpdatePlayerStatesPacket msg, ByteBuf buf) {
 			ByteBufHelper.writeUnsignedByte((short) msg.states.size(), buf);
 
 			for (State state : msg.states) {

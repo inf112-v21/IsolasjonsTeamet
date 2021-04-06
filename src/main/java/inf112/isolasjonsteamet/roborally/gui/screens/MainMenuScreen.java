@@ -10,8 +10,13 @@ import com.badlogic.gdx.utils.Align;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import inf112.isolasjonsteamet.roborally.gui.ScreenController;
+import inf112.isolasjonsteamet.roborally.network.Client;
+import inf112.isolasjonsteamet.roborally.network.ClientPacketListener;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer;
 import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
+import java.util.concurrent.CompletableFuture;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * The root screen shown when the game starts, which wraps other main menu screens.
@@ -56,11 +61,11 @@ public class MainMenuScreen extends StageScreen {
 		table.row();
 
 		var startGameButton = new TextButton("Start game", skin);
-		startGameRow.add(startGameButton);
+		startGameRow.add(startGameButton).expandX();
 
 		var playerNum = new TextField("4", skin);
 		playerNum.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
-		startGameRow.add(playerNum);
+		startGameRow.add(playerNum).width(40F);
 		startGameRow.add(" players");
 
 		var joinMultiplayerButton = new TextButton("Join multiplayer", skin);
@@ -95,7 +100,33 @@ public class MainMenuScreen extends StageScreen {
 
 				var localServerClient = new SingleplayerClientServer(playerNames);
 				for (String playerName : playerNames) {
-					playersBuilder.add(new PlayerInfo(playerName, localServerClient, true));
+					var automaticClient = new Client() {
+						@Override
+						public void sendToServer(Client2ServerPacket packet) {
+							localServerClient.setActivePlayer(playerName);
+							localServerClient.sendToServer(packet);
+						}
+
+						@Override
+						public void addListener(ClientPacketListener<?> listener) {
+							localServerClient.setActivePlayer(playerName);
+							localServerClient.addListener(listener);
+						}
+
+						@Override
+						public void removeListener(ClientPacketListener<?> listener) {
+							localServerClient.setActivePlayer(playerName);
+							localServerClient.removeListener(listener);
+						}
+
+						@Override
+						public CompletableFuture<Void> disconnect(@Nullable String reason) {
+							localServerClient.setActivePlayer(playerName);
+							return localServerClient.disconnect(reason);
+						}
+					};
+
+					playersBuilder.add(new PlayerInfo(playerName, automaticClient, true));
 				}
 
 				screenController.startGame("example.tmx", playersBuilder.build(), localServerClient);

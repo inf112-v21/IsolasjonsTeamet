@@ -18,6 +18,7 @@ import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 import inf112.isolasjonsteamet.roborally.cards.CardRow;
+import inf112.isolasjonsteamet.roborally.cards.CardType;
 import inf112.isolasjonsteamet.roborally.gui.CardArea;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
 import inf112.isolasjonsteamet.roborally.gui.MapRendererWidget;
@@ -34,7 +35,7 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPac
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
-import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.InitializePlayerStatesPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.players.ClientPlayer;
 import inf112.isolasjonsteamet.roborally.players.Player;
@@ -67,6 +68,8 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	private CardArea cardArea;
 
 	private PrintStream out;
+
+	private ToggleButton roundReadyButton;
 
 	public RoboRallyClient(
 			Client client,
@@ -123,7 +126,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 		//givenCardsGroup.debug();
 
 		//Create button for performing moves from cards
-		var roundReadyButton = new ToggleButton("Not ready", "Ready", false, skin, this::sendRoundReady);
+		roundReadyButton = new ToggleButton("Not ready", "Ready", false, skin, this::sendRoundReady);
 		var textB = roundReadyButton.getButton();
 
 		textB.setSize(100, 30);
@@ -307,21 +310,37 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	private class PacketAdapter extends ClientPacketAdapter {
 
 		@Override
-		public void onInitializePlayerStates(InitializePlayerStatesPacket packet) {
+		public void onUpdatePlayerStates(UpdatePlayerStatesPacket packet) {
 			Gdx.app.postRunnable(() -> {
-				for (InitializePlayerStatesPacket.State state : packet.getStates()) {
-					if (state.getName().equals(clientPlayer.getName())) {
+				var unprocessed = players.stream().map(Player::getName).collect(Collectors.toSet());
+
+				for (UpdatePlayerStatesPacket.State state : packet.getStates()) {
+					if (unprocessed.contains(state.getName())) {
+						//noinspection OptionalGetWithoutIsPresent
+						var player = players.stream().filter(p -> p.getName().equals(state.getName())).findAny().get();
+						Robot robot = player.getRobot();
+						robot.setPos(state.getPos());
+						robot.setDir(state.getDir());
+
+						unprocessed.remove(state.getName());
+					} else if (state.getName().equals(clientPlayer.getName())) {
+						// This block of code will only ever run once, after the first time, the client player
+						// will be a part of the unprocessed set, and that block will run instead
+
 						Robot robot = clientPlayer.getRobot();
 						robot.setPos(state.getPos());
 						robot.setDir(state.getDir());
 
-						players.add(clientPlayer);
+						players.add(clientPlayer); //This is safe as the block is only ever run once
+						unprocessed.remove(state.getName());
 					} else {
 						players.add(
 								new PlayerImpl(state.getName(), RoboRallyClient.this, state.getPos(), state.getDir())
 						);
 					}
 				}
+
+				players.removeIf(p -> unprocessed.contains(p.getName()));
 
 				board.updateActiveRobots(players.stream().map(Player::getRobot).collect(Collectors.toList()));
 			});
@@ -334,9 +353,12 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 
 				for (int i = 0; i < 8; i++) {
 					for (Player player : players) {
-						var chosenCard = cards.get(player.getName()).get(i);
-						for (Action action : chosenCard.getActions()) {
-							performActionNow(player.getRobot(), action);
+						List<CardType> playerCards = cards.get(player.getName());
+						if (i < playerCards.size()) {
+							var chosenCard = playerCards.get(i);
+							for (Action action : chosenCard.getActions()) {
+								performActionNow(player.getRobot(), action);
+							}
 						}
 					}
 				}
@@ -349,6 +371,8 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 				clientPlayer.takeNonStuckCardsBack();
 				clientPlayer.giveCards(packet.getCards());
 				refreshShownCards();
+
+				roundReadyButton.setState(false);
 			});
 		}
 

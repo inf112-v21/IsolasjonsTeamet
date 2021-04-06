@@ -16,7 +16,7 @@ import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerSta
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
-import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.InitializePlayerStatesPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
@@ -58,7 +58,7 @@ public class RoboRallyServer implements ActionProcessor {
 		this.board = board;
 
 		server.addListener(new ServerAdapter());
-		server.sendToAllPlayers(InitializePlayerStatesPacket.fromPlayers(ImmutableList.copyOf(playersMap.values())));
+		server.sendToAllPlayers(UpdatePlayerStatesPacket.fromPlayers(ImmutableList.copyOf(playersMap.values())));
 	}
 
 	public void performActionNow(Robot robot, Action action) {
@@ -146,6 +146,8 @@ public class RoboRallyServer implements ActionProcessor {
 			Robot robot = players.get(player).getRobot();
 			robot.setPos(packet.getPosition());
 			robot.setDir(packet.getRotation());
+
+			server.sendToAllPlayers(UpdatePlayerStatesPacket.fromPlayers(ImmutableList.copyOf(players.values())));
 		}
 
 		@Override

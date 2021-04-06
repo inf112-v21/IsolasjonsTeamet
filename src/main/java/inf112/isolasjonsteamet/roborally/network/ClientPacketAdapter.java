@@ -9,7 +9,7 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
-import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.InitializePlayerStatesPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.GameStartingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.LobbyInfoPacket;
@@ -43,7 +43,7 @@ public abstract class ClientPacketAdapter implements ClientPacketListener<Server
 	public void onGameInfo(GameInfoPacket packet) {
 	}
 
-	public void onInitializePlayerStates(InitializePlayerStatesPacket packet) {
+	public void onUpdatePlayerStates(UpdatePlayerStatesPacket packet) {
 	}
 
 	public void onRunRound(RunRoundPacket packet) {
@@ -64,8 +64,8 @@ public abstract class ClientPacketAdapter implements ClientPacketListener<Server
 			onGameStarting((GameStartingPacket) packet);
 		} else if (packet instanceof LobbyInfoPacket) {
 			onLobbyInfo((LobbyInfoPacket) packet);
-		} else if (packet instanceof InitializePlayerStatesPacket) {
-			onInitializePlayerStates((InitializePlayerStatesPacket) packet);
+		} else if (packet instanceof UpdatePlayerStatesPacket) {
+			onUpdatePlayerStates((UpdatePlayerStatesPacket) packet);
 		} else if (packet instanceof RunRoundPacket) {
 			onRunRound((RunRoundPacket) packet);
 		} else if (packet instanceof DealNewCardsPacket) {
