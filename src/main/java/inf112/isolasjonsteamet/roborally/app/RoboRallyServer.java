@@ -1,7 +1,6 @@
 package inf112.isolasjonsteamet.roborally.app;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.board.Board;
@@ -12,44 +11,54 @@ import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.network.Server;
 import inf112.isolasjonsteamet.roborally.network.ServerPacketAdapter;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStateDebugPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.InitializePlayerStatesPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
+import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.players.ServerPlayer;
+import inf112.isolasjonsteamet.roborally.util.Coordinate;
+import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 public class RoboRallyServer implements ActionProcessor {
 
 	private final Server server;
 
-	private final List<ServerStatePlayer> players;
-	private final Map<String, ServerStatePlayer> playersAsMap;
+	private final Map<String, ServerStatePlayer> players;
 	private final CardDeck deck;
 	private final Board board;
 
-	public RoboRallyServer(Server server, List<ServerPlayer> players, CardDeck deck, Board board) {
+	public RoboRallyServer(Server server, List<PlayerInfo> players, CardDeck deck, Board board) {
 		this.server = server;
 
-		var playersBuilder = ImmutableList.<ServerStatePlayer>builder();
-		var playersMapBuilder = ImmutableMap.<String, ServerStatePlayer>builder();
-		for (ServerPlayer player : players) {
-			var serverPlayer = new ServerStatePlayer(player);
-			playersBuilder.add(serverPlayer);
-			playersMapBuilder.put(serverPlayer.getName(), serverPlayer);
+		//We need to keep the player order, so we use a tree map
+		var playersMap = new TreeMap<String, ServerStatePlayer>();
+		for (PlayerInfo playerInfo : players) {
+			var player = new PlayerImpl(playerInfo.getName(), this, new Coordinate(0, 0), Orientation.NORTH);
+			playersMap.put(player.getName(), new ServerStatePlayer(player));
 		}
+		board.updateActiveRobots(
+				playersMap.values().stream().map(ServerStatePlayer::getRobot).collect(Collectors.toList())
+		);
 
-		this.players = playersBuilder.build();
-		this.playersAsMap = playersMapBuilder.build();
+		this.players = playersMap;
 		this.deck = deck;
 		this.board = board;
 
 		server.addListener(new ServerAdapter());
+		server.sendToAllPlayers(InitializePlayerStatesPacket.fromPlayers(ImmutableList.copyOf(playersMap.values())));
 	}
 
 	public void performActionNow(Robot robot, Action action) {
@@ -58,7 +67,7 @@ public class RoboRallyServer implements ActionProcessor {
 	}
 
 	private void dealCards() {
-		for (ServerStatePlayer player : players) {
+		for (ServerStatePlayer player : players.values()) {
 			var newCards = deck.grabCards(8 - player.getStuckCardAmount());
 			player.giveCards(newCards);
 			server.sendToPlayer(player.getName(), new DealNewCardsPacket(newCards));
@@ -66,7 +75,7 @@ public class RoboRallyServer implements ActionProcessor {
 	}
 
 	private void takeCardsBack() {
-		for (ServerStatePlayer player : players) {
+		for (ServerStatePlayer player : players.values()) {
 			deck.discardCards(player.takeNonStuckCardsBack());
 		}
 	}
@@ -75,7 +84,7 @@ public class RoboRallyServer implements ActionProcessor {
 		var cards = new HashMap<String, List<CardType>>();
 
 		for (int i = 0; i < 8; i++) {
-			for (ServerStatePlayer player : players) {
+			for (ServerStatePlayer player : players.values()) {
 				processPlayerCard(player, i);
 				cards.put(player.getName(), player.getCards(CardRow.CHOSEN));
 			}
@@ -102,7 +111,7 @@ public class RoboRallyServer implements ActionProcessor {
 		deck.shuffle();
 		dealCards();
 
-		for (ServerStatePlayer player : players) {
+		for (ServerStatePlayer player : players.values()) {
 			player.isReady = false;
 		}
 	}
@@ -115,14 +124,14 @@ public class RoboRallyServer implements ActionProcessor {
 
 		@Override
 		public void onUpdateRoundReady(@Nullable String player, UpdateRoundReadyPacket packet) {
-			var updatedServerPlayer = playersAsMap.get(player);
+			var updatedServerPlayer = players.get(player);
 
 			updatedServerPlayer.isReady = packet.isReady();
 			updatedServerPlayer.setCards(CardRow.CHOSEN, packet.getChosenCards());
 			updatedServerPlayer.setCards(CardRow.GIVEN, packet.getGivenCards());
 
 			boolean allReady = true;
-			for (ServerStatePlayer serverPlayer : players) {
+			for (ServerStatePlayer serverPlayer : players.values()) {
 				allReady = allReady && serverPlayer.isReady;
 			}
 
@@ -134,9 +143,15 @@ public class RoboRallyServer implements ActionProcessor {
 
 		@Override
 		public void onUpdatePlayerState(@Nullable String player, UpdatePlayerStateDebugPacket packet) {
-			Robot robot = playersAsMap.get(player).getRobot();
+			Robot robot = players.get(player).getRobot();
 			robot.setPos(packet.getPosition());
 			robot.setDir(packet.getRotation());
+		}
+
+		@Override
+		public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
+			players.remove(player);
+			server.sendToAllPlayers(new PlayerLeftGamePacket(player, packet.getReason()));
 		}
 
 		@Override

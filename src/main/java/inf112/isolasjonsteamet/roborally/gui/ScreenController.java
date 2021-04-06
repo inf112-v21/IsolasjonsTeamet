@@ -2,6 +2,17 @@ package inf112.isolasjonsteamet.roborally.gui;
 
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.utils.Null;
+import inf112.isolasjonsteamet.roborally.board.ClientBoard;
+import inf112.isolasjonsteamet.roborally.network.Client;
+import inf112.isolasjonsteamet.roborally.network.Server;
+import inf112.isolasjonsteamet.roborally.players.ClientPlayer;
+import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
+import inf112.isolasjonsteamet.roborally.players.Robot;
+import java.util.List;
+import java.util.function.Function;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * An object which allows control over the active screen being shown by libGDX. Has a stack structure where active
@@ -34,5 +45,5 @@ public interface ScreenController {
 	/**
 	 * Starts a game and pushes that screen to the stack.
 	 */
-	void startGame();
+	void startGame(String boardFileName, List<PlayerInfo> players, @Nullable Server server);
 }

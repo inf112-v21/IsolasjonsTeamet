@@ -7,6 +7,7 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.Scaling;
@@ -33,10 +34,13 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPac
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.InitializePlayerStatesPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.players.ClientPlayer;
 import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.players.Robot;
+import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.io.PrintStream;
 import java.util.ArrayList;
@@ -51,7 +55,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	private final Client client;
 	private final ClientBoard board;
 	private final ClientPlayer clientPlayer;
-	private final List<Player> players;
+	private final List<Player> players = new ArrayList<>();
 	private final ScreenController screenController;
 
 	private Action showingAction;
@@ -67,13 +71,12 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	public RoboRallyClient(
 			Client client,
 			ClientBoard board,
-			ClientPlayer clientPlayer,
-			List<Player> players, ScreenController screenController
+			String clientName,
+			ScreenController screenController
 	) {
 		this.client = client;
 		this.board = board;
-		this.clientPlayer = clientPlayer;
-		this.players = new ArrayList<>(players);
+		this.clientPlayer = new PlayerImpl(clientName, this, new Coordinate(0, 0), Orientation.NORTH);
 		this.screenController = screenController;
 	}
 
@@ -99,6 +102,11 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 		table.add(leftGroup).top().left().expandY().padRight(10F);
 		table.add(new MapRendererWidget(board, 100));
 		table.row();
+
+		var playerLabel = new Label(clientPlayer.getName(), skin);
+		playerLabel.setFontScale(2F);
+		leftGroup.add(playerLabel);
+		leftGroup.row();
 
 		var bottomConsole = new PrintStreamLabel(6, System.out, skin, "default-font", Color.WHITE);
 		out = bottomConsole.getStream();
@@ -167,8 +175,6 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	@Override
 	public void performActionNow(Robot robot, Action action) {
 		action.perform(this, board, robot);
-		board.checkValid();
-
 		showingAction = action;
 		showingRobot = robot;
 	}
@@ -188,6 +194,10 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	@SuppressWarnings({"checkstyle:Indentation", "checkstyle:WhitespaceAround"})
 	@Override
 	public boolean keyDown(int keycode) {
+		if (clientPlayer == null) {
+			return false;
+		}
+
 		boolean handled = switch (keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
@@ -297,6 +307,27 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	private class PacketAdapter extends ClientPacketAdapter {
 
 		@Override
+		public void onInitializePlayerStates(InitializePlayerStatesPacket packet) {
+			Gdx.app.postRunnable(() -> {
+				for (InitializePlayerStatesPacket.State state : packet.getStates()) {
+					if (state.getName().equals(clientPlayer.getName())) {
+						Robot robot = clientPlayer.getRobot();
+						robot.setPos(state.getPos());
+						robot.setDir(state.getDir());
+
+						players.add(clientPlayer);
+					} else {
+						players.add(
+								new PlayerImpl(state.getName(), RoboRallyClient.this, state.getPos(), state.getDir())
+						);
+					}
+				}
+
+				board.updateActiveRobots(players.stream().map(Player::getRobot).collect(Collectors.toList()));
+			});
+		}
+
+		@Override
 		public void onRunRound(RunRoundPacket packet) {
 			Gdx.app.postRunnable(() -> {
 				var cards = packet.getPlayedCards();
@@ -344,7 +375,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 		@Override
 		public void onPlayerLeftGame(PlayerLeftGamePacket packet) {
 			Gdx.app.postRunnable(() -> {
-				out.printf("%s left the game%n", packet.getPlayerName());
+				out.printf("%s left the game. Reason: %s%n", packet.getPlayerName(), packet.getReason());
 				out.flush();
 
 				removePlayer(packet.getPlayerName());

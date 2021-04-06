@@ -43,6 +43,11 @@ public class RobotImpl implements Robot {
 		return pos;
 	}
 
+	@Override
+	public void setPos(Coordinate pos) {
+		this.pos = pos;
+	}
+
 	/**
 	 * Move the robot on the board.
 	 */

@@ -8,7 +8,11 @@ import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import inf112.isolasjonsteamet.roborally.gui.screens.GameScreen;
 import inf112.isolasjonsteamet.roborally.gui.screens.MainMenuScreen;
+import inf112.isolasjonsteamet.roborally.network.Server;
+import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
+import java.util.List;
 import java.util.Stack;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Main controller of the game logic. Routes the active screen around using a stack.
@@ -40,8 +44,8 @@ public class RoboRallyScreenController extends Game implements DelegatingInputPr
 	}
 
 	@Override
-	public void startGame() {
-		pushInputScreen(new GameScreen());
+	public void startGame(String boardFileName, List<PlayerInfo> players, @Nullable Server server) {
+		pushInputScreen(new GameScreen(boardFileName, players, this, server));
 	}
 
 	@Override

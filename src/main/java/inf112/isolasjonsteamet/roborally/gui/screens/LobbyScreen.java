@@ -5,6 +5,7 @@ import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
+import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.gui.ScreenController;
 import inf112.isolasjonsteamet.roborally.gui.ToggleButton;
 import inf112.isolasjonsteamet.roborally.network.Client;
@@ -22,9 +23,11 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.GameStartingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.LobbyInfoPacket;
+import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -43,7 +46,7 @@ public class LobbyScreen extends StageScreen {
 	private ToggleButton gameStartingButton;
 
 	private Table playerList;
-	private Map<String, Boolean> players = new HashMap<>();
+	private Map<String, Boolean> players = new TreeMap<>();
 	private String currentHost;
 
 	public LobbyScreen(ScreenController screenController, Server server, String hostPlayer, Client client) {
@@ -169,8 +172,12 @@ public class LobbyScreen extends StageScreen {
 					server.removeListener(serverLobby);
 				}
 
-				//TODO: Pass client and server in here as well
-				screenController.setInputScreen(new GameScreen());
+				var playerInfos = ImmutableList.<PlayerInfo>builder();
+				for (String playerName : players.keySet()) {
+					playerInfos.add(new PlayerInfo(playerName, null, false));
+				}
+
+				screenController.startGame("example.tmx", playerInfos.build(), server);
 			}
 		}
 	}
@@ -239,7 +246,7 @@ public class LobbyScreen extends StageScreen {
 		@Override
 		public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
 			isPlayerReady.remove(player);
-			server.sendToAllPlayers(new PlayerLeftGamePacket(player));
+			server.sendToAllPlayers(new PlayerLeftGamePacket(player, packet.getReason()));
 		}
 
 		@Override

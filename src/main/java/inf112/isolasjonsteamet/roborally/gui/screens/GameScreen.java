@@ -4,19 +4,19 @@ import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
 import com.google.common.collect.ImmutableList;
-import inf112.isolasjonsteamet.roborally.actions.Action;
-import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.app.RoboRallyClient;
+import inf112.isolasjonsteamet.roborally.app.RoboRallyServer;
 import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
+import inf112.isolasjonsteamet.roborally.cards.CardType;
+import inf112.isolasjonsteamet.roborally.cards.Cards;
+import inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
-import inf112.isolasjonsteamet.roborally.players.Player;
-import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
-import inf112.isolasjonsteamet.roborally.players.Robot;
-import inf112.isolasjonsteamet.roborally.util.Coordinate;
-import inf112.isolasjonsteamet.roborally.util.Orientation;
+import inf112.isolasjonsteamet.roborally.gui.ScreenController;
+import inf112.isolasjonsteamet.roborally.network.Server;
+import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * A screen which wraps the game itself.
@@ -26,46 +26,42 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 	private final List<RoboRallyClient> games = new ArrayList<>();
 	private RoboRallyClient activeGame;
 
-	public GameScreen(String boardFileName, int localPlayers) {
-		var playersBuilder = ImmutableList.<Player>builder();
-		//playersBuilder.addAll(remotePlayers);
-		var localPlayersOnly = new ArrayList<PlayerImpl>();
-
-		// We need to give an action processor to the player when we construct it,
-		// but we need to game for that
-		// We solve the recursive dependency problem with a late binding
-		class LateConstructedActionProcessor implements ActionProcessor {
-
-			ActionProcessor delegateTo;
-
-			@Override
-			public void performActionNow(Robot robot, Action action) {
-				if (delegateTo != null) {
-					delegateTo.performActionNow(robot, action);
-				}
+	public GameScreen(String boardFileName, List<PlayerInfo> playerInfos, ScreenController screenController, @Nullable Server server) {
+		for (int i = 0; i < playerInfos.size(); i++) {
+			var playerInfo = playerInfos.get(i);
+			if (!playerInfo.isLocallyPlayerControlled()) {
+				games.add(null);
+				continue;
 			}
-		}
-		var lateActionProcessors = new ArrayList<LateConstructedActionProcessor>();
 
-		for (int i = 0; i < localPlayers; i++) {
-			var actionProcessor = new LateConstructedActionProcessor();
-			lateActionProcessors.add(actionProcessor);
-			var player = new PlayerImpl("Player" + i, actionProcessor, new Coordinate(0, 0), Orientation.NORTH);
-			playersBuilder.add(player);
-			localPlayersOnly.add(player);
-		}
-		var players = playersBuilder.build();
-
-		for (int i = 0; i < localPlayers; i++) {
-			var board = new BoardClientImpl(
-					players.stream().map(Player::getRobot).collect(Collectors.toList()), boardFileName
-			);
-			var game = new RoboRallyClient(board, localPlayersOnly.get(i));
-			lateActionProcessors.get(i).delegateTo = game;
+			var board = new BoardClientImpl(ImmutableList.of(), boardFileName);
+			var game = new RoboRallyClient(playerInfo.getClient(), board, playerInfo.getName(), screenController);
 
 			game.create();
 			games.add(game);
+
+			if (activeGame == null) {
+				activeGame = game;
+			}
 		}
+
+		if (server != null) {
+			var allCards = ImmutableList.of(
+					Cards.MOVE_ONE, Cards.MOVE_ONE, Cards.MOVE_TWO, Cards.MOVE_THREE, Cards.BACK_UP, Cards.ROTATE_LEFT,
+					Cards.ROTATE_RIGHT, Cards.U_TURN
+			);
+
+			var allCardsRepeated = ImmutableList.<CardType>builder();
+			for (int i = 0; i < 10; i++) {
+				allCardsRepeated.addAll(allCards);
+			}
+			var deck = new DequeCardDeckImpl(allCardsRepeated.build());
+
+			var board = new BoardClientImpl(ImmutableList.of(), boardFileName);
+			var gameServer = new RoboRallyServer(server, playerInfos, deck, board);
+			gameServer.prepareRound();
+		}
+
 		activeGame = games.get(0);
 	}
 
@@ -94,13 +90,15 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 	}
 
 	private void switchToPlayer(int playerNum) {
-		System.out.println("Switching to player " + playerNum);
-
 		if (playerNum > games.size()) {
-			throw new IllegalStateException("Not enough player slots to add player " + playerNum);
+			return;
 		}
 
-		activeGame = games.get(playerNum - 1);
+		System.out.println("Switching to player " + playerNum);
+		var triedNewActiveGame = games.get(playerNum - 1);
+		if (triedNewActiveGame != null) {
+			activeGame = triedNewActiveGame;
+		}
 	}
 
 	@Override

@@ -13,6 +13,9 @@ import java.util.function.Supplier;
  */
 public class Cards {
 
+	private static final BiMap<Integer, CardType> cardRegistry = HashBiMap.create();
+	private static int nextValidId = 0;
+
 	public static final CardType NO_CARD = register(new CardType("", 0, texture("transparent1px.png")));
 
 	public static final CardType MOVE_ONE =
@@ -29,9 +32,6 @@ public class Cards {
 			register(new CardType("Rotate left", 18, texture("rotate_left.jpg"), new RotateLeft()));
 	public static final CardType U_TURN =
 			register(new CardType("U-Turn", 6, texture("u_turn.jpg"), new RotateRight()));
-
-	public static final BiMap<Integer, CardType> cardRegistry = HashBiMap.create();
-	private static int nextValidId = 0;
 
 	private static Supplier<Texture> texture(String file) {
 		return () -> new Texture(file);
