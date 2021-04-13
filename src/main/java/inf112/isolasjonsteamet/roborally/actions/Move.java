@@ -21,14 +21,20 @@ public class Move implements Action {
 
 	@Override
 	public void perform(ActionProcessor processor, Board board, Player player) {
+		Coordinate pos = player.getPos();
+
 		final Coordinate offset = direction.toCoord().mult(numMoves);
-		final Coordinate pos = player.getPos().add(offset);
+		final Coordinate finalDestination = player.getPos().add(offset);
+
+		while (!board.hasWallInDir(pos, direction) && !pos.equals(finalDestination)) {
+			pos = pos.add(direction.toCoord());
+		}
 
 		int clampedX = MathUtils.clamp(pos.getX(), 0, board.getWidth() - 1);
 		int clampedY = MathUtils.clamp(pos.getY(), 0, board.getHeight() - 1);
 
-		var moveTo = new Coordinate(clampedX, clampedY);
-		var clampedOffset = moveTo.sub(player.getPos());
+		var moveTo = new Coordinate(clampedX, clampedY); //absolute coordinate
+		var clampedOffset = moveTo.sub(player.getPos()); //relative coordinate
 
 		player.move(clampedOffset);
 	}

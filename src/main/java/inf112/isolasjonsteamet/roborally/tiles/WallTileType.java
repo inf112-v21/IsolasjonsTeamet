@@ -1,8 +1,5 @@
 package inf112.isolasjonsteamet.roborally.tiles;
 
-
-import static javax.management.MBeanServerFactory.builder;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
@@ -34,14 +31,18 @@ public class WallTileType extends TileType {
 	}
 
 	private static List<WallTileType> computeAllWallTypes() {
-		Builder<WallTileType> builder = ImmutableList.builder();
-		boolean choices[] = new boolean[] {true, false};
+		ImmutableList.Builder<WallTileType> builder = ImmutableList.builder();
+		boolean[] choices = new boolean[] {true, false};
 
-
-
-
+		for (boolean hasNorthWall : choices) {
+			for (boolean hasWestWall : choices) {
+				for(boolean hasEastWall : choices){
+					for(boolean hasSouthWall : choices){
+						builder.add(new WallTileType(hasNorthWall, hasWestWall, hasSouthWall, hasEastWall));
+					}
+				}
+			}
 		}
-
 		return builder.build();
 	}
 }
