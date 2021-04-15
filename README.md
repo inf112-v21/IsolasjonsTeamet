@@ -143,4 +143,5 @@ To run CheckStyle, use `checkstyleMain`.
 
 
 ## Known bugs
-* All players currently share the same graphical rotation
+* (Only seen once) On multiplayer, a player can be initialized wrongly, and thus be missing from the board.
+* Multiplayer can be crashy

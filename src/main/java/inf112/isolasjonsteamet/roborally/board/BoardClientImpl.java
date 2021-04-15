@@ -139,6 +139,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
 			if (!robots.contains(boardRobot.robot)) {
 				boardRobotsIt.remove();
+				boardRobot.dispose();
 			} else {
 				existingRobots.add(boardRobot.robot);
 			}
@@ -213,6 +214,10 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
 			int rotation = orientationToCellRotation(dir);
 			cell.setRotation(rotation);
+		}
+
+		private void dispose() {
+			layers.remove(layer);
 		}
 
 		private int orientationToCellRotation(Orientation orientation) {

@@ -30,7 +30,11 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 	private final List<RoboRallyClient> games = new ArrayList<>();
 	private RoboRallyClient activeGame;
 
-	public GameScreen(String boardFileName, List<PlayerInfo> playerInfos, ScreenController screenController, @Nullable Server server) {
+	private final ScreenController screenController;
+
+	public GameScreen(String boardFileName, List<PlayerInfo> playerInfos, String host, ScreenController screenController, @Nullable Server server) {
+		this.screenController = screenController;
+
 		for (PlayerInfo playerInfo : playerInfos) {
 			if (!playerInfo.isLocallyPlayerControlled()) {
 				games.add(null);
@@ -41,7 +45,9 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 			}
 
 			var board = new BoardClientImpl(ImmutableList.of(), boardFileName);
-			var game = new RoboRallyClient(playerInfo.getClient(), board, playerInfo.getName(), screenController);
+			var game = new RoboRallyClient(
+					playerInfo.getClient(), board, playerInfo.getName(), host, screenController, this
+			);
 
 			game.create();
 			games.add(game);
@@ -64,7 +70,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 			var deck = new DequeCardDeckImpl(allCardsRepeated.build());
 
 			var board = new BoardClientImpl(ImmutableList.of(), boardFileName);
-			var gameServer = new RoboRallyServer(server, playerInfos, deck, board);
+			var gameServer = new RoboRallyServer(server, playerInfos, host, deck, board);
 			gameServer.prepareRound();
 		}
 
@@ -105,6 +111,28 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 		var triedNewActiveGame = games.get(playerNum - 1);
 		if (triedNewActiveGame != null) {
 			activeGame = triedNewActiveGame;
+		}
+	}
+
+	public void removeClient(RoboRallyClient client, @Nullable String kickedReason) {
+		if (games.remove(client)) {
+			client.dispose();
+		}
+
+		boolean hasActiveGame = false;
+		for (RoboRallyClient game : games) {
+			if (game != null) {
+				hasActiveGame = true;
+				break;
+			}
+		}
+
+		if (!hasActiveGame) {
+			screenController.returnToMainMenu();
+
+			if (kickedReason != null) {
+				screenController.pushInputScreen(new NotificationScreen(screenController, "Kicked: " + kickedReason));
+			}
 		}
 	}
 

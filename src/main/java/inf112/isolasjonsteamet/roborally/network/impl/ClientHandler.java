@@ -4,6 +4,7 @@ import inf112.isolasjonsteamet.roborally.network.ClientPacketListener;
 import inf112.isolasjonsteamet.roborally.network.Packet;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.KickPlayerPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
@@ -43,6 +44,10 @@ public class ClientHandler extends SimpleChannelInboundHandler<Packet> {
 	ChannelFuture disconnect(@Nullable String reason) {
 		sendMessage(new ClientDisconnectingPacket(reason)).addListener(ChannelFutureListener.CLOSE);
 		return ctx.channel().closeFuture();
+	}
+
+	void kickPlayer(String player, String reason) {
+		sendMessage(new KickPlayerPacket(player, reason));
 	}
 
 	@Override

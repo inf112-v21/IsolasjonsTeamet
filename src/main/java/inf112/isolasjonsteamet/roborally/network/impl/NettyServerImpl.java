@@ -33,6 +33,7 @@ public class NettyServerImpl extends Thread implements Server {
 	private final ServerHandler serverHandler;
 
 	private final CompletableFuture<Void> readySignal = new CompletableFuture<>();
+	private final CompletableFuture<Void> closeSignal = new CompletableFuture<>();
 	private Channel rootChannel;
 
 	private final AtomicBoolean closing = new AtomicBoolean(false);
@@ -72,14 +73,24 @@ public class NettyServerImpl extends Thread implements Server {
 					.option(ChannelOption.SO_BACKLOG, 128)
 					.childOption(ChannelOption.SO_KEEPALIVE, true);
 
-			ChannelFuture f = b.bind(host, port).sync();
-			rootChannel = f.channel();
-			readySignal.complete(null);
-			f.channel().closeFuture().sync();
-			LOGGER.debug("Server closed");
+			ChannelFuture f = b.bind(host, port).await();
+
+			if (f.isSuccess()) {
+				rootChannel = f.channel();
+				readySignal.complete(null);
+				rootChannel.closeFuture().addListener((ChannelFutureListener) future1 -> closeSignal.complete(null));
+
+				f.channel().closeFuture().sync();
+				LOGGER.debug("Client closed");
+			} else {
+				closing.set(true);
+				readySignal.completeExceptionally(f.cause());
+				closeSignal.completeExceptionally(f.cause());
+			}
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		} finally {
+			closing.set(true); //No more packets should be sent
 			workerGroup.shutdownGracefully();
 			bossGroup.shutdownGracefully();
 			LOGGER.debug("Event loops shut down");
@@ -118,15 +129,11 @@ public class NettyServerImpl extends Thread implements Server {
 
 	@Override
 	public CompletableFuture<Void> close(@Nullable String reason) {
-		CompletableFuture<Void> promise = new CompletableFuture<>();
-
-		rootChannel.closeFuture().addListener((ChannelFutureListener) future1 -> promise.complete(null));
-
 		if (!closing.getAndSet(true)) {
 			LOGGER.debug("Closing server");
 			serverHandler.disconnectAll(reason).addListener((ChannelGroupFutureListener) future -> rootChannel.close());
 		}
-		return promise;
+		return closeSignal;
 	}
 
 	@Override

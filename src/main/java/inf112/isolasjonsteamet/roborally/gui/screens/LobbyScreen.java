@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.gui.ScreenController;
@@ -14,6 +15,7 @@ import inf112.isolasjonsteamet.roborally.network.Server;
 import inf112.isolasjonsteamet.roborally.network.ServerPacketAdapter;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.KickPlayerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.LobbyReadyUpdatePacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.RequestLobbyInfoPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
@@ -72,7 +74,7 @@ public class LobbyScreen extends StageScreen {
 		super.create();
 
 		var table = createRootTable();
-		table.add("Multiplayer lobby").colspan(2);
+		table.add("Multiplayer lobby").colspan(3);
 		table.row();
 
 		table.add("Players:");
@@ -80,7 +82,7 @@ public class LobbyScreen extends StageScreen {
 
 		playerList = new Table(skin);
 		refreshPlayerList();
-		table.add(playerList);
+		table.add(playerList).colspan(2);
 		table.row();
 
 		isReadyButton = new ToggleButton("Not ready", "Ready", false, skin, this::setClientReady);
@@ -143,6 +145,25 @@ public class LobbyScreen extends StageScreen {
 			if (ready) {
 				playerList.add("Ready!");
 			}
+			else {
+				playerList.add();
+			}
+
+			if (server != null && !player.equals(currentHost)) {
+				var kickButton = new TextButton("Kick", skin);
+				var kickReasonField = new TextField("", skin);
+
+				kickButton.addListener(new ChangeListener() {
+					@Override
+					public void changed(ChangeEvent event, Actor actor) {
+						kickPlayer(player, kickReasonField.getText());
+					}
+				});
+
+				playerList.add(kickButton).padLeft(10);
+				playerList.add(kickReasonField).padLeft(5);
+			}
+
 			playerList.row();
 		});
 	}
@@ -187,7 +208,7 @@ public class LobbyScreen extends StageScreen {
 					playerInfos.add(new PlayerInfo(playerName, playerClient, playerClient != null));
 				}
 
-				screenController.startGame("example.tmx", playerInfos.build(), server);
+				screenController.startGame("example.tmx", playerInfos.build(), currentHost, server);
 			}
 		}
 	}
@@ -257,6 +278,13 @@ public class LobbyScreen extends StageScreen {
 		public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
 			isPlayerReady.remove(player);
 			server.sendToAllPlayers(new PlayerLeftGamePacket(player, packet.getReason()));
+		}
+
+		@Override
+		public void onKickPlayer(@Nullable String player, KickPlayerPacket packet) {
+			if (player.equals(hostPlayer)) {
+				LobbyScreen.this.kickPlayer(packet.getPlayerName(), packet.getReason());
+			}
 		}
 
 		@Override

@@ -8,6 +8,7 @@ import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.LobbyReadyUpda
 import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.RequestLobbyInfoPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameInfoPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.KickPlayerPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket;
@@ -45,6 +46,7 @@ public class PacketProtocol {
 			//Misc
 			PacketRegistration.findCodec(GameJoinPacket.class),
 			PacketRegistration.findCodec(ClientDisconnectingPacket.class),
+			PacketRegistration.findCodec(KickPlayerPacket.class),
 
 			//Server -> Client packets
 			//Game

@@ -130,12 +130,19 @@ public class MainMenuScreen extends StageScreen {
 							localServerClient.setActivePlayer(playerName);
 							return localServerClient.disconnect(reason);
 						}
+
+						@Override
+						public void kickPlayer(String player, String reason) {
+							localServerClient.kickPlayer(player, reason);
+						}
 					};
 
 					playersBuilder.add(new PlayerInfo(playerName, automaticClient, true));
 				}
 
-				screenController.startGame("example.tmx", playersBuilder.build(), localServerClient);
+				screenController.startGame(
+						"example.tmx", playersBuilder.build(), playerNames.asList().get(0), localServerClient
+				);
 			}
 		});
 

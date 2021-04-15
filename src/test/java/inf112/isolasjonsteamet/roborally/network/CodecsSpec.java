@@ -18,6 +18,7 @@ import inf112.isolasjonsteamet.roborally.network.impl.PacketRegistration;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameInfoPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket.JoinResult;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.KickPlayerPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket;
@@ -162,6 +163,16 @@ public class CodecsSpec {
 		@Test
 		public void withReason() {
 			assertSurvivesRoundtrip(new GameJoinPacket("foobar"));
+		}
+	}
+
+	@DisplayName("KickPlayerPacket" + SURVIVE_ENCODE_DECODE)
+	@Nested
+	class KickPlayer extends ReasonTests {
+
+		@Override
+		protected Packet makePacket(String reason) {
+			return new KickPlayerPacket("foobar", reason);
 		}
 	}
 

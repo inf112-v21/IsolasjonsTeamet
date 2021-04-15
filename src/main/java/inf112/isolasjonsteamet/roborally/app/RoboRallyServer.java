@@ -12,6 +12,7 @@ import inf112.isolasjonsteamet.roborally.network.Server;
 import inf112.isolasjonsteamet.roborally.network.ServerPacketAdapter;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.KickPlayerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStatePacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
@@ -37,11 +38,13 @@ public class RoboRallyServer implements ActionProcessor {
 	private final Server server;
 
 	private final Map<String, ServerStatePlayer> players;
+	private final String host;
 	private final CardDeck deck;
 	private final Board board;
 
-	public RoboRallyServer(Server server, List<PlayerInfo> players, CardDeck deck, Board board) {
+	public RoboRallyServer(Server server, List<PlayerInfo> players, String host, CardDeck deck, Board board) {
 		this.server = server;
+		this.host = host;
 
 		//We need to keep the player order, so we use a tree map
 		var playersMap = new TreeMap<String, ServerStatePlayer>();
@@ -156,8 +159,20 @@ public class RoboRallyServer implements ActionProcessor {
 
 		@Override
 		public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
-			players.remove(player);
-			server.sendToAllPlayers(new PlayerLeftGamePacket(player, packet.getReason()));
+			if (player.equals(host)) {
+				server.close("Host left");
+			}
+			else {
+				players.remove(player);
+				server.sendToAllPlayers(new PlayerLeftGamePacket(player, packet.getReason()));
+			}
+		}
+
+		@Override
+		public void onKickPlayer(@Nullable String player, KickPlayerPacket packet) {
+			if (player.equals(host)) {
+				server.kickPlayer(packet.getPlayerName(), packet.getReason());
+			}
 		}
 
 		@Override

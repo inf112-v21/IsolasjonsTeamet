@@ -8,6 +8,7 @@ import inf112.isolasjonsteamet.roborally.network.impl.ProtocolException;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameInfoPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket.JoinResult;
+import inf112.isolasjonsteamet.roborally.players.Player;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -57,6 +58,12 @@ public interface Client {
 				promise.completeExceptionally(new ProtocolException(info.getProtocol(), info.getRequiredVersion()));
 			}
 		});
+		client.ready().whenComplete((v, e) -> {
+			if (e != null) {
+				promise.completeExceptionally(e);
+			}
+		});
+
 		client.start();
 
 		return promise;
@@ -74,4 +81,12 @@ public interface Client {
 		sendToServer(new GameJoinPacket(playerName));
 		return response;
 	}
+
+	/**
+	 * Kicks the specified player from the game with a reason. Can only be used by the host.
+	 *
+	 * @param player The player to kick.
+	 * @param reason Why the player was kicked.
+	 */
+	void kickPlayer(String player, String reason);
 }

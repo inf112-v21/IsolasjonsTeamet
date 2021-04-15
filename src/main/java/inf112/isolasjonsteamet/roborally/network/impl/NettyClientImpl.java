@@ -32,7 +32,7 @@ public class NettyClientImpl extends Thread implements Client {
 	private final ClientHandler clientHandler = new ClientHandler();
 
 	private final CompletableFuture<Void> readySignal = new CompletableFuture<>();
-	private Channel channel;
+	private final CompletableFuture<Void> closeSignal = new CompletableFuture<>();
 
 	private final AtomicBoolean disconnecting = new AtomicBoolean(false);
 
@@ -71,14 +71,23 @@ public class NettyClientImpl extends Thread implements Client {
 						}
 					});
 
-			ChannelFuture f = b.connect(host, port).sync();
-			channel = f.channel();
-			readySignal.complete(null);
-			f.channel().closeFuture().sync();
-			LOGGER.debug("Client closed");
+			ChannelFuture f = b.connect(host, port).await();
+			if (f.isSuccess()) {
+				Channel channel = f.channel();
+				readySignal.complete(null);
+				channel.closeFuture().addListener((ChannelFutureListener) future1 -> closeSignal.complete(null));
+
+				f.channel().closeFuture().sync();
+				LOGGER.debug("Client closed");
+			} else {
+				disconnecting.set(true);
+				readySignal.completeExceptionally(f.cause());
+				closeSignal.completeExceptionally(f.cause());
+			}
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		} finally {
+			disconnecting.set(true); //No more packets should be sent
 			workerGroup.shutdownGracefully();
 			bossGroup.shutdownGracefully();
 			LOGGER.debug("Event loops shut down");
@@ -108,16 +117,20 @@ public class NettyClientImpl extends Thread implements Client {
 	}
 
 	@Override
-	public CompletableFuture<Void> disconnect(@Nullable String reason) {
-		CompletableFuture<Void> promise = new CompletableFuture<>();
-		channel.closeFuture().addListener((ChannelFutureListener) future1 -> promise.complete(null));
+	public void kickPlayer(String player, String reason) {
+		if (!disconnecting.get()) {
+			clientHandler.kickPlayer(player, reason);
+		}
+	}
 
+	@Override
+	public CompletableFuture<Void> disconnect(@Nullable String reason) {
 		if (!disconnecting.getAndSet(true)) {
 			LOGGER.debug("Disconnecting client");
 			clientHandler.disconnect(reason);
 		}
 
-		return promise;
+		return closeSignal;
 
 	}
 }

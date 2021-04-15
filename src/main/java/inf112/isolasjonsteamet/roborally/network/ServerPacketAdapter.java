@@ -3,6 +3,7 @@ package inf112.isolasjonsteamet.roborally.network;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.GameJoinPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.KickPlayerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStatePacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.LobbyReadyUpdatePacket;
@@ -12,10 +13,13 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @SuppressWarnings("unused")
 public abstract class ServerPacketAdapter implements ServerPacketListener<Client2ServerPacket> {
 
+	public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
+	}
+
 	public void onGameJoin(@Nullable String player, GameJoinPacket packet) {
 	}
 
-	public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
+	public void onKickPlayer(@Nullable String player, KickPlayerPacket packet) {
 	}
 
 	public void onUpdatePlayerState(@Nullable String player, UpdatePlayerStatePacket packet) {
@@ -44,6 +48,8 @@ public abstract class ServerPacketAdapter implements ServerPacketListener<Client
 			onClientDisconnecting(player, (ClientDisconnectingPacket) packet);
 		} else if (packet instanceof GameJoinPacket) {
 			onGameJoin(player, (GameJoinPacket) packet);
+		} else if (packet instanceof KickPlayerPacket) {
+			onKickPlayer(player, (KickPlayerPacket) packet);
 		} else {
 			throw new IllegalArgumentException("Unknown C2S packet type " + packet.getClass());
 		}

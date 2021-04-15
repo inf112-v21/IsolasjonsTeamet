@@ -10,6 +10,8 @@ import inf112.isolasjonsteamet.roborally.network.Server;
 import inf112.isolasjonsteamet.roborally.network.ServerPacketListener;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import java.util.List;
@@ -139,7 +141,11 @@ public class SingleplayerClientServer implements Client, Server {
 
 	@Override
 	public void kickPlayer(String player, String reason) {
-		players.remove(player);
+		if (players.contains(player)) {
+			sendToPlayer(player, new KickedPacket(reason));
+			players.remove(player);
+			sendToAllPlayers(new OtherPlayerKickedPacket(player, reason));
+		}
 	}
 
 	@Override
