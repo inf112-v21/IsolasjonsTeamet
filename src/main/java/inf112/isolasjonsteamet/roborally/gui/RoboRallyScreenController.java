@@ -13,11 +13,15 @@ import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
 import java.util.List;
 import java.util.Stack;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main controller of the game logic. Routes the active screen around using a stack.
  */
 public class RoboRallyScreenController extends Game implements DelegatingInputProcessor, ScreenController {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(RoboRallyScreenController.class);
 
 	private final MainMenuScreen mainMenuScreen = new MainMenuScreen(this);
 
@@ -56,7 +60,7 @@ public class RoboRallyScreenController extends Game implements DelegatingInputPr
 
 	@Override
 	public <T extends Screen & InputProcessor> void pushInputScreen(T inputScreen) {
-		screenStack.push(screen);
+		LOGGER.debug("Pushing screen " + inputScreen);
 		inputProcessorStack.push(inputScreen);
 		setScreen(inputScreen);
 	}
@@ -64,6 +68,7 @@ public class RoboRallyScreenController extends Game implements DelegatingInputPr
 	@Override
 	public boolean popInputScreen() {
 		checkState(screenStack.size() > 1, "Can't pop main menu screen");
+		LOGGER.debug("Popping screen");
 
 		screenStack.pop();
 		inputProcessorStack.pop();
@@ -81,6 +86,7 @@ public class RoboRallyScreenController extends Game implements DelegatingInputPr
 	@Deprecated
 	@Override
 	public void setScreen(Screen screen) {
+		LOGGER.warn("Using setScreen directly");
 		super.setScreen(screen);
 	}
 

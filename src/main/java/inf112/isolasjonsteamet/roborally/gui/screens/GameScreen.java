@@ -17,11 +17,15 @@ import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
 import java.util.ArrayList;
 import java.util.List;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A screen which wraps the game itself.
  */
 public class GameScreen implements Screen, DelegatingInputProcessor {
+
+	private static final Logger LOGGER = LoggerFactory.getLogger(GameScreen.class);
 
 	private final List<RoboRallyClient> games = new ArrayList<>();
 	private RoboRallyClient activeGame;
@@ -94,7 +98,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 			return;
 		}
 
-		System.out.println("Switching to player " + playerNum);
+		LOGGER.info("Switching to player " + playerNum);
 		var triedNewActiveGame = games.get(playerNum - 1);
 		if (triedNewActiveGame != null) {
 			activeGame = triedNewActiveGame;

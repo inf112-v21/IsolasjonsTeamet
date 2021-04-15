@@ -35,6 +35,7 @@ public class NettyServerImpl extends Thread implements Server {
 	 * Constucts a new netty server on the given host and port.
 	 */
 	public NettyServerImpl(String host, int port, String gameName) {
+		super("NettyServerImpl");
 		this.host = host;
 		this.port = port;
 		this.gameName = gameName;

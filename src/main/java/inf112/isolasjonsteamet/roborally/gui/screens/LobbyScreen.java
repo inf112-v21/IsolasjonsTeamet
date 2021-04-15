@@ -269,7 +269,6 @@ public class LobbyScreen extends StageScreen {
 		@Override
 		public void onLobbyInfo(LobbyInfoPacket packet) {
 			players = new HashMap<>(packet.getIsPlayerReady());
-			System.out.println(players);
 			currentHost = packet.getHost();
 			refreshPlayerList();
 		}

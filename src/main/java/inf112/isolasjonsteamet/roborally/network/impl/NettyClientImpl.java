@@ -26,6 +26,7 @@ public class NettyClientImpl extends Thread implements Client {
 	private final CompletableFuture<Void> readySignal = new CompletableFuture<>();
 
 	public NettyClientImpl(String host, int port) {
+		super("NettyClientImpl");
 		this.host = host;
 		this.port = port;
 	}

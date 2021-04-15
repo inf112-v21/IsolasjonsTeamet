@@ -144,8 +144,6 @@ public class CardArea {
 
 		@Override
 		public void drop(Source source, Payload payload, float x, float y, int pointer) {
-			System.out.println("Drop " + row + " " + col);
-
 			if (!(source instanceof CardAreaSource)) {
 				throw new IllegalStateException("Unknown source");
 			}
