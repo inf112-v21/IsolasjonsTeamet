@@ -29,6 +29,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 
 	private final List<RoboRallyClient> games = new ArrayList<>();
 	private RoboRallyClient activeGame;
+	private RoboRallyServer gameServer = null;
 
 	private final ScreenController screenController;
 
@@ -70,7 +71,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 			var deck = new DequeCardDeckImpl(allCardsRepeated.build());
 
 			var board = new BoardClientImpl(ImmutableList.of(), boardFileName);
-			var gameServer = new RoboRallyServer(server, playerInfos, host, deck, board);
+			gameServer = new RoboRallyServer(server, playerInfos, host, deck, board);
 			gameServer.prepareRound();
 		}
 
@@ -171,6 +172,10 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 			if (game != null) {
 				game.dispose();
 			}
+		}
+
+		if (gameServer != null) {
+			gameServer.dispose();
 		}
 	}
 
