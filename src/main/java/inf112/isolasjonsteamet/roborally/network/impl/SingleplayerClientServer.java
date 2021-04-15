@@ -63,6 +63,12 @@ public class SingleplayerClientServer implements Client, Server {
 		serverPacketListeners.forEach(listener -> listener.handleIfPossible(activePlayer, packet));
 	}
 
+	@Override
+	public String getUsername() {
+		checkNotClosed();
+		return activePlayer;
+	}
+
 	public void setActivePlayer(String player) {
 		checkNotClosed();
 		this.activePlayer = player;

@@ -64,12 +64,16 @@ public class ToggleButton {
 	}
 
 	public void setState(boolean state) {
-		this.state = state;
-		button.setText(textForState());
+		setStateQuietly(state);
 
 		if (stateListener != null) {
 			stateListener.accept(state);
 		}
+	}
+
+	public void setStateQuietly(boolean state) {
+		this.state = state;
+		button.setText(textForState());
 	}
 
 	public void flip() {

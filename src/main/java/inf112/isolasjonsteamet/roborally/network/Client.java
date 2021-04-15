@@ -17,6 +17,9 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  */
 public interface Client {
 
+	/** Gets the username this player has decided to call themselves. */
+	String getUsername();
+
 	/** Send a packet to the server. */
 	void sendToServer(Client2ServerPacket packet);
 
@@ -36,8 +39,8 @@ public interface Client {
 	 * @param port The port to connect to
 	 * @return A "tuple" containing the client, and the current game info.
 	 */
-	static CompletableFuture<Map.Entry<Client, GameInfoPacket>> connectAndVerify(String host, int port, String clientIdentifier) {
-		var client = new NettyClientImpl(host, port, clientIdentifier);
+	static CompletableFuture<Map.Entry<Client, GameInfoPacket>> connectAndVerify(String host, int port, String username) {
+		var client = new NettyClientImpl(host, port, username);
 		var promise = new CompletableFuture<Map.Entry<Client, GameInfoPacket>>();
 
 		ClientPacketListener.next(client, GameInfoPacket.class).thenAccept(info -> {

@@ -27,7 +27,7 @@ public class NettyClientImpl extends Thread implements Client {
 
 	private final String host;
 	private final int port;
-	private final String clientIdentifier;
+	private final String username;
 
 	private final ClientHandler clientHandler = new ClientHandler();
 
@@ -36,15 +36,20 @@ public class NettyClientImpl extends Thread implements Client {
 
 	private final AtomicBoolean disconnecting = new AtomicBoolean(false);
 
-	public NettyClientImpl(String host, int port, String clientIdentifier) {
+	public NettyClientImpl(String host, int port, String username) {
 		super("NettyClientImpl");
 		this.host = host;
 		this.port = port;
-		this.clientIdentifier = clientIdentifier;
+		this.username = username;
 	}
 
 	public CompletableFuture<Void> ready() {
 		return readySignal;
+	}
+
+	@Override
+	public String getUsername() {
+		return username;
 	}
 
 	@Override
@@ -83,7 +88,7 @@ public class NettyClientImpl extends Thread implements Client {
 	@Override
 	public void sendToServer(Client2ServerPacket packet) {
 		if (!disconnecting.get()) {
-			LOGGER.trace("{} -> Server {}: ", clientIdentifier, packet);
+			LOGGER.trace("{} -> Server {}: ", username, packet);
 			clientHandler.sendMessage(packet);
 		}
 	}

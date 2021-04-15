@@ -89,7 +89,7 @@ public class LobbyScreen extends StageScreen {
 		// We initialize the button here, but only add it to the GUI if we're actually on the server
 		// We still use some of the state of if a game is starting on the client as well
 		gameStartingButton = new ToggleButton("Cancel start game", "Start game", false, skin, gameStarting -> {
-			if (gameStarting) {
+			if (!gameStarting) {
 				broadcastCancelStartGame();
 			} else {
 				broadcastGameStarting();
@@ -158,8 +158,8 @@ public class LobbyScreen extends StageScreen {
 	}
 
 	private void prepareStartGame() {
-		gameStartingButton.setState(false);
-		setReadyCountdownState(9);
+		gameStartingButton.setStateQuietly(true);
+		setReadyCountdownState(3);
 	}
 
 	private void setReadyCountdownState(int secondsLeft) {
@@ -179,7 +179,12 @@ public class LobbyScreen extends StageScreen {
 
 				var playerInfos = ImmutableList.<PlayerInfo>builder();
 				for (String playerName : players.keySet()) {
-					playerInfos.add(new PlayerInfo(playerName, null, false));
+					Client playerClient = null;
+					if (playerName.equals(client.getUsername())) {
+						playerClient = client;
+					}
+
+					playerInfos.add(new PlayerInfo(playerName, playerClient, playerClient != null));
 				}
 
 				screenController.startGame("example.tmx", playerInfos.build(), server);
@@ -188,7 +193,7 @@ public class LobbyScreen extends StageScreen {
 	}
 
 	private void cancelStartGame() {
-		gameStartingButton.setState(false);
+		gameStartingButton.setStateQuietly(false);
 		isReadyButton.refreshText();
 	}
 

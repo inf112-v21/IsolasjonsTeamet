@@ -68,7 +68,9 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 			gameServer.prepareRound();
 		}
 
-		activeGame = games.get(0);
+		if (activeGame == null) {
+			throw new IllegalStateException("Game started with no locally controlled players");
+		}
 	}
 
 	@Override
@@ -138,7 +140,9 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 	@Override
 	public void dispose() {
 		for (RoboRallyClient game : games) {
-			game.dispose();
+			if (game != null) {
+				game.dispose();
+			}
 		}
 	}
 

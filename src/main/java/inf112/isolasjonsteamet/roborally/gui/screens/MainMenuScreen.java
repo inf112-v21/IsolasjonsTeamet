@@ -101,6 +101,12 @@ public class MainMenuScreen extends StageScreen {
 				var localServerClient = new SingleplayerClientServer(playerNames);
 				for (String playerName : playerNames) {
 					var automaticClient = new Client() {
+
+						@Override
+						public String getUsername() {
+							return localServerClient.getUsername();
+						}
+
 						@Override
 						public void sendToServer(Client2ServerPacket packet) {
 							localServerClient.setActivePlayer(playerName);
