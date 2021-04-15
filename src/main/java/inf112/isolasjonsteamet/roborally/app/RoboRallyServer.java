@@ -12,7 +12,7 @@ import inf112.isolasjonsteamet.roborally.network.Server;
 import inf112.isolasjonsteamet.roborally.network.ServerPacketAdapter;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
-import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStateDebugPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStatePacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
@@ -142,7 +142,7 @@ public class RoboRallyServer implements ActionProcessor {
 		}
 
 		@Override
-		public void onUpdatePlayerState(@Nullable String player, UpdatePlayerStateDebugPacket packet) {
+		public void onUpdatePlayerState(@Nullable String player, UpdatePlayerStatePacket packet) {
 			Robot robot = players.get(player).getRobot();
 			robot.setPos(packet.getPosition());
 			robot.setDir(packet.getRotation());

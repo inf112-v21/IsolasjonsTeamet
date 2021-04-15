@@ -116,7 +116,7 @@ public class LobbyScreen extends StageScreen {
 		table.row();
 
 		client.addListener(clientLobby);
-		client.sendToServer(new RequestLobbyInfoPacket());
+		client.sendToServer(RequestLobbyInfoPacket.INSTANCE);
 	}
 
 	@Override

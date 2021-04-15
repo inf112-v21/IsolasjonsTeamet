@@ -44,13 +44,16 @@ public class ByteBufHelper {
 	 * @param maxSize How many bytes the length should use. Must be one of 1, 2, 3, 4, 8
 	 */
 	public static void writeString(@Nullable String string, ByteBuf buf, int maxSize) {
-		int toWrite = string == null ? -1 : string.length();
+		int len = -1;
+		if (string != null) {
+			len = string.length();
+		}
 
 		switch (maxSize) {
-			case 1 -> writeUnsignedByte((short) toWrite, buf);
-			case 2 -> writeUnsignedShort(toWrite, buf);
-			case 3 -> writeUnsignedMedium(toWrite, buf);
-			case 4 -> writeUnsignedInt(toWrite, buf);
+			case 1 -> writeUnsignedByte(string == null ? (short) (Byte.MAX_VALUE * 2 + 1) : (short) len, buf);
+			case 2 -> writeUnsignedShort(string == null ? Short.MAX_VALUE * 2 + 1 : len, buf);
+			case 3 -> writeUnsignedMedium(string == null ? (1 << 24) - 1 : len, buf);
+			case 4 -> writeUnsignedInt(string == null ? Integer.MAX_VALUE * 2L + 1 : len, buf);
 			default -> throw new IllegalArgumentException("Illegal max size %d specified".formatted(maxSize));
 		}
 
@@ -108,7 +111,7 @@ public class ByteBufHelper {
 	public static <T extends Enum<T>> T readEnum(Class<T> enumClass, ByteBuf buf) {
 		int size = enumClass.getEnumConstants().length;
 		int ordinal;
-		if (size < 255) {
+		if (size <= 255) {
 			ordinal = buf.readUnsignedByte();
 		} else {
 			// It should be impossible to have an enum larger than an

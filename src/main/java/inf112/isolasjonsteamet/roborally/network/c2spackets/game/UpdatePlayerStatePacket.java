@@ -9,12 +9,12 @@ import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import io.netty.buffer.ByteBuf;
 
-public class UpdatePlayerStateDebugPacket implements Client2ServerPacket {
+public class UpdatePlayerStatePacket implements Client2ServerPacket {
 
 	private final Coordinate position;
 	private final Orientation rotation;
 
-	public UpdatePlayerStateDebugPacket(Coordinate position, Orientation rotation) {
+	public UpdatePlayerStatePacket(Coordinate position, Orientation rotation) {
 		this.position = position;
 		this.rotation = rotation;
 	}
@@ -35,7 +35,7 @@ public class UpdatePlayerStateDebugPacket implements Client2ServerPacket {
 		if (o == null || getClass() != o.getClass()) {
 			return false;
 		}
-		UpdatePlayerStateDebugPacket that = (UpdatePlayerStateDebugPacket) o;
+		UpdatePlayerStatePacket that = (UpdatePlayerStatePacket) o;
 		return Objects.equal(position, that.position) && rotation == that.rotation;
 	}
 
@@ -52,20 +52,20 @@ public class UpdatePlayerStateDebugPacket implements Client2ServerPacket {
 				.toString();
 	}
 
-	public enum PacketCodec implements Codec<UpdatePlayerStateDebugPacket> {
+	public enum PacketCodec implements Codec<UpdatePlayerStatePacket> {
 		INSTANCE;
 
 		@Override
-		public UpdatePlayerStateDebugPacket read(ByteBuf in) {
+		public UpdatePlayerStatePacket read(ByteBuf in) {
 			int x = in.readInt();
 			int y = in.readInt();
 			Orientation rotation = ByteBufHelper.readEnum(Orientation.class, in);
 
-			return new UpdatePlayerStateDebugPacket(new Coordinate(x, y), rotation);
+			return new UpdatePlayerStatePacket(new Coordinate(x, y), rotation);
 		}
 
 		@Override
-		public void write(UpdatePlayerStateDebugPacket msg, ByteBuf buf) {
+		public void write(UpdatePlayerStatePacket msg, ByteBuf buf) {
 			buf.writeInt(msg.position.getX());
 			buf.writeInt(msg.position.getY());
 			ByteBufHelper.writeEnum(msg.rotation, buf);

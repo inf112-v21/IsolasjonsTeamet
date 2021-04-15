@@ -67,15 +67,16 @@ public class UpdateRoundReadyPacket implements Client2ServerPacket {
 		@Override
 		public UpdateRoundReadyPacket read(ByteBuf in) {
 			boolean isReady = in.readBoolean();
-			byte countChosenCards = in.readByte();
 
+			byte countChosenCards = in.readByte();
 			var chosenBuilder = ImmutableList.<CardType>builder();
 			for (int i = 0; i < countChosenCards; i++) {
 				chosenBuilder.add(Cards.getCardFromRegistry(in.readUnsignedByte()));
 			}
 
+			byte countGivenCards = in.readByte();
 			var givenBuilder = ImmutableList.<CardType>builder();
-			for (int i = 0; i < countChosenCards; i++) {
+			for (int i = 0; i < countGivenCards; i++) {
 				givenBuilder.add(Cards.getCardFromRegistry(in.readUnsignedByte()));
 			}
 

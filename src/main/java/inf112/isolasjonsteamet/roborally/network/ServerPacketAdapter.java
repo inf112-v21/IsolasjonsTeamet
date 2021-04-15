@@ -3,7 +3,7 @@ package inf112.isolasjonsteamet.roborally.network;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.GameJoinPacket;
-import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStateDebugPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStatePacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.LobbyReadyUpdatePacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.RequestLobbyInfoPacket;
@@ -18,7 +18,7 @@ public abstract class ServerPacketAdapter implements ServerPacketListener<Client
 	public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
 	}
 
-	public void onUpdatePlayerState(@Nullable String player, UpdatePlayerStateDebugPacket packet) {
+	public void onUpdatePlayerState(@Nullable String player, UpdatePlayerStatePacket packet) {
 	}
 
 	public void onUpdateRoundReady(@Nullable String player, UpdateRoundReadyPacket packet) {
@@ -36,8 +36,8 @@ public abstract class ServerPacketAdapter implements ServerPacketListener<Client
 			onLobbyReadyUpdate(player, (LobbyReadyUpdatePacket) packet);
 		} else if (packet instanceof RequestLobbyInfoPacket) {
 			onRequestLobbyInfo(player, (RequestLobbyInfoPacket) packet);
-		} else if (packet instanceof UpdatePlayerStateDebugPacket) {
-			onUpdatePlayerState(player, (UpdatePlayerStateDebugPacket) packet);
+		} else if (packet instanceof UpdatePlayerStatePacket) {
+			onUpdatePlayerState(player, (UpdatePlayerStatePacket) packet);
 		} else if (packet instanceof UpdateRoundReadyPacket) {
 			onUpdateRoundReady(player, (UpdateRoundReadyPacket) packet);
 		} else if (packet instanceof ClientDisconnectingPacket) {

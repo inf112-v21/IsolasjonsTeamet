@@ -8,7 +8,8 @@ import io.netty.buffer.ByteBuf;
 /**
  * Sent by the client to indicate it wants info about the current lobby room it has connected to.
  */
-public class RequestLobbyInfoPacket implements Client2ServerPacket {
+public enum RequestLobbyInfoPacket implements Client2ServerPacket {
+	INSTANCE;
 
 	@Override
 	public String toString() {
@@ -22,7 +23,7 @@ public class RequestLobbyInfoPacket implements Client2ServerPacket {
 
 		@Override
 		public RequestLobbyInfoPacket read(ByteBuf in) {
-			return new RequestLobbyInfoPacket();
+			return RequestLobbyInfoPacket.INSTANCE;
 		}
 
 		@Override

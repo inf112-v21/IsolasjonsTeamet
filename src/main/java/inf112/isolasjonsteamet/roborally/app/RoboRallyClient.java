@@ -28,7 +28,7 @@ import inf112.isolasjonsteamet.roborally.gui.ToggleButton;
 import inf112.isolasjonsteamet.roborally.gui.screens.NotificationScreen;
 import inf112.isolasjonsteamet.roborally.network.Client;
 import inf112.isolasjonsteamet.roborally.network.ClientPacketAdapter;
-import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStateDebugPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStatePacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
@@ -272,7 +272,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 
 	private void sendPlayerStateToServer() {
 		var robot = clientPlayer.getRobot();
-		var packet = new UpdatePlayerStateDebugPacket(robot.getPos(), robot.getDir());
+		var packet = new UpdatePlayerStatePacket(robot.getPos(), robot.getDir());
 		client.sendToServer(packet);
 	}
 
