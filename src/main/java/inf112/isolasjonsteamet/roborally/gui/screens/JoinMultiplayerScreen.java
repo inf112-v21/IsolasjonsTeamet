@@ -30,7 +30,7 @@ public class JoinMultiplayerScreen extends StageScreen {
 		super.create();
 
 		hostField = new TextField("", skin);
-		portField = new TextField("", skin);
+		portField = new TextField("21313", skin);
 		portField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
 		usernameField = new TextField("", skin);
 		statusLabel = new Label("", skin);
@@ -98,7 +98,7 @@ public class JoinMultiplayerScreen extends StageScreen {
 	@Override
 	public void hide() {
 		hostField.setText("");
-		portField.setText("");
+		portField.setText("21313");
 		usernameField.setText("");
 		statusLabel.setText("");
 	}
@@ -106,8 +106,9 @@ public class JoinMultiplayerScreen extends StageScreen {
 	private void joinMultiplayer(int port) {
 		statusLabel.setText("Connecting to server");
 		statusLabel.setColor(Color.YELLOW);
+		var username = usernameField.getText();
 
-		Client.connectAndVerify(hostField.getText(), port).whenComplete((t, e) -> {
+		Client.connectAndVerify(hostField.getText(), port, username).whenComplete((t, e) -> {
 			if (e != null) {
 				Gdx.app.postRunnable(() -> {
 					statusLabel.setText("Failed to connect to server: " + e.getMessage());
@@ -117,7 +118,7 @@ public class JoinMultiplayerScreen extends StageScreen {
 				Gdx.app.postRunnable(() -> statusLabel.setText("Connected..."));
 				Client client = t.getKey();
 
-				client.joinGame(usernameField.getText()).thenAccept(result -> {
+				client.joinGame(username).thenAccept(result -> {
 					switch (result) {
 						case DENIED -> {
 							Gdx.app.postRunnable(() -> {

@@ -114,6 +114,11 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 		sendPacket(ctx, createGameInfoPacket());
 	}
 
+	private GameInfoPacket createGameInfoPacket() {
+		var players = ImmutableList.copyOf(playersToChannel.keySet());
+		return GameInfoPacket.ofThisVersion(gameName, players);
+	}
+
 	@Override
 	public void channelInactive(ChannelHandlerContext ctx) throws Exception {
 		String player = channelToPlayers.remove(ctx.channel());
@@ -123,9 +128,20 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 		//TODO: Sent message to other clients
 	}
 
-	private GameInfoPacket createGameInfoPacket() {
-		var players = ImmutableList.copyOf(playersToChannel.keySet());
-		return GameInfoPacket.ofThisVersion(gameName, players);
+	@Override
+	protected void channelRead0(ChannelHandlerContext ctx, Packet msg) throws Exception {
+		if (!(msg instanceof Client2ServerPacket)) {
+			LOGGER.warn("Server received client message " + msg);
+			return;
+		}
+
+		//We handle this one extra specially here first
+		if (msg instanceof GameJoinPacket) {
+			handleGameJoin(ctx, (GameJoinPacket) msg);
+		}
+
+		listeners.forEach(listener ->
+				listener.handleIfPossible(channelToPlayers.get(ctx.channel()), (Client2ServerPacket) msg));
 	}
 
 	private void handleGameJoin(ChannelHandlerContext ctx, GameJoinPacket packet) {
@@ -159,25 +175,14 @@ public class ServerHandler extends SimpleChannelInboundHandler<Packet> {
 	}
 
 	@Override
-	protected void channelRead0(ChannelHandlerContext ctx, Packet msg) throws Exception {
-		if (!(msg instanceof Client2ServerPacket)) {
-			LOGGER.warn("Server received client message " + msg);
-			return;
-		}
-
-		//We handle this one extra specially here first
-		if (msg instanceof GameJoinPacket) {
-			handleGameJoin(ctx, (GameJoinPacket) msg);
-		}
-
-		listeners.forEach(listener ->
-				listener.handleIfPossible(channelToPlayers.get(ctx.channel()), (Client2ServerPacket) msg));
-	}
-
-	@Override
 	public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
 		if (evt instanceof IdleStateEvent && !gamePlayers.contains(ctx.channel())) {
 			ctx.close();
 		}
+	}
+
+	@Override
+	public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
+		super.exceptionCaught(ctx, cause);
 	}
 }

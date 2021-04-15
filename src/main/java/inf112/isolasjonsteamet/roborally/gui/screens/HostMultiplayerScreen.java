@@ -30,7 +30,7 @@ public class HostMultiplayerScreen extends StageScreen {
 	void create() {
 		super.create();
 
-		portField = new TextField("", skin);
+		portField = new TextField("21313", skin);
 		portField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
 		gameNameField = new TextField("", skin);
 		usernameField = new TextField("", skin);
@@ -63,7 +63,6 @@ public class HostMultiplayerScreen extends StageScreen {
 		backButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				//TODO: Shutdown server here first
 				screenController.popInputScreen();
 			}
 		});
@@ -93,7 +92,9 @@ public class HostMultiplayerScreen extends StageScreen {
 
 	@Override
 	public void hide() {
-		portField.setText("");
+		portField.setText("21313");
+		gameNameField.setText("");
+		usernameField.setText("");
 		statusLabel.setText("");
 	}
 
@@ -111,8 +112,9 @@ public class HostMultiplayerScreen extends StageScreen {
 				});
 			} else {
 				Gdx.app.postRunnable(() -> statusLabel.setText("Server started. Starting client..."));
+				var username = usernameField.getText();
 
-				Client.connectAndVerify("localhost", port).whenComplete((tuple, e2) -> {
+				Client.connectAndVerify("localhost", port, username).whenComplete((tuple, e2) -> {
 					if (e2 != null) {
 						Gdx.app.postRunnable(() -> {
 							statusLabel.setText("Failed to start and connect with client: " + e2.getMessage());
@@ -121,7 +123,6 @@ public class HostMultiplayerScreen extends StageScreen {
 						server.close("Client host connection failed");
 					} else {
 						Client client = tuple.getKey();
-						var username = usernameField.getText();
 						Gdx.app.postRunnable(() -> statusLabel.setText("Joining the game"));
 						client.joinGame(username).thenAccept(result -> {
 							switch (result) {

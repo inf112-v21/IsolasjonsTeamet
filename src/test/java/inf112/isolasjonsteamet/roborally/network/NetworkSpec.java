@@ -85,7 +85,7 @@ public class NetworkSpec {
 	}
 
 	public NettyClientImpl createClient() {
-		return new NettyClientImpl("localhost", 8000);
+		return new NettyClientImpl("localhost", 8000, "test");
 	}
 
 	public void runClient(NettyClientImpl client) throws InterruptedException, ExecutionException, TimeoutException {

@@ -16,20 +16,26 @@ import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.timeout.IdleStateHandler;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.atomic.AtomicBoolean;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * An implementation of {@link Server} which uses TCP over Netty under the hood.
  */
 public class NettyServerImpl extends Thread implements Server {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(NettyServerImpl.class);
+
 	private final String host;
 	private final int port;
-	private final String gameName;
 	private final ServerHandler serverHandler;
 
 	private final CompletableFuture<Void> readySignal = new CompletableFuture<>();
 	private Channel rootChannel;
+
+	private final AtomicBoolean closing = new AtomicBoolean(false);
 
 	/**
 	 * Constucts a new netty server on the given host and port.
@@ -38,7 +44,6 @@ public class NettyServerImpl extends Thread implements Server {
 		super("NettyServerImpl");
 		this.host = host;
 		this.port = port;
-		this.gameName = gameName;
 
 		this.serverHandler = new ServerHandler(gameName);
 	}
@@ -71,46 +76,64 @@ public class NettyServerImpl extends Thread implements Server {
 			rootChannel = f.channel();
 			readySignal.complete(null);
 			f.channel().closeFuture().sync();
+			LOGGER.debug("Server closed");
 		} catch (InterruptedException e) {
 			throw new RuntimeException(e);
 		} finally {
 			workerGroup.shutdownGracefully();
 			bossGroup.shutdownGracefully();
+			LOGGER.debug("Event loops shut down");
 		}
 	}
 
 	@Override
 	public void sendToAllPlayers(Server2ClientPacket packet) {
-		serverHandler.sendToAllPlayers(packet);
+		if (!closing.get()) {
+			LOGGER.trace("Server -> All: {}", packet);
+			serverHandler.sendToAllPlayers(packet);
+		}
 	}
 
 	@Override
 	public void sendToPlayer(String player, Server2ClientPacket packet) {
-		serverHandler.sendToPlayer(player, packet);
+		if (!closing.get()) {
+			LOGGER.trace("Server -> {}: {}", player, packet);
+			serverHandler.sendToPlayer(player, packet);
+		}
 	}
 
 	@Override
 	public void addListener(ServerPacketListener<?> listener) {
-		serverHandler.addListener(listener);
+		if (!closing.get()) {
+			serverHandler.addListener(listener);
+		}
 	}
 
 	@Override
 	public void removeListener(ServerPacketListener<?> listener) {
-		serverHandler.removeListener(listener);
+		if (!closing.get()) {
+			serverHandler.removeListener(listener);
+		}
 	}
 
 	@Override
 	public CompletableFuture<Void> close(@Nullable String reason) {
-		serverHandler.disconnectAll(reason).addListener((ChannelGroupFutureListener) future -> rootChannel.close());
 		CompletableFuture<Void> promise = new CompletableFuture<>();
 
 		rootChannel.closeFuture().addListener((ChannelFutureListener) future1 -> promise.complete(null));
+
+		if (!closing.getAndSet(true)) {
+			LOGGER.debug("Closing server");
+			serverHandler.disconnectAll(reason).addListener((ChannelGroupFutureListener) future -> rootChannel.close());
+		}
 		return promise;
 	}
 
 	@Override
 	public void kickPlayer(String player, String reason) {
-		serverHandler.kickPlayer(player, reason);
+		if (!closing.get()) {
+			serverHandler.kickPlayer(player, reason);
+		}
 	}
 
 	@Override

@@ -31,10 +31,12 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 	private RoboRallyClient activeGame;
 
 	public GameScreen(String boardFileName, List<PlayerInfo> playerInfos, ScreenController screenController, @Nullable Server server) {
-		for (int i = 0; i < playerInfos.size(); i++) {
-			var playerInfo = playerInfos.get(i);
+		for (PlayerInfo playerInfo : playerInfos) {
 			if (!playerInfo.isLocallyPlayerControlled()) {
 				games.add(null);
+				// Not aware of any cases where a non-locally player-controlled player
+				// can have a client associated with it, but if that's something we use later,
+				// we should handle it here
 				continue;
 			}
 
@@ -69,7 +71,6 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 		activeGame = games.get(0);
 	}
 
-	@SuppressWarnings("CheckStyle")
 	@Override
 	public boolean keyDown(int keycode) {
 		int playerToSwitchTo = switch (keycode) {
@@ -136,7 +137,9 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 
 	@Override
 	public void dispose() {
-		activeGame.dispose();
+		for (RoboRallyClient game : games) {
+			game.dispose();
+		}
 	}
 
 	@Override

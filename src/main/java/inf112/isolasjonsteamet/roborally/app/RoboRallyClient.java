@@ -153,6 +153,8 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	public void dispose() {
 		stage.dispose();
 		skin.dispose();
+
+		client.disconnect("Disposing");
 	}
 
 	/**

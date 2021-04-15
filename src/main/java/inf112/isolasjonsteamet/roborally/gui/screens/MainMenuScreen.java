@@ -154,4 +154,13 @@ public class MainMenuScreen extends StageScreen {
 			}
 		});
 	}
+
+	@Override
+	public void dispose() {
+		super.dispose();
+
+		joinMultiplayerScreen.dispose();
+		hostMultiplayerScreen.dispose();
+		instructionsScreen.dispose();
+	}
 }

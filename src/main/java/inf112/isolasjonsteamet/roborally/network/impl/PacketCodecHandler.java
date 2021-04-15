@@ -52,13 +52,17 @@ public class PacketCodecHandler extends ChannelDuplexHandler {
 		@Override
 		protected Object decode(ChannelHandlerContext ctx, ByteBuf in) throws Exception {
 			ByteBuf buf = (ByteBuf) super.decode(ctx, in);
-			byte discriminator = buf.readByte();
-			if (!codecMap.containsKey(discriminator)) {
-				throw new IllegalStateException("Tried to decode unknown packet " + discriminator);
-			}
+			try {
+				byte discriminator = buf.readByte();
+				if (!codecMap.containsKey(discriminator)) {
+					throw new IllegalStateException("Tried to decode unknown packet " + discriminator);
+				}
 
-			final Codec<?> codec = codecMap.get(discriminator);
-			return codec.read(buf);
+				final Codec<?> codec = codecMap.get(discriminator);
+				return codec.read(buf);
+			} finally {
+				buf.release();
+			}
 		}
 	};
 

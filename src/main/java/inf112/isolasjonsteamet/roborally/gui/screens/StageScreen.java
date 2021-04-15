@@ -94,8 +94,15 @@ public class StageScreen implements Screen, DelegatingInputProcessor {
 
 	@Override
 	public void dispose() {
-		stage.dispose();
-		skin.dispose();
+		if (stage != null) {
+			stage.dispose();
+			stage = null;
+		}
+
+		if (skin != null) {
+			skin.dispose();
+			skin = null;
+		}
 	}
 
 	@Override

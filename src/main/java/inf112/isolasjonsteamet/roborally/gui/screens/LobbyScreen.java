@@ -120,8 +120,13 @@ public class LobbyScreen extends StageScreen {
 	}
 
 	@Override
-	public void hide() {
-		super.hide();
+	public void dispose() {
+		super.dispose();
+		if (server != null) {
+			server.close("Disposing");
+		} else {
+			client.disconnect("Disposing");
+		}
 	}
 
 	private void refreshPlayerList() {

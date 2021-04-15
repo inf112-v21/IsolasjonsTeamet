@@ -61,6 +61,10 @@ public class RoboRallyServer implements ActionProcessor {
 		server.sendToAllPlayers(UpdatePlayerStatesPacket.fromPlayers(ImmutableList.copyOf(playersMap.values())));
 	}
 
+	public void dispose() {
+		server.close("Disposing");
+	}
+
 	public void performActionNow(Robot robot, Action action) {
 		action.perform(this, board, robot);
 		board.checkValid();

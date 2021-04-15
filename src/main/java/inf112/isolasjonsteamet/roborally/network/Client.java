@@ -36,8 +36,8 @@ public interface Client {
 	 * @param port The port to connect to
 	 * @return A "tuple" containing the client, and the current game info.
 	 */
-	static CompletableFuture<Map.Entry<Client, GameInfoPacket>> connectAndVerify(String host, int port) {
-		var client = new NettyClientImpl(host, port);
+	static CompletableFuture<Map.Entry<Client, GameInfoPacket>> connectAndVerify(String host, int port, String clientIdentifier) {
+		var client = new NettyClientImpl(host, port, clientIdentifier);
 		var promise = new CompletableFuture<Map.Entry<Client, GameInfoPacket>>();
 
 		ClientPacketListener.next(client, GameInfoPacket.class).thenAccept(info -> {
