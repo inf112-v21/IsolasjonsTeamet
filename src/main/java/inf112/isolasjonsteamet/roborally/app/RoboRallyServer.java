@@ -4,9 +4,9 @@ import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.cards.Card;
 import inf112.isolasjonsteamet.roborally.cards.CardDeck;
 import inf112.isolasjonsteamet.roborally.cards.CardRow;
-import inf112.isolasjonsteamet.roborally.cards.CardType;
 import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.network.Server;
 import inf112.isolasjonsteamet.roborally.network.ServerPacketAdapter;
@@ -17,8 +17,8 @@ import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerSta
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
-import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
@@ -33,6 +33,10 @@ import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * The server for a RoboRally game. Handles passing communication between players, deals out cards, and runs the
+ * rounds.
+ */
 public class RoboRallyServer implements ActionProcessor {
 
 	private final Server server;
@@ -42,6 +46,16 @@ public class RoboRallyServer implements ActionProcessor {
 	private final CardDeck deck;
 	private final Board board;
 
+	/**
+	 * Initializes a new server, and sends a state packet to all players when everything is ready. You still need to
+	 * call {@link #prepareRound()} to kick the game off.
+	 *
+	 * @param server The server to use for sending packets.
+	 * @param players Info about the players that will participate.
+	 * @param host The player which has been designated host.
+	 * @param deck The deck to use.
+	 * @param board The board to use.
+	 */
 	public RoboRallyServer(Server server, List<PlayerInfo> players, String host, CardDeck deck, Board board) {
 		this.server = server;
 		this.host = host;
@@ -88,7 +102,7 @@ public class RoboRallyServer implements ActionProcessor {
 	}
 
 	private void processCards() {
-		var cards = new HashMap<String, List<CardType>>();
+		var cards = new HashMap<String, List<Card>>();
 
 		for (int i = 0; i < 8; i++) {
 			for (ServerStatePlayer player : players.values()) {
@@ -101,8 +115,8 @@ public class RoboRallyServer implements ActionProcessor {
 	}
 
 	protected void processPlayerCard(Player player, int cardNum) {
-		List<CardType> chosenCards = player.getCards(CardRow.CHOSEN);
-		CardType card = Cards.NO_CARD;
+		List<Card> chosenCards = player.getCards(CardRow.CHOSEN);
+		Card card = Cards.NO_CARD;
 
 		if (chosenCards.size() > cardNum) {
 			card = chosenCards.get(cardNum);
@@ -113,6 +127,9 @@ public class RoboRallyServer implements ActionProcessor {
 		}
 	}
 
+	/**
+	 * Prepares a new round for all the players. Takes back used cards, shuffles the deck, and deals out new cards.
+	 */
 	public void prepareRound() {
 		takeCardsBack();
 		deck.shuffle();
@@ -123,10 +140,14 @@ public class RoboRallyServer implements ActionProcessor {
 		}
 	}
 
+	/**
+	 * Starts a round with the cards all players have chosen.
+	 */
 	public void startRound() {
 		processCards();
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	private class ServerAdapter extends ServerPacketAdapter {
 
 		@Override
@@ -149,7 +170,7 @@ public class RoboRallyServer implements ActionProcessor {
 		}
 
 		@Override
-		public void onUpdatePlayerState(@Nullable String player, UpdatePlayerStatePacket packet) {
+		public void onUpdatePlayerState(String player, UpdatePlayerStatePacket packet) {
 			Robot robot = players.get(player).getRobot();
 			robot.setPos(packet.getPosition());
 			robot.setDir(packet.getRotation());
@@ -158,25 +179,24 @@ public class RoboRallyServer implements ActionProcessor {
 		}
 
 		@Override
-		public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
+		public void onClientDisconnecting(String player, ClientDisconnectingPacket packet) {
 			if (player.equals(host)) {
 				server.close("Host left");
-			}
-			else {
+			} else {
 				players.remove(player);
 				server.sendToAllPlayers(new PlayerLeftGamePacket(player, packet.getReason()));
 			}
 		}
 
 		@Override
-		public void onKickPlayer(@Nullable String player, KickPlayerPacket packet) {
+		public void onKickPlayer(String player, KickPlayerPacket packet) {
 			if (player.equals(host)) {
 				server.kickPlayer(packet.getPlayerName(), packet.getReason());
 			}
 		}
 
 		@Override
-		public void handle(@Nullable String player, Client2ServerPacket packet) {
+		public void handle(String player, Client2ServerPacket packet) {
 			if (player == null) {
 				return;
 			}
@@ -210,22 +230,22 @@ public class RoboRallyServer implements ActionProcessor {
 		}
 
 		@Override
-		public void giveCards(List<CardType> cards) {
+		public void giveCards(List<Card> cards) {
 			player.giveCards(cards);
 		}
 
 		@Override
-		public List<CardType> takeNonStuckCardsBack() {
+		public List<Card> takeNonStuckCardsBack() {
 			return player.takeNonStuckCardsBack();
 		}
 
 		@Override
-		public List<CardType> getCards(CardRow row) {
+		public List<Card> getCards(CardRow row) {
 			return player.getCards(row);
 		}
 
 		@Override
-		public void setCards(CardRow row, List<CardType> cards) {
+		public void setCards(CardRow row, List<Card> cards) {
 			player.setCards(row, cards);
 		}
 	}

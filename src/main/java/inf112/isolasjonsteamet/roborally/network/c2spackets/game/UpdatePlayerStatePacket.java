@@ -9,6 +9,10 @@ import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import io.netty.buffer.ByteBuf;
 
+/**
+ * Sent by a client to the server for debugging. Allows the client to warp to any tile as it sees fit. Not for
+ * production use.
+ */
 public class UpdatePlayerStatePacket implements Client2ServerPacket {
 
 	private final Coordinate position;
@@ -52,6 +56,7 @@ public class UpdatePlayerStatePacket implements Client2ServerPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<UpdatePlayerStatePacket> {
 		INSTANCE;
 

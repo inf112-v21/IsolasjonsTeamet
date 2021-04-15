@@ -9,7 +9,7 @@ import java.util.function.Supplier;
 /**
  * Describes a unique card type.
  */
-public class CardType {
+public class Card {
 
 	private final String name;
 	private final int priority;
@@ -18,14 +18,16 @@ public class CardType {
 	private final Supplier<Texture> makeTexture;
 	private Texture texture;
 
-	public CardType(String name, int priority, Supplier<Texture> makeTexture, List<Action> actions) {
+	/** Make a new card with a name, priority, texture, and actions. */
+	public Card(String name, int priority, Supplier<Texture> makeTexture, List<Action> actions) {
 		this.name = name;
 		this.priority = priority;
 		this.actions = ImmutableList.copyOf(actions);
 		this.makeTexture = makeTexture;
 	}
 
-	public CardType(String name, int priority, Supplier<Texture> makeTexture, Action... actions) {
+	/** Make a new card with a name, priority, texture, and actions. */
+	public Card(String name, int priority, Supplier<Texture> makeTexture, Action... actions) {
 		this.name = name;
 		this.priority = priority;
 		this.makeTexture = makeTexture;

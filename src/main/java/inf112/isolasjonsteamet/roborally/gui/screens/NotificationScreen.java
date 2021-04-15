@@ -5,6 +5,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import inf112.isolasjonsteamet.roborally.gui.ScreenController;
 
+/**
+ * A screen which simply displays a notification to the player.
+ */
 public class NotificationScreen extends StageScreen {
 
 	private final ScreenController screenController;

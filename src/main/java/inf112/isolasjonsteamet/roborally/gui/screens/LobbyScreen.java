@@ -34,6 +34,9 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * A lobby screen, where players can join and indicate they are ready before the game starts.
+ */
 public class LobbyScreen extends StageScreen {
 
 	private final ScreenController screenController;
@@ -51,6 +54,13 @@ public class LobbyScreen extends StageScreen {
 	private Map<String, Boolean> players = new TreeMap<>();
 	private String currentHost;
 
+	/**
+	 * Creates a new lobby screen as the host player.
+	 *
+	 * @param server A server to send packets to the other players.
+	 * @param hostPlayer Name of the host player.
+	 * @param client The client to communicate to the server like any other player.
+	 */
 	public LobbyScreen(ScreenController screenController, Server server, String hostPlayer, Client client) {
 		this.screenController = screenController;
 		this.server = server;
@@ -60,6 +70,11 @@ public class LobbyScreen extends StageScreen {
 		clientLobby = new ClientLobby();
 	}
 
+	/**
+	 * Creates a new lobby screen as a client player.
+	 *
+	 * @param client The client to communicate with the server.
+	 */
 	public LobbyScreen(ScreenController screenController, Client client) {
 		this.screenController = screenController;
 		this.server = null;
@@ -144,8 +159,7 @@ public class LobbyScreen extends StageScreen {
 
 			if (ready) {
 				playerList.add("Ready!");
-			}
-			else {
+			} else {
 				playerList.add();
 			}
 
@@ -238,6 +252,7 @@ public class LobbyScreen extends StageScreen {
 		Objects.requireNonNull(server).sendToAllPlayers(new GameStartingPacket(false));
 	}
 
+	@SuppressWarnings("ConstantConditions")
 	private class ServerLobby extends ServerPacketAdapter {
 
 		private final Map<String, Boolean> isPlayerReady = new HashMap<>();
@@ -251,7 +266,7 @@ public class LobbyScreen extends StageScreen {
 		}
 
 		@Override
-		public void handle(@Nullable String player, Client2ServerPacket packet) {
+		public void handle(String player, Client2ServerPacket packet) {
 			if (player == null) {
 				return;
 			}
@@ -264,24 +279,24 @@ public class LobbyScreen extends StageScreen {
 		}
 
 		@Override
-		public void onLobbyReadyUpdate(@Nullable String player, LobbyReadyUpdatePacket packet) {
+		public void onLobbyReadyUpdate(String player, LobbyReadyUpdatePacket packet) {
 			isPlayerReady.put(player, packet.isReady());
 			server.sendToAllPlayers(new LobbyInfoPacket(isPlayerReady, hostPlayer));
 		}
 
 		@Override
-		public void onRequestLobbyInfo(@Nullable String player, RequestLobbyInfoPacket packet) {
+		public void onRequestLobbyInfo(String player, RequestLobbyInfoPacket packet) {
 			server.sendToPlayer(player, new LobbyInfoPacket(isPlayerReady, hostPlayer));
 		}
 
 		@Override
-		public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
+		public void onClientDisconnecting(String player, ClientDisconnectingPacket packet) {
 			isPlayerReady.remove(player);
 			server.sendToAllPlayers(new PlayerLeftGamePacket(player, packet.getReason()));
 		}
 
 		@Override
-		public void onKickPlayer(@Nullable String player, KickPlayerPacket packet) {
+		public void onKickPlayer(String player, KickPlayerPacket packet) {
 			if (player.equals(hostPlayer)) {
 				LobbyScreen.this.kickPlayer(packet.getPlayerName(), packet.getReason());
 			}

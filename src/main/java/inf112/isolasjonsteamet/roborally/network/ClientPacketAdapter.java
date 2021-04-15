@@ -9,8 +9,8 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
-import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.GameStartingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.LobbyInfoPacket;
 import org.checkerframework.checker.nullness.qual.Nullable;

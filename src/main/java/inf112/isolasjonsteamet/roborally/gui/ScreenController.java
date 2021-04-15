@@ -2,16 +2,9 @@ package inf112.isolasjonsteamet.roborally.gui;
 
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.utils.Null;
-import inf112.isolasjonsteamet.roborally.board.ClientBoard;
-import inf112.isolasjonsteamet.roborally.network.Client;
 import inf112.isolasjonsteamet.roborally.network.Server;
-import inf112.isolasjonsteamet.roborally.players.ClientPlayer;
-import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
-import inf112.isolasjonsteamet.roborally.players.Robot;
 import java.util.List;
-import java.util.function.Function;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**

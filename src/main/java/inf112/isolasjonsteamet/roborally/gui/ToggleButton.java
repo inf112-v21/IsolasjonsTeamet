@@ -7,6 +7,9 @@ import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import java.util.function.Consumer;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * A button which can be toggled, either programmatically, or from the player pressing it.
+ */
 public class ToggleButton {
 
 	private final String trueState;
@@ -18,6 +21,15 @@ public class ToggleButton {
 
 	private final @Nullable Consumer<Boolean> stateListener;
 
+	/**
+	 * Construct a new toggle button.
+	 *
+	 * @param trueState The text to display in the true state.
+	 * @param falseState The text to display in the false state.
+	 * @param startingState The starting state.
+	 * @param button A button to wrap the logic around.
+	 * @param stateListener A listener for when the state changes.
+	 */
 	public ToggleButton(
 			String trueState,
 			String falseState,
@@ -41,6 +53,15 @@ public class ToggleButton {
 		});
 	}
 
+	/**
+	 * Construct a new toggle button.
+	 *
+	 * @param trueState The text to display in the true state.
+	 * @param falseState The text to display in the false state.
+	 * @param startingState The starting state.
+	 * @param skin The skin to create the button with.
+	 * @param stateListener A listener for when the state changes.
+	 */
 	public ToggleButton(
 			String trueState,
 			String falseState,
@@ -63,6 +84,9 @@ public class ToggleButton {
 		return state;
 	}
 
+	/**
+	 * Sets the state of the button, updating the text it displays, and runs the listener.
+	 */
 	public void setState(boolean state) {
 		setStateQuietly(state);
 
@@ -71,11 +95,17 @@ public class ToggleButton {
 		}
 	}
 
+	/**
+	 * Sets the state of the button, updating the text it displays without running the listener.
+	 */
 	public void setStateQuietly(boolean state) {
 		this.state = state;
 		button.setText(textForState());
 	}
 
+	/**
+	 * Flips or toggles the state of the button.
+	 */
 	public void flip() {
 		state = !state;
 		button.setText(textForState());
@@ -85,6 +115,10 @@ public class ToggleButton {
 		}
 	}
 
+	/**
+	 * Sets the text of the button to what it should be for the current state. Useful if external code has modified the
+	 * text of the button.
+	 */
 	public void refreshText() {
 		button.setText(textForState());
 	}

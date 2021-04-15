@@ -14,7 +14,7 @@ import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.board.BoardImpl;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.players.RobotImpl;
-import inf112.isolasjonsteamet.roborally.tiles.TileType;
+import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
@@ -63,18 +63,19 @@ public class RobotSpec implements ActionProcessor {
 	 */
 	private void createSimpleBoard(Robot robot) {
 		var charMap =
-				ImmutableMap.<Character, List<TileType>>builder()
+				ImmutableMap.<Character, List<Tile>>builder()
 						.put('o', ImmutableList.of(Tiles.GROUND))
 						.put('x', ImmutableList.of(Tiles.HOLE))
 						.put('f', ImmutableList.of(Tiles.FLAG))
 						.build();
 
-		board = new BoardImpl(ImmutableList.of(robot), charMap, """
+		board = new BoardImpl(charMap, """
 				oooof
 				ooooo
 				ooxoo
 				ooooo
 				ooooo""");
+		board.updateActiveRobots(ImmutableList.of(robot));
 	}
 
 	/**

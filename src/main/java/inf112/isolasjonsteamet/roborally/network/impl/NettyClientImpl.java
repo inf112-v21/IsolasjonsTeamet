@@ -36,6 +36,9 @@ public class NettyClientImpl extends Thread implements Client {
 
 	private final AtomicBoolean disconnecting = new AtomicBoolean(false);
 
+	/**
+	 * Constucts a new netty client which will connect to the given host and port.
+	 */
 	public NettyClientImpl(String host, int port, String username) {
 		super("NettyClientImpl");
 		this.host = host;

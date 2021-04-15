@@ -6,6 +6,9 @@ import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
 import io.netty.buffer.ByteBuf;
 
+/**
+ * Sent to a player when they are kicked. Might also contain a reason specifying why they were kicked.
+ */
 public class KickedPacket implements Server2ClientPacket {
 
 	private final String reason;
@@ -42,6 +45,7 @@ public class KickedPacket implements Server2ClientPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<KickedPacket> {
 		INSTANCE;
 

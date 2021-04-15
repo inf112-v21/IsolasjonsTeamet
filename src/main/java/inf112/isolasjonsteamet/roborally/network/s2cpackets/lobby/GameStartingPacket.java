@@ -6,6 +6,9 @@ import inf112.isolasjonsteamet.roborally.network.Codec;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import io.netty.buffer.ByteBuf;
 
+/**
+ * Sent to player to indicate that the game is starting, or that the game start has been cancelled.
+ */
 public class GameStartingPacket implements Server2ClientPacket {
 
 	private final boolean gameStarting;
@@ -42,6 +45,7 @@ public class GameStartingPacket implements Server2ClientPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<GameStartingPacket> {
 		INSTANCE;
 

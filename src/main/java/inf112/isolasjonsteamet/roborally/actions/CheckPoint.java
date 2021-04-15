@@ -1,8 +1,8 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
-import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.effects.CheckPointEffect;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 
 /**

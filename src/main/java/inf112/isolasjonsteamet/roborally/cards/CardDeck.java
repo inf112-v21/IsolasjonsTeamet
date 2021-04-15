@@ -15,13 +15,13 @@ public interface CardDeck {
 	 * @throws java.util.NoSuchElementException If the desired amount of cards to return is greater than the remaining
 	 * 		cards in the deck.
 	 */
-	List<CardType> grabCards(int amount);
+	List<Card> grabCards(int amount);
 
 	/**
 	 * Adds the given cards to the discard pile, such that when the deck is shuffled next time, they will be a part of
 	 * it.
 	 */
-	void discardCards(List<CardType> cards);
+	void discardCards(List<Card> cards);
 
 	/**
 	 * Adds all cards in the discard pile back to the main deck, and shuffles it.

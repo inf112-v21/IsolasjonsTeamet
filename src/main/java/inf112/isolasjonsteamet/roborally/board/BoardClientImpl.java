@@ -10,7 +10,7 @@ import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.players.Robot;
-import inf112.isolasjonsteamet.roborally.tiles.TileType;
+import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
@@ -38,8 +38,8 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	/**
 	 * Create a new instance of BoardClientImpl.
 	 */
-	public BoardClientImpl(List<Robot> robots, String boardFilename) {
-		super(robots, new ArrayList<>());
+	public BoardClientImpl(String boardFilename) {
+		super(new ArrayList<>());
 		map = new TmxMapLoader().load(boardFilename);
 		loadCells();
 		tiles = tilesFromMap();
@@ -89,15 +89,15 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	/**
 	 * Get tiles from the map.
 	 */
-	private ImmutableList<List<List<TileType>>> tilesFromMap() {
+	private ImmutableList<List<List<Tile>>> tilesFromMap() {
 		int width = boardLayer.getWidth();
 		int height = boardLayer.getHeight();
 
-		List<List<List<TileType>>> accX = new ArrayList<>(width);
+		List<List<List<Tile>>> accX = new ArrayList<>(width);
 		for (int x = 0; x < width; x++) {
-			List<List<TileType>> accY = new ArrayList<>(height);
+			List<List<Tile>> accY = new ArrayList<>(height);
 			for (int y = 0; y < height; y++) {
-				List<TileType> acc = new ArrayList<>();
+				List<Tile> acc = new ArrayList<>();
 
 				if (boardLayer.getCell(x, y) != null) {
 					acc.add(Tiles.GROUND);

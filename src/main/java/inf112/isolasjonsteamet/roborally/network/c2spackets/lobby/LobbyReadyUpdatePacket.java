@@ -6,6 +6,10 @@ import inf112.isolasjonsteamet.roborally.network.Codec;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import io.netty.buffer.ByteBuf;
 
+/**
+ * Sends to the server if this player is ready to continue to the game. The host is in the end in charge of when the
+ * game starts.
+ */
 public class LobbyReadyUpdatePacket implements Client2ServerPacket {
 
 	private final boolean ready;
@@ -42,6 +46,7 @@ public class LobbyReadyUpdatePacket implements Client2ServerPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<LobbyReadyUpdatePacket> {
 		INSTANCE;
 

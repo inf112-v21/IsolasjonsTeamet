@@ -4,8 +4,13 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
 import io.netty.buffer.ByteBuf;
 
+/**
+ * A packet sent from the host to the server, indicating that the player with the given name should be kicked. If the
+ * kick goes through, also the host will receive a {@link OtherPlayerKickedPacket}.
+ */
 public class KickPlayerPacket implements Client2ServerPacket {
 
 	private final String playerName;
@@ -49,6 +54,7 @@ public class KickPlayerPacket implements Client2ServerPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<KickPlayerPacket> {
 		INSTANCE;
 

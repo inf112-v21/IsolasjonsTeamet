@@ -4,7 +4,7 @@ import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import inf112.isolasjonsteamet.roborally.cards.CardType;
+import inf112.isolasjonsteamet.roborally.cards.Card;
 import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
@@ -14,17 +14,24 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Sent to all players when all players are ready, and the round is starting. Contains all the chosen cards for all
+ * players.
+ */
 public class RunRoundPacket implements Server2ClientPacket {
 
-	private final Map<String, List<CardType>> playedCards;
+	private final Map<String, List<Card>> playedCards;
 
-	public RunRoundPacket(Map<String, List<CardType>> playedCards) {
-		var builder = ImmutableMap.<String, List<CardType>>builder();
+	/**
+	 * Construct a new {@link RunRoundPacket}.
+	 */
+	public RunRoundPacket(Map<String, List<Card>> playedCards) {
+		var builder = ImmutableMap.<String, List<Card>>builder();
 		playedCards.forEach((player, cards) -> builder.put(player, ImmutableList.copyOf(cards)));
 		this.playedCards = builder.build();
 	}
 
-	public Map<String, List<CardType>> getPlayedCards() {
+	public Map<String, List<Card>> getPlayedCards() {
 		return playedCards;
 	}
 
@@ -52,6 +59,7 @@ public class RunRoundPacket implements Server2ClientPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<RunRoundPacket> {
 		INSTANCE;
 
@@ -59,12 +67,12 @@ public class RunRoundPacket implements Server2ClientPacket {
 		public RunRoundPacket read(ByteBuf in) {
 			var playerCount = in.readUnsignedByte();
 
-			var acc = new HashMap<String, List<CardType>>(playerCount);
+			var acc = new HashMap<String, List<Card>>(playerCount);
 			for (int i = 0; i < playerCount; i++) {
 				var player = ByteBufHelper.readString(in, 1);
 				var size = in.readUnsignedByte();
 
-				var builder = ImmutableList.<CardType>builder();
+				var builder = ImmutableList.<Card>builder();
 
 				for (int j = 0; j < size; j++) {
 					builder.add(Cards.getCardFromRegistry(in.readUnsignedByte()));
@@ -72,7 +80,6 @@ public class RunRoundPacket implements Server2ClientPacket {
 
 				acc.put(player, builder.build());
 			}
-
 
 			return new RunRoundPacket(acc);
 		}
@@ -85,7 +92,7 @@ public class RunRoundPacket implements Server2ClientPacket {
 				ByteBufHelper.writeString(player, buf, 1);
 
 				ByteBufHelper.writeUnsignedByte((short) cards.size(), buf);
-				for (CardType card : cards) {
+				for (Card card : cards) {
 					ByteBufHelper.writeUnsignedByte((short) Cards.getIdForCard(card), buf);
 				}
 			});

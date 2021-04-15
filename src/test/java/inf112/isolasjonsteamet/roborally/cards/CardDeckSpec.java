@@ -26,7 +26,7 @@ public class CardDeckSpec {
 		@Nested
 		public class Grab3Cards {
 
-			private final List<CardType> grabbed = deck.grabCards(3);
+			private final List<Card> grabbed = deck.grabCards(3);
 
 			@DisplayName("Return a list of size 3")
 			@Test
@@ -38,7 +38,7 @@ public class CardDeckSpec {
 			@Test
 			public void resetShuffles() {
 				deck.reset();
-				List<CardType> newGrabbed = deck.grabCards(3);
+				List<Card> newGrabbed = deck.grabCards(3);
 				assertNotEquals(grabbed, newGrabbed);
 			}
 		}

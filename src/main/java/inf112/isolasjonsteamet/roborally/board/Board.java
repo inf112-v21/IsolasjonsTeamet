@@ -1,7 +1,7 @@
 package inf112.isolasjonsteamet.roborally.board;
 
 import inf112.isolasjonsteamet.roborally.players.Robot;
-import inf112.isolasjonsteamet.roborally.tiles.TileType;
+import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import java.util.List;
 import javax.annotation.Nullable;
@@ -25,7 +25,7 @@ public interface Board {
 	/**
 	 * Get tiles at a given position.
 	 */
-	List<TileType> getTilesAt(Coordinate pos);
+	List<Tile> getTilesAt(Coordinate pos);
 
 	/**
 	 * Get width of board.

@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.fail;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import inf112.isolasjonsteamet.roborally.cards.CardType;
+import inf112.isolasjonsteamet.roborally.cards.Card;
 import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.GameJoinPacket;
@@ -82,8 +82,8 @@ public class CodecsSpec {
 	@Nested
 	@DisplayName("UpdateRoundReadyPacket" + SURVIVE_ENCODE_DECODE)
 	class UpdateRoundReady {
-		ImmutableList<CardType> givenCards = ImmutableList.of(Cards.ROTATE_LEFT, Cards.ROTATE_RIGHT, Cards.BACK_UP);
-		ImmutableList<CardType> chosenCards = ImmutableList.of(Cards.MOVE_ONE, Cards.ROTATE_LEFT, Cards.MOVE_ONE);
+		ImmutableList<Card> givenCards = ImmutableList.of(Cards.ROTATE_LEFT, Cards.ROTATE_RIGHT, Cards.BACK_UP);
+		ImmutableList<Card> chosenCards = ImmutableList.of(Cards.MOVE_ONE, Cards.ROTATE_LEFT, Cards.MOVE_ONE);
 
 		@DisplayName("With not ready and no cards")
 		@Test
@@ -193,7 +193,7 @@ public class CodecsSpec {
 		@DisplayName("with cards")
 		@Test
 		public void withCards() {
-			ImmutableList<CardType> cards = ImmutableList.of(Cards.ROTATE_LEFT, Cards.ROTATE_RIGHT, Cards.BACK_UP);
+			ImmutableList<Card> cards = ImmutableList.of(Cards.ROTATE_LEFT, Cards.ROTATE_RIGHT, Cards.BACK_UP);
 			assertSurvivesRoundtrip(new DealNewCardsPacket(cards));
 		}
 	}
@@ -201,8 +201,8 @@ public class CodecsSpec {
 	@DisplayName("RunRoundPacket" + SURVIVE_ENCODE_DECODE)
 	@Nested
 	class RunRound {
-		ImmutableList<CardType> player1Cards = ImmutableList.of(Cards.ROTATE_LEFT, Cards.ROTATE_RIGHT, Cards.BACK_UP);
-		ImmutableList<CardType> player2Cards = ImmutableList.of(Cards.MOVE_ONE, Cards.ROTATE_LEFT, Cards.MOVE_ONE);
+		ImmutableList<Card> player1Cards = ImmutableList.of(Cards.ROTATE_LEFT, Cards.ROTATE_RIGHT, Cards.BACK_UP);
+		ImmutableList<Card> player2Cards = ImmutableList.of(Cards.MOVE_ONE, Cards.ROTATE_LEFT, Cards.MOVE_ONE);
 
 		@DisplayName("with one player")
 		@Test

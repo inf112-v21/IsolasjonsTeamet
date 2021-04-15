@@ -13,6 +13,10 @@ import io.netty.buffer.ByteBuf;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Updates the state of the game. Last ditch packet the server can send to synchronize everyone. Can add and remove
+ * players, in addition to teleporting them around.
+ */
 public class UpdatePlayerStatesPacket implements Server2ClientPacket {
 
 	private final List<State> states;
@@ -21,6 +25,9 @@ public class UpdatePlayerStatesPacket implements Server2ClientPacket {
 		this.states = states;
 	}
 
+	/**
+	 * Constructs a {@link UpdatePlayerStatesPacket} from a list of players.
+	 */
 	public static UpdatePlayerStatesPacket fromPlayers(List<Player> players) {
 		var states = players.stream().map(p ->
 				new State(p.getName(), p.getRobot().getPos(), p.getRobot().getDir())
@@ -56,12 +63,16 @@ public class UpdatePlayerStatesPacket implements Server2ClientPacket {
 		return Objects.hashCode(states);
 	}
 
+	/**
+	 * The state sent with each player in the packet.
+	 */
 	public static class State {
 
 		private final String name;
 		private final Coordinate pos;
 		private final Orientation dir;
 
+		/** Construct a new state. */
 		public State(String name, Coordinate pos, Orientation dir) {
 			this.name = name;
 			this.pos = pos;
@@ -107,6 +118,7 @@ public class UpdatePlayerStatesPacket implements Server2ClientPacket {
 		}
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<UpdatePlayerStatesPacket> {
 		INSTANCE;
 

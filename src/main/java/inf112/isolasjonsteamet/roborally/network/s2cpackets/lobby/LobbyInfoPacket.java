@@ -9,6 +9,10 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import io.netty.buffer.ByteBuf;
 import java.util.Map;
 
+/**
+ * Sent to players to inform them of the current state of the lobby. Contains the current host, all the players, and if
+ * they are ready or not.
+ */
 public class LobbyInfoPacket implements Server2ClientPacket {
 
 	private final Map<String, Boolean> isPlayerReady;
@@ -52,6 +56,7 @@ public class LobbyInfoPacket implements Server2ClientPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<LobbyInfoPacket> {
 		INSTANCE;
 

@@ -21,8 +21,8 @@ import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.board.ClientBoard;
+import inf112.isolasjonsteamet.roborally.cards.Card;
 import inf112.isolasjonsteamet.roborally.cards.CardRow;
-import inf112.isolasjonsteamet.roborally.cards.CardType;
 import inf112.isolasjonsteamet.roborally.gui.CardArea;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
 import inf112.isolasjonsteamet.roborally.gui.MapRendererWidget;
@@ -40,8 +40,8 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPac
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
-import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
 import inf112.isolasjonsteamet.roborally.players.ClientPlayer;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
@@ -52,7 +52,6 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
-import org.slf4j.LoggerFactory;
 
 /**
  * Game class that starts a new game.
@@ -80,6 +79,14 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 
 	private ToggleButton roundReadyButton;
 
+	/**
+	 * Creates a new RoboRally client, which will run and display the game from one player's perspective.
+	 *
+	 * @param client The client to use for sending packets to the server.
+	 * @param board The board to use.
+	 * @param clientName The name of the client player.
+	 * @param host The name of the host player.
+	 */
 	public RoboRallyClient(
 			Client client,
 			ClientBoard board,
@@ -426,7 +433,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 
 				for (int i = 0; i < 8; i++) {
 					for (Player player : players) {
-						List<CardType> playerCards = cards.get(player.getName());
+						List<Card> playerCards = cards.get(player.getName());
 						if (i < playerCards.size()) {
 							var chosenCard = playerCards.get(i);
 							for (Action action : chosenCard.getActions()) {

@@ -3,7 +3,7 @@ package inf112.isolasjonsteamet.roborally.network.s2cpackets.game;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
-import inf112.isolasjonsteamet.roborally.cards.CardType;
+import inf112.isolasjonsteamet.roborally.cards.Card;
 import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
@@ -11,15 +11,19 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import io.netty.buffer.ByteBuf;
 import java.util.List;
 
+/**
+ * Sent to all players at the preparation phase of a new round. Contains all the cards the player can choose from this
+ * round.
+ */
 public class DealNewCardsPacket implements Server2ClientPacket {
 
-	private final List<CardType> cards;
+	private final List<Card> cards;
 
-	public DealNewCardsPacket(List<CardType> cards) {
+	public DealNewCardsPacket(List<Card> cards) {
 		this.cards = ImmutableList.copyOf(cards);
 	}
 
-	public List<CardType> getCards() {
+	public List<Card> getCards() {
 		return cards;
 	}
 
@@ -47,13 +51,14 @@ public class DealNewCardsPacket implements Server2ClientPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<DealNewCardsPacket> {
 		INSTANCE;
 
 		@Override
 		public DealNewCardsPacket read(ByteBuf in) {
 			var size = in.readUnsignedByte();
-			var builder = ImmutableList.<CardType>builder();
+			var builder = ImmutableList.<Card>builder();
 
 			for (int i = 0; i < size; i++) {
 				builder.add(Cards.getCardFromRegistry(in.readUnsignedByte()));
@@ -65,7 +70,7 @@ public class DealNewCardsPacket implements Server2ClientPacket {
 		@Override
 		public void write(DealNewCardsPacket msg, ByteBuf buf) {
 			ByteBufHelper.writeUnsignedByte((short) msg.cards.size(), buf);
-			for (CardType card : msg.cards) {
+			for (Card card : msg.cards) {
 				ByteBufHelper.writeUnsignedByte((short) Cards.getIdForCard(card), buf);
 			}
 		}

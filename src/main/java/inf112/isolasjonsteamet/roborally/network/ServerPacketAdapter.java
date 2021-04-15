@@ -10,6 +10,10 @@ import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.LobbyReadyUpda
 import inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.RequestLobbyInfoPacket;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
+/**
+ * An adapter for packets sent from the client to the server,
+ * such that instanceof checks are not needed.
+ */
 @SuppressWarnings("unused")
 public abstract class ServerPacketAdapter implements ServerPacketListener<Client2ServerPacket> {
 

@@ -9,13 +9,13 @@ import inf112.isolasjonsteamet.roborally.actions.RotateRight;
  */
 public class Tiles {
 
-	public static final TileType HOLE = new TileType(); //TODO: Add actions to this tile
-	public static final TileType LASER = new TileType(); //TODO: Add actions to this tile
-	public static final TileType FLAG = new TileType(); //TODO: Add actions to this tile
-	public static final TileType REPAIR_SITES_HAMMER_WRENCH = new TileType(); //TODO: Add actions to this tile
-	public static final TileType REPAIR_SITES_WRENCH = new TileType(); //TODO: Add actions to this tile
-	public static final TileType CONVEYOR_BELT = new TileType(new MoveForward(1));
-	public static final TileType ROTATING_CONVEYOR_BELT_LEFT = new TileType(new RotateLeft());
-	public static final TileType ROTATING_CONVEYOR_BELT_RIGHT = new TileType(new RotateRight());
-	public static final TileType GROUND = new TileType();
+	public static final Tile HOLE = new Tile(); //TODO: Add actions to this tile
+	public static final Tile LASER = new Tile(); //TODO: Add actions to this tile
+	public static final Tile FLAG = new Tile(); //TODO: Add actions to this tile
+	public static final Tile REPAIR_SITES_HAMMER_WRENCH = new Tile(); //TODO: Add actions to this tile
+	public static final Tile REPAIR_SITES_WRENCH = new Tile(); //TODO: Add actions to this tile
+	public static final Tile CONVEYOR_BELT = new Tile(new MoveForward(1));
+	public static final Tile ROTATING_CONVEYOR_BELT_LEFT = new Tile(new RotateLeft());
+	public static final Tile ROTATING_CONVEYOR_BELT_RIGHT = new Tile(new RotateRight());
+	public static final Tile GROUND = new Tile();
 }

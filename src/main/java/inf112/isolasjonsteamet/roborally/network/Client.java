@@ -8,7 +8,6 @@ import inf112.isolasjonsteamet.roborally.network.impl.ProtocolException;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameInfoPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket.JoinResult;
-import inf112.isolasjonsteamet.roborally.players.Player;
 import java.util.Map;
 import java.util.concurrent.CompletableFuture;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -40,7 +39,9 @@ public interface Client {
 	 * @param port The port to connect to
 	 * @return A "tuple" containing the client, and the current game info.
 	 */
-	static CompletableFuture<Map.Entry<Client, GameInfoPacket>> connectAndVerify(String host, int port, String username) {
+	static CompletableFuture<Map.Entry<Client, GameInfoPacket>> connectAndVerify(
+			String host, int port, String username
+	) {
 		var client = new NettyClientImpl(host, port, username);
 		var promise = new CompletableFuture<Map.Entry<Client, GameInfoPacket>>();
 
@@ -72,7 +73,7 @@ public interface Client {
 	/**
 	 * Joins the game hosted on the server this client is connected to.
 	 *
-	 * @param playerName The playername to use within the game.
+	 * @param playerName The player name to use within the game.
 	 * @return The result of joining the game.
 	 */
 	default CompletableFuture<JoinResult> joinGame(String playerName) {

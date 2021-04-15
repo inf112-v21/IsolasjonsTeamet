@@ -13,9 +13,9 @@ import java.util.Random;
  */
 public class DequeCardDeckImpl implements CardDeck {
 
-	private final List<CardType> fullDeckContent;
-	private final Deque<CardType> deck;
-	private final List<CardType> discardPile;
+	private final List<Card> fullDeckContent;
+	private final Deque<Card> deck;
+	private final List<Card> discardPile;
 
 	private final Random rng;
 
@@ -25,7 +25,7 @@ public class DequeCardDeckImpl implements CardDeck {
 	 * @param contents All the cards that should appear in the deck.
 	 * @param rng The random instance to use when shuffling the list.
 	 */
-	public DequeCardDeckImpl(List<CardType> contents, Random rng) {
+	public DequeCardDeckImpl(List<Card> contents, Random rng) {
 		fullDeckContent = contents;
 		deck = new ArrayDeque<>(contents.size());
 		discardPile = new ArrayList<>(contents.size());
@@ -39,15 +39,15 @@ public class DequeCardDeckImpl implements CardDeck {
 	 *
 	 * @param contents All the cards that should appear in the deck.
 	 */
-	public DequeCardDeckImpl(List<CardType> contents) {
+	public DequeCardDeckImpl(List<Card> contents) {
 		this(contents, new Random());
 	}
 
 	/**
 	 * {@inheritDoc}
 	 */
-	public List<CardType> grabCards(int amount) {
-		List<CardType> grabbedCards = new ArrayList<>();
+	public List<Card> grabCards(int amount) {
+		List<Card> grabbedCards = new ArrayList<>();
 
 		for (int i = 0; i < amount; i++) {
 			grabbedCards.add(deck.removeFirst());
@@ -57,7 +57,7 @@ public class DequeCardDeckImpl implements CardDeck {
 	}
 
 	@Override
-	public void discardCards(List<CardType> cards) {
+	public void discardCards(List<Card> cards) {
 		discardPile.addAll(cards);
 	}
 

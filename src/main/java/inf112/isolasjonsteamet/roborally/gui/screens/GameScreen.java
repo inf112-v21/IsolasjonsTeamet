@@ -7,7 +7,7 @@ import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.app.RoboRallyClient;
 import inf112.isolasjonsteamet.roborally.app.RoboRallyServer;
 import inf112.isolasjonsteamet.roborally.board.BoardClientImpl;
-import inf112.isolasjonsteamet.roborally.cards.CardType;
+import inf112.isolasjonsteamet.roborally.cards.Card;
 import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
@@ -33,11 +33,25 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 
 	private final ScreenController screenController;
 
-	public GameScreen(String boardFileName, List<PlayerInfo> playerInfos, String host, ScreenController screenController, @Nullable Server server) {
+	/**
+	 * Creates and starts a game for the player. If this player is also the host, then it also starts the server.
+	 *
+	 * @param boardFileName The name of the board to play.
+	 * @param playerInfos Info about the players that will participate.
+	 * @param host The name of the designated host.
+	 * @param server The server, if this player is also the server.
+	 */
+	public GameScreen(
+			String boardFileName,
+			List<PlayerInfo> playerInfos,
+			String host,
+			ScreenController screenController,
+			@Nullable Server server
+	) {
 		this.screenController = screenController;
 
 		for (PlayerInfo playerInfo : playerInfos) {
-			if (!playerInfo.isLocallyPlayerControlled()) {
+			if (!playerInfo.isLocallyManuallyControlled()) {
 				games.add(null);
 				// Not aware of any cases where a non-locally player-controlled player
 				// can have a client associated with it, but if that's something we use later,
@@ -45,7 +59,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 				continue;
 			}
 
-			var board = new BoardClientImpl(ImmutableList.of(), boardFileName);
+			var board = new BoardClientImpl(boardFileName);
 			var game = new RoboRallyClient(
 					playerInfo.getClient(), board, playerInfo.getName(), host, screenController, this
 			);
@@ -64,13 +78,13 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 					Cards.ROTATE_RIGHT, Cards.U_TURN
 			);
 
-			var allCardsRepeated = ImmutableList.<CardType>builder();
+			var allCardsRepeated = ImmutableList.<Card>builder();
 			for (int i = 0; i < 10; i++) {
 				allCardsRepeated.addAll(allCards);
 			}
 			var deck = new DequeCardDeckImpl(allCardsRepeated.build());
 
-			var board = new BoardClientImpl(ImmutableList.of(), boardFileName);
+			var board = new BoardClientImpl(boardFileName);
 			gameServer = new RoboRallyServer(server, playerInfos, host, deck, board);
 			gameServer.prepareRound();
 		}
@@ -80,6 +94,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 		}
 	}
 
+	@SuppressWarnings("checkstyle:Indentation")
 	@Override
 	public boolean keyDown(int keycode) {
 		int playerToSwitchTo = switch (keycode) {
@@ -115,14 +130,30 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 		}
 	}
 
+	/**
+	 * Removes a client from the player-controlled games being managed here. If there are no valid games left, this
+	 * screen closes itself
+	 *
+	 * @param client The client to remove.
+	 * @param kickedReason If the client is being removed because they were kicked, then the kick reason. Otherwise
+	 * 		null.
+	 */
 	public void removeClient(RoboRallyClient client, @Nullable String kickedReason) {
-		if (games.remove(client)) {
+		int idx = games.indexOf(client);
+		if (idx != -1) {
+			games.set(idx, null);
 			client.dispose();
 		}
+
+		boolean replaceActiveGame = activeGame.equals(client);
 
 		boolean hasActiveGame = false;
 		for (RoboRallyClient game : games) {
 			if (game != null) {
+				if (replaceActiveGame) {
+					activeGame = game;
+				}
+
 				hasActiveGame = true;
 				break;
 			}

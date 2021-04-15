@@ -6,6 +6,9 @@ import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
 import inf112.isolasjonsteamet.roborally.network.Codec;
 import io.netty.buffer.ByteBuf;
 
+/**
+ * Sent to all the players of a game after a player has been kicked.
+ */
 public class OtherPlayerKickedPacket implements Server2ClientPacket {
 
 	private final String playerName;
@@ -49,6 +52,7 @@ public class OtherPlayerKickedPacket implements Server2ClientPacket {
 				.toString();
 	}
 
+	@SuppressWarnings("checkstyle:MissingJavadocType")
 	public enum PacketCodec implements Codec<OtherPlayerKickedPacket> {
 		INSTANCE;
 

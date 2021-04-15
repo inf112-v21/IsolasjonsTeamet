@@ -29,7 +29,7 @@ public class MainMenuScreen extends StageScreen {
 	private final InstructionsScreen instructionsScreen;
 
 	/**
-	 * Creates the main meny screen and all it's children.
+	 * Creates the main menu screen and all it's children.
 	 */
 	public MainMenuScreen(ScreenController screenController) {
 		this.screenController = screenController;
