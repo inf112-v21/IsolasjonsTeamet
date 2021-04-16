@@ -17,7 +17,6 @@ public class RepairEffect implements Effect {
 		this.effPos = pos;
 	}
 
-	@Override
 	public void setEffect(Coordinate pos, Player player) {
 		//Kode for å presentere grafisk her
 	}

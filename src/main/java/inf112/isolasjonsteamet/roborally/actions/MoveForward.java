@@ -8,19 +8,19 @@ import inf112.isolasjonsteamet.roborally.players.Player;
  */
 public class MoveForward implements Action {
 
-	private final int numMoves;
+    private final int numMoves;
 
 	public MoveForward(int numMoves) {
 		this.numMoves = numMoves;
 	}
 
-	@Override
+    @Override
 	public void perform(ActionProcessor processor, Board board, Player player) {
-		processor.performActionNow(player, new Move(player.getDir(), numMoves));
+		processor.scheduleAction(player, new Move(player.getDir(), numMoves));
 		System.out.println(player.getName() + " moved " + numMoves + " forward. Current pos: " + player.getPos());
 	}
 
-	@Override
+    @Override
 	public String toString() {
 		return "MoveForward " + numMoves;
 	}

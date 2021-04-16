@@ -13,4 +13,6 @@ public interface ActionProcessor {
 	 * @param player The player to run the action for.
 	 */
 	void performActionNow(Player player, Action action);
+
+	void scheduleAction(Player player, Action action);
 }

@@ -3,7 +3,6 @@ package inf112.isolasjonsteamet.roborally.app;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
-import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL30;
@@ -37,9 +36,13 @@ import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
+
 import java.io.PrintStream;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.Random;
 
 /**
@@ -57,6 +60,7 @@ public class RoboRallyGame
 	private Action showingAction;
 	private Player showingPlayer;
 	private int framesSinceStartedShowingAction = 0;
+	private final Queue<Map.Entry<Action, Player>> scheduledActions = new ArrayDeque<>();
 
 	private Stage stage;
 	private Skin skin;
@@ -69,7 +73,7 @@ public class RoboRallyGame
 	 */
 	@Override
 	public void create() {
-		for (int i = 0; i < 9; i++) {
+		for (int i = 0; i < 1; i++) {
 			players.add(null);
 			switchToPlayer(i + 1);
 		}
@@ -197,7 +201,14 @@ public class RoboRallyGame
 			if (showingAction.show(showingPlayer, board, framesSinceStartedShowingAction++)) {
 				showingAction = null;
 				framesSinceStartedShowingAction = 0;
-			}
+
+                Map.Entry<Action, Player> nextAction = scheduledActions.poll();
+                if (nextAction != null) {
+                    Action action = nextAction.getKey();
+                    Player player = nextAction.getValue();
+                    performActionNow(player, action);
+                }
+            }
 		}
 
 		TextField textF = new TextField("Cards: " + orderCards, skin);
@@ -214,9 +225,16 @@ public class RoboRallyGame
 	/**
 	 * {@inheritDoc}
 	 */
+	@Override
 	public void performActionNow(Player player, Action action) {
 		Coordinate oldPos = activePlayer.getPos();
 		final Orientation oldDir = activePlayer.getDir();
+
+		action.initialize(board, player);
+        action.initializeShow(player, board);
+
+        showingAction = action;
+        showingPlayer = player;
 
 		action.perform(this, board, activePlayer);
 		board.checkValid();
@@ -239,12 +257,20 @@ public class RoboRallyGame
 			board.playerDiedCell.setRotation(rotation);
 			board.playerWonCell.setRotation(rotation);
 		}
-
-		showingAction = action;
-		showingPlayer = player;
 	}
 
-	private void performActionActivePlayer(Action action) {
+    @Override
+    public void scheduleAction(Player player, Action action) {
+	    if (scheduledActions.isEmpty() && showingAction == null) {
+	        performActionNow(player, action);
+	        return;
+        }
+
+	    action.initialize(board, player);
+        scheduledActions.add(Map.entry(action, player));
+    }
+
+    private void performActionActivePlayer(Action action) {
 		performActionNow(activePlayer, action);
 	}
 
@@ -259,6 +285,10 @@ public class RoboRallyGame
 	@SuppressWarnings({"checkstyle:Indentation", "checkstyle:WhitespaceAround"})
 	@Override
 	public boolean keyDown(int keycode) {
+	    if (showingAction != null) {
+	        return false;
+        }
+
 		boolean handled = switch (keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
