@@ -93,6 +93,11 @@ public class RobotImpl implements Robot {
 	}
 
 	@Override
+	public int getDamageTokens() {
+		return damageToken;
+	}
+
+	@Override
 	public void repairRobot() {
 		if (damageToken == 0) {
 			throw new IllegalStateException("Can not get negative damage tokens");
@@ -109,10 +114,6 @@ public class RobotImpl implements Robot {
 
 	public int getLife() {
 		return life;
-	}
-
-	public int getDamageTokens() {
-		return damageToken;
 	}
 
 	@Override

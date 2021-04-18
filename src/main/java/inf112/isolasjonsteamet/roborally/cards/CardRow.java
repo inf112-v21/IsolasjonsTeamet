@@ -5,12 +5,18 @@ package inf112.isolasjonsteamet.roborally.cards;
  * their given cards, which is what was dealt to them by the server.
  */
 public enum CardRow {
-	CHOSEN("Chosen"), GIVEN("Given");
+	CHOSEN(5, "Chosen"), GIVEN(9, "Given");
 
+	private final int size;
 	private final String name;
 
-	CardRow(String name) {
+	CardRow(int size, String name) {
+		this.size = size;
 		this.name = name;
+	}
+
+	public int getSize() {
+		return size;
 	}
 
 	public String getName() {
