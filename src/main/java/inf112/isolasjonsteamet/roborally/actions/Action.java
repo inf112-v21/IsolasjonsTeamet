@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 
 /**
@@ -11,7 +12,7 @@ public interface Action {
 	/**
 	 * Perform an action on the board.
 	 */
-	void perform(ActionProcessor processor, Board board, Robot robot);
+	void perform(ActionProcessor processor, Board board, Robot robot, Phase phase);
 
 	/**
 	 * Shows the action being executed.

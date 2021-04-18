@@ -2,6 +2,7 @@ package inf112.isolasjonsteamet.roborally.actions;
 
 import com.badlogic.gdx.math.MathUtils;
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
@@ -20,7 +21,7 @@ public class Move implements Action {
 	}
 
 	@Override
-	public void perform(ActionProcessor processor, Board board, Robot robot) {
+	public void perform(ActionProcessor processor, Board board, Robot robot, Phase phase) {
 		final Coordinate offset = direction.toCoord().mult(numMoves);
 		final Coordinate pos = robot.getPos().add(offset);
 

@@ -2,8 +2,8 @@ package inf112.isolasjonsteamet.roborally.app;
 
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
-import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.cards.Card;
 import inf112.isolasjonsteamet.roborally.cards.CardDeck;
 import inf112.isolasjonsteamet.roborally.cards.CardRow;
@@ -24,12 +24,14 @@ import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.players.ServerPlayer;
+import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -37,7 +39,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
  * The server for a RoboRally game. Handles passing communication between players, deals out cards, and runs the
  * rounds.
  */
-public class RoboRallyServer implements ActionProcessor {
+public class RoboRallyServer extends RoboRallyShared {
 
 	private final Server server;
 
@@ -82,8 +84,8 @@ public class RoboRallyServer implements ActionProcessor {
 		server.close("Disposing");
 	}
 
-	public void performActionNow(Robot robot, Action action) {
-		action.perform(this, board, robot);
+	public void performActionNow(Robot robot, Action action, Phase phase) {
+		action.perform(this, board, robot, phase);
 		board.checkValid();
 	}
 
@@ -101,12 +103,24 @@ public class RoboRallyServer implements ActionProcessor {
 		}
 	}
 
-	private void processCards() {
+	/**
+	 * Prepares a new round for all the players. Takes back used cards, shuffles the deck, and deals out new cards.
+	 */
+	public void prepareRound() {
+		takeCardsBack();
+		deck.shuffle();
+		dealCards();
+
+		for (ServerStatePlayer player : players.values()) {
+			player.isReady = false;
+		}
+	}
+
+	private void sendRoundPacket() {
 		var cards = new HashMap<String, List<Card>>();
 
 		for (int i = 0; i < 8; i++) {
 			for (ServerStatePlayer player : players.values()) {
-				processPlayerCard(player, i);
 				cards.put(player.getName(), player.getCards(CardRow.CHOSEN));
 			}
 		}
@@ -123,20 +137,16 @@ public class RoboRallyServer implements ActionProcessor {
 		}
 
 		for (Action action : card.getActions()) {
-			performActionNow(player.getRobot(), action);
+			performActionNow(player.getRobot(), action, Phase.CARDS);
 		}
 	}
 
-	/**
-	 * Prepares a new round for all the players. Takes back used cards, shuffles the deck, and deals out new cards.
-	 */
-	public void prepareRound() {
-		takeCardsBack();
-		deck.shuffle();
-		dealCards();
-
+	@Override
+	protected void foreachPlayerTile(BiConsumer<Player, Tile> handler) {
 		for (ServerStatePlayer player : players.values()) {
-			player.isReady = false;
+			for (Tile tile : board.getTilesAt(player.getRobot().getPos())) {
+				handler.accept(player, tile);
+			}
 		}
 	}
 
@@ -144,7 +154,17 @@ public class RoboRallyServer implements ActionProcessor {
 	 * Starts a round with the cards all players have chosen.
 	 */
 	public void startRound() {
-		processCards();
+		sendRoundPacket();
+
+		for (int i = 0; i < 5; i++) {
+			for (ServerStatePlayer player : players.values()) {
+				processPlayerCard(player, i);
+			}
+
+			processBoardElements();
+			fireLasers();
+			processCheckpoints();
+		}
 	}
 
 	@SuppressWarnings("ConstantConditions")

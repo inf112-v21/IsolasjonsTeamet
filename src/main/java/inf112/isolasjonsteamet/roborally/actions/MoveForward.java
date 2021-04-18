@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,8 +20,8 @@ public class MoveForward implements Action {
 	}
 
 	@Override
-	public void perform(ActionProcessor processor, Board board, Robot robot) {
-		processor.performActionNow(robot, new Move(robot.getDir(), numMoves));
+	public void perform(ActionProcessor processor, Board board, Robot robot, Phase phase) {
+		processor.performActionNow(robot, new Move(robot.getDir(), numMoves), phase);
 		LOGGER.debug(robot.getDebugName() + " moved " + numMoves + " forward. Current pos: " + robot.getPos());
 	}
 

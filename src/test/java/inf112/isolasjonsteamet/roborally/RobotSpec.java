@@ -12,6 +12,7 @@ import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.actions.Uturn;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.board.BoardImpl;
+import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.players.RobotImpl;
 import inf112.isolasjonsteamet.roborally.tiles.Tile;
@@ -87,8 +88,8 @@ public class RobotSpec implements ActionProcessor {
 	}
 
 	@Override
-	public void performActionNow(Robot robot, Action action) {
-		action.perform(this, board, robot);
+	public void performActionNow(Robot robot, Action action, Phase phase) {
+		action.perform(this, board, robot, phase);
 		board.checkValid();
 	}
 
@@ -96,7 +97,7 @@ public class RobotSpec implements ActionProcessor {
 	 * Runs an action on our testboard.
 	 */
 	private void runAction(Action action) {
-		performActionNow(activeRobot, action);
+		performActionNow(activeRobot, action, Phase.CARDS);
 	}
 
 	/**

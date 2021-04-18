@@ -21,8 +21,10 @@ import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.board.ClientBoard;
+import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.cards.Card;
 import inf112.isolasjonsteamet.roborally.cards.CardRow;
+import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.gui.CardArea;
 import inf112.isolasjonsteamet.roborally.gui.DelegatingInputProcessor;
 import inf112.isolasjonsteamet.roborally.gui.MapRendererWidget;
@@ -38,6 +40,7 @@ import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundRead
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
@@ -46,17 +49,22 @@ import inf112.isolasjonsteamet.roborally.players.ClientPlayer;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.players.Robot;
+import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 /**
  * Game class that starts a new game.
  */
-public class RoboRallyClient implements ApplicationListener, DelegatingInputProcessor, ActionProcessor {
+public class RoboRallyClient
+		extends RoboRallyShared
+		implements ApplicationListener, DelegatingInputProcessor, ActionProcessor {
 
 	private final Client client;
 	private final ClientBoard board;
@@ -249,14 +257,23 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	}
 
 	@Override
-	public void performActionNow(Robot robot, Action action) {
-		action.perform(this, board, robot);
+	public void performActionNow(Robot robot, Action action, Phase phase) {
+		action.perform(this, board, robot, phase);
 		showingAction = action;
 		showingRobot = robot;
 	}
 
 	private void performClientAction(Action action) {
-		performActionNow(clientPlayer.getRobot(), action);
+		performActionNow(clientPlayer.getRobot(), action, Phase.CARDS);
+	}
+
+	@Override
+	protected void foreachPlayerTile(BiConsumer<Player, Tile> handler) {
+		for (Player player : players) {
+			for (Tile tile : board.getTilesAt(player.getRobot().getPos())) {
+				handler.accept(player, tile);
+			}
+		}
 	}
 
 	@Override
@@ -383,102 +400,109 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	private class PacketAdapter extends ClientPacketAdapter {
 
 		@Override
+		public void handle(Server2ClientPacket packet) {
+			//Reduce the need to add this to each handler
+			Gdx.app.postRunnable(() -> super.handle(packet));
+		}
+
+		@Override
 		public void onUpdatePlayerStates(UpdatePlayerStatesPacket packet) {
-			Gdx.app.postRunnable(() -> {
-				var unprocessed = players.stream().map(Player::getName).collect(Collectors.toSet());
-				boolean playersChanged = false;
+			var unprocessed = players.stream().map(Player::getName).collect(Collectors.toSet());
+			boolean playersChanged = false;
 
-				for (UpdatePlayerStatesPacket.State state : packet.getStates()) {
-					if (unprocessed.contains(state.getName())) {
-						//noinspection OptionalGetWithoutIsPresent
-						var player = players.stream().filter(p -> p.getName().equals(state.getName())).findAny().get();
-						Robot robot = player.getRobot();
-						robot.setPos(state.getPos());
-						robot.setDir(state.getDir());
+			for (UpdatePlayerStatesPacket.State state : packet.getStates()) {
+				if (unprocessed.contains(state.getName())) {
+					//noinspection OptionalGetWithoutIsPresent
+					var player = players.stream().filter(p -> p.getName().equals(state.getName())).findAny().get();
+					Robot robot = player.getRobot();
+					robot.setPos(state.getPos());
+					robot.setDir(state.getDir());
 
-						unprocessed.remove(state.getName());
-					} else if (state.getName().equals(clientPlayer.getName())) {
-						// This block of code will only ever run once, after the first time, the client player
-						// will be a part of the unprocessed set, and that block will run instead
+					unprocessed.remove(state.getName());
+				} else if (state.getName().equals(clientPlayer.getName())) {
+					// This block of code will only ever run once, after the first time, the client player
+					// will be a part of the unprocessed set, and that block will run instead
 
-						Robot robot = clientPlayer.getRobot();
-						robot.setPos(state.getPos());
-						robot.setDir(state.getDir());
+					Robot robot = clientPlayer.getRobot();
+					robot.setPos(state.getPos());
+					robot.setDir(state.getDir());
 
-						players.add(clientPlayer); //This is safe as the block is only ever run once
-						unprocessed.remove(state.getName());
-						playersChanged = true;
-					} else {
-						players.add(
-								new PlayerImpl(state.getName(), RoboRallyClient.this, state.getPos(), state.getDir())
-						);
-						playersChanged = true;
-					}
+					players.add(clientPlayer); //This is safe as the block is only ever run once
+					unprocessed.remove(state.getName());
+					playersChanged = true;
+				} else {
+					players.add(
+							new PlayerImpl(state.getName(), RoboRallyClient.this, state.getPos(), state.getDir())
+					);
+					playersChanged = true;
 				}
+			}
 
-				players.removeIf(p -> unprocessed.contains(p.getName()));
+			players.removeIf(p -> unprocessed.contains(p.getName()));
 
-				board.updateActiveRobots(players.stream().map(Player::getRobot).collect(Collectors.toList()));
+			board.updateActiveRobots(players.stream().map(Player::getRobot).collect(Collectors.toList()));
 
-				if (playersChanged) {
-					refreshPlayerList();
-				}
-			});
+			if (playersChanged) {
+				refreshPlayerList();
+			}
+		}
+
+		private void processPlayerCard(Map<String, List<Card>> cards, Player player, int cardNum) {
+			List<Card> playerCards = cards.get(player.getName());
+			Card chosenCard = Cards.NO_CARD;
+
+			if (cardNum < playerCards.size()) {
+				chosenCard = playerCards.get(cardNum);
+			}
+
+			for (Action action : chosenCard.getActions()) {
+				performActionNow(player.getRobot(), action, Phase.CARDS);
+			}
 		}
 
 		@Override
 		public void onRunRound(RunRoundPacket packet) {
-			Gdx.app.postRunnable(() -> {
-				var cards = packet.getPlayedCards();
+			var cards = packet.getPlayedCards();
 
-				for (int i = 0; i < 8; i++) {
-					for (Player player : players) {
-						List<Card> playerCards = cards.get(player.getName());
-						if (i < playerCards.size()) {
-							var chosenCard = playerCards.get(i);
-							for (Action action : chosenCard.getActions()) {
-								performActionNow(player.getRobot(), action);
-							}
-						}
-					}
+			for (int i = 0; i < 5; i++) {
+				for (Player player : players) {
+					processPlayerCard(cards, player, i);
 				}
-			});
+
+				processBoardElements();
+				fireLasers();
+				processCheckpoints();
+			}
 		}
 
 		@Override
 		public void onDealNewCards(DealNewCardsPacket packet) {
-			Gdx.app.postRunnable(() -> {
-				clientPlayer.takeNonStuckCardsBack();
-				clientPlayer.giveCards(packet.getCards());
-				refreshShownCards();
+			clientPlayer.takeNonStuckCardsBack();
+			clientPlayer.giveCards(packet.getCards());
+			refreshShownCards();
 
-				roundReadyButton.setState(false);
-			});
+			roundReadyButton.setState(false);
 		}
 
 		@Override
 		public void onKicked(KickedPacket packet) {
-			Gdx.app.postRunnable(() -> gameScreen.removeClient(RoboRallyClient.this, packet.getReason()));
+			gameScreen.removeClient(RoboRallyClient.this, packet.getReason());
 		}
 
 		@Override
 		public void onOtherPlayerKicked(OtherPlayerKickedPacket packet) {
-			Gdx.app.postRunnable(() -> {
-				out.printf("%s was kicked for %s%n", packet.getPlayerName(), packet.getReason());
-				out.flush();
+			out.printf("%s was kicked for %s%n", packet.getPlayerName(), packet.getReason());
+			out.flush();
 
-				removePlayer(packet.getPlayerName());
-			});
+			removePlayer(packet.getPlayerName());
 		}
 
 		@Override
 		public void onPlayerLeftGame(PlayerLeftGamePacket packet) {
-			Gdx.app.postRunnable(() -> {
-				out.printf("%s left the game. Reason: %s%n", packet.getPlayerName(), packet.getReason());
-				out.flush();
+			out.printf("%s left the game. Reason: %s%n", packet.getPlayerName(), packet.getReason());
+			out.flush();
 
-				removePlayer(packet.getPlayerName());
-			});
+			removePlayer(packet.getPlayerName());
 		}
 
 		private void removePlayer(String playerName) {
@@ -489,10 +513,8 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 
 		@Override
 		public void onServerClosing(ServerClosingPacket packet) {
-			Gdx.app.postRunnable(() -> {
-				screenController.returnToMainMenu();
-				screenController.pushInputScreen(new NotificationScreen(screenController, "Server closed"));
-			});
+			screenController.returnToMainMenu();
+			screenController.pushInputScreen(new NotificationScreen(screenController, "Server closed"));
 		}
 	}
 }

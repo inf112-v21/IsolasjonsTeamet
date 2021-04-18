@@ -77,7 +77,7 @@ public class RoboRallyScreenController extends Game implements DelegatingInputPr
 
 	@Override
 	public boolean popInputScreen() {
-		checkState(screenStack.size() > 1, "Can't pop main menu screen");
+		checkState(screenStack.size() >= 1, "Can't pop main menu screen");
 		LOGGER.debug("Popping screen");
 
 		screenStack.pop().hide();
