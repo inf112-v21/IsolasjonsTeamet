@@ -20,6 +20,7 @@ import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
+import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.cards.Card;
@@ -277,6 +278,19 @@ public class RoboRallyClient
 	}
 
 	@Override
+	protected Board board() {
+		return board;
+	}
+
+	@Override
+	protected void skipBoardValidChecks() {
+	}
+
+	@Override
+	protected void enableBoardValidChecks() {
+	}
+
+	@Override
 	public InputProcessor delegateInputsTo() {
 		return stage;
 	}
@@ -473,6 +487,8 @@ public class RoboRallyClient
 				fireLasers();
 				processCheckpoints();
 			}
+
+			processCleanup();
 		}
 
 		@Override

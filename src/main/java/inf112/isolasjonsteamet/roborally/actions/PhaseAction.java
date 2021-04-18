@@ -5,6 +5,9 @@ import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import java.util.function.Supplier;
 
+/**
+ * An action which will run another action on specific phases of the game.
+ */
 public class PhaseAction implements Action {
 
 	private final Phase activeOnPhase;

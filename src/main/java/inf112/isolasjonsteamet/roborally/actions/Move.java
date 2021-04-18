@@ -14,10 +14,20 @@ public class Move implements Action {
 
 	private final Orientation direction;
 	private final int numMoves;
+	@SuppressWarnings("FieldCanBeLocal") //TODO: Remove when implementing pushing
+	private final boolean noPush;
 
-	public Move(Orientation direction, int numMoves) {
+	/**
+	 * Constructs a move action with the option if disabling pushing other robots.
+	 */
+	public Move(Orientation direction, int numMoves, boolean noPush) {
 		this.direction = direction;
 		this.numMoves = numMoves;
+		this.noPush = noPush;
+	}
+
+	public Move(Orientation direction, int numMoves) {
+		this(direction, numMoves, false);
 	}
 
 	@Override

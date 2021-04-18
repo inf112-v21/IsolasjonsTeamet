@@ -48,6 +48,8 @@ public class RoboRallyServer extends RoboRallyShared {
 	private final CardDeck deck;
 	private final Board board;
 
+	private boolean boardValidationChecks = true;
+
 	/**
 	 * Initializes a new server, and sends a state packet to all players when everything is ready. You still need to
 	 * call {@link #prepareRound()} to kick the game off.
@@ -84,9 +86,15 @@ public class RoboRallyServer extends RoboRallyShared {
 		server.close("Disposing");
 	}
 
+	/**
+	 * {@inheritDoc}.
+	 */
 	public void performActionNow(Robot robot, Action action, Phase phase) {
 		action.perform(this, board, robot, phase);
-		board.checkValid();
+
+		if (boardValidationChecks) {
+			board.checkValid();
+		}
 	}
 
 	private void dealCards() {
@@ -150,6 +158,21 @@ public class RoboRallyServer extends RoboRallyShared {
 		}
 	}
 
+	@Override
+	protected Board board() {
+		return board;
+	}
+
+	@Override
+	protected void skipBoardValidChecks() {
+		boardValidationChecks = false;
+	}
+
+	@Override
+	protected void enableBoardValidChecks() {
+		boardValidationChecks = true;
+	}
+
 	/**
 	 * Starts a round with the cards all players have chosen.
 	 */
@@ -165,6 +188,8 @@ public class RoboRallyServer extends RoboRallyShared {
 			fireLasers();
 			processCheckpoints();
 		}
+
+		processCleanup();
 	}
 
 	@SuppressWarnings("ConstantConditions")

@@ -3,19 +3,36 @@ package inf112.isolasjonsteamet.roborally.app;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.Move;
-import inf112.isolasjonsteamet.roborally.actions.RotateLeft;
-import inf112.isolasjonsteamet.roborally.actions.RotateRight;
+import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.players.Player;
-import inf112.isolasjonsteamet.roborally.tiles.ConveyerBeltTile;
+import inf112.isolasjonsteamet.roborally.tiles.ConveyorBeltTile;
 import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.function.BiConsumer;
 
+/**
+ * Holds common code for the client and server.
+ */
 public abstract class RoboRallyShared implements ActionProcessor {
 
+	/**
+	 * Performs an action for each tile each player is standing on.
+	 */
 	protected abstract void foreachPlayerTile(BiConsumer<Player, Tile> handler);
+
+	protected abstract Board board();
+
+	/**
+	 * Disables board validation checks.
+	 */
+	protected abstract void skipBoardValidChecks();
+
+	/**
+	 * Enables board validation checks.
+	 */
+	protected abstract void enableBoardValidChecks();
 
 	protected void processPlayerTiles(Phase phase) {
 		foreachPlayerTile((player, tile) -> {
@@ -26,38 +43,90 @@ public abstract class RoboRallyShared implements ActionProcessor {
 	}
 
 	private boolean isConveyorBelt(Tile tile, boolean expressOnly) {
-		if (!(tile instanceof ConveyerBeltTile)) {
+		if (!(tile instanceof ConveyorBeltTile)) {
 			return false;
 		}
 
-		return !expressOnly || ((ConveyerBeltTile) tile).isExpress();
+		return !expressOnly || ((ConveyorBeltTile) tile).isExpress();
 	}
 
-	private boolean isConveyerMovementBlocked(Coordinate pos, Orientation dir) {
-		//TODO
+	private boolean isConveyorBeltFacing(Tile tile, boolean expressOnly, Orientation facing) {
+		return isConveyorBelt(tile, expressOnly) && ((ConveyorBeltTile) tile).getDirection().equals(facing);
+	}
+
+	private boolean isConveyorMovementBlocked(Coordinate pos, Orientation dir, boolean expressOnly) {
+		Board board = board();
+		var destination = pos.add(dir.toCoord());
+		var opposingDestination = pos.add(dir.toCoord().mult(2));
+
+		var robotAtOpposingDestination = board.getRobotAt(opposingDestination);
+		var robotAtDestination = board.getRobotAt(destination);
+
+		if (robotAtOpposingDestination != null) {
+			boolean hasOpposingConveyor =
+					board.getTilesAt(opposingDestination)
+							.stream()
+							.anyMatch(t -> isConveyorBeltFacing(t, expressOnly, dir.getOpposingDir()));
+
+			if (hasOpposingConveyor) {
+				return true;
+			}
+		}
+
+		//TODO: This case needs a lot of testing
+		if (robotAtDestination != null) {
+			boolean hasDestinationOpposingOrNoConveyor =
+					board.getTilesAt(destination)
+							.stream()
+							.anyMatch(t ->
+									!isConveyorBelt(t, false) || isConveyorBeltFacing(t, false, dir.getOpposingDir())
+							);
+
+			if (hasDestinationOpposingOrNoConveyor) {
+				return true;
+			}
+
+			//We know there is a conveyor belt in here somewhere
+			for (Tile tile : board.getTilesAt(destination)) {
+				if (isConveyorBelt(tile, false)) {
+					var conveyorTile = (ConveyorBeltTile) tile;
+					return isConveyorMovementBlocked(destination, conveyorTile.getDirection(), false);
+				}
+			}
+		}
+
 		return false;
 	}
 
 	private void processConveyorBelts(boolean expressOnly) {
+		skipBoardValidChecks();
+
 		foreachPlayerTile((player, tile) -> {
 			if (isConveyorBelt(tile, expressOnly)) {
-				ConveyerBeltTile conveyerTile = (ConveyerBeltTile) tile;
+				ConveyorBeltTile conveyorTile = (ConveyorBeltTile) tile;
 				var robot = player.getRobot();
 				var pos = robot.getPos();
 
-				if (!isConveyerMovementBlocked(pos, conveyerTile.getDirection())) {
-					if (conveyerTile.isRotateLeft()) {
-						performActionNow(robot, new RotateLeft(), Phase.BOARD_ELEMENTS_CONVEYOR);
+				if (!isConveyorMovementBlocked(pos, conveyorTile.getDirection(), expressOnly)) {
+					for (Tile nextTile : board().getTilesAt(pos)) {
+						if (isConveyorBelt(nextTile, false)) {
+							var nextConveyorTile = (ConveyorBeltTile) nextTile;
+
+							if (nextConveyorTile.isRotateBelt()) {
+								robot.setDir(nextConveyorTile.getDirection());
+							}
+						}
 					}
 
-					if (conveyerTile.isRotateRight()) {
-						performActionNow(robot, new RotateRight(), Phase.BOARD_ELEMENTS_CONVEYOR);
-					}
-
-					performActionNow(robot, new Move(conveyerTile.getDirection(), 1), Phase.BOARD_ELEMENTS_CONVEYOR);
+					performActionNow(
+							robot, new Move(conveyorTile.getDirection(), 1, true), Phase.BOARD_ELEMENTS_CONVEYOR
+					);
 				}
 			}
 		});
+
+		enableBoardValidChecks();
+		board().checkValid();
 	}
 
 	protected void processBoardElements() {
@@ -73,5 +142,9 @@ public abstract class RoboRallyShared implements ActionProcessor {
 
 	protected void processCheckpoints() {
 		processPlayerTiles(Phase.CHECKPOINTS);
+	}
+
+	protected void processCleanup() {
+		processPlayerTiles(Phase.CLEANUP);
 	}
 }
