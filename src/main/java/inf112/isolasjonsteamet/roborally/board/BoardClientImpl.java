@@ -93,10 +93,10 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		int width = boardLayer.getWidth();
 		int height = boardLayer.getHeight();
 
-		List<List<List<Tile>>> accX = new ArrayList<>(width);
-		for (int x = 0; x < width; x++) {
-			List<List<Tile>> accY = new ArrayList<>(height);
-			for (int y = 0; y < height; y++) {
+		List<List<List<Tile>>> accY = new ArrayList<>(width);
+		for (int y = 0; y < height; y++) {
+			List<List<Tile>> accX = new ArrayList<>(height);
+			for (int x = 0; x < width; x++) {
 				List<Tile> acc = new ArrayList<>();
 
 				if (boardLayer.getCell(x, y) != null) {
@@ -111,12 +111,12 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 					acc.add(Tiles.FLAG);
 				}
 
-				accY.add(ImmutableList.copyOf(acc));
+				accX.add(ImmutableList.copyOf(acc));
 			}
-			accX.add(ImmutableList.copyOf(accY));
+			accY.add(ImmutableList.copyOf(accX));
 		}
 
-		return ImmutableList.copyOf(accX);
+		return ImmutableList.copyOf(accY);
 	}
 
 	private void clearLayer(TiledMapTileLayer layer) {

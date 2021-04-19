@@ -108,7 +108,7 @@ public abstract class RoboRallyShared implements ActionProcessor {
 				var pos = robot.getPos();
 
 				if (!isConveyorMovementBlocked(pos, conveyorTile.getDirection(), expressOnly)) {
-					for (Tile nextTile : board().getTilesAt(pos)) {
+					for (Tile nextTile : board().getTilesAt(pos.add(conveyorTile.getDirection().toCoord()))) {
 						if (isConveyorBelt(nextTile, false)) {
 							var nextConveyorTile = (ConveyorBeltTile) nextTile;
 

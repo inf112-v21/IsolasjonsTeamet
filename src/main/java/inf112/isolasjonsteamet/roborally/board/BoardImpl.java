@@ -28,8 +28,8 @@ public class BoardImpl implements Board {
 	 */
 	protected BoardImpl(List<List<List<Tile>>> tiles) {
 		this.tiles = tiles;
-		width = tiles.size();
-		height = tiles.isEmpty() ? 0 : tiles.get(0).size();
+		height = tiles.size();
+		width = tiles.isEmpty() ? 0 : tiles.get(0).size();
 	}
 
 	public BoardImpl(Map<Character, List<Tile>> charMap, String board) {
@@ -62,7 +62,10 @@ public class BoardImpl implements Board {
 		charMap.forEach((k, v) -> immutableCharMap.put(k, ImmutableList.copyOf(v)));
 
 		List<List<List<Tile>>> accX = new ArrayList<>(width);
-		for (String line : board.lines().collect(Collectors.toList())) {
+
+		var linesList = board.lines().collect(Collectors.toList());
+		for (int i = linesList.size() - 1; i >= 0; i--) {
+			String line = linesList.get(i);
 			List<List<Tile>> accY = new ArrayList<>(height);
 
 			for (char c : line.toCharArray()) {
@@ -91,17 +94,17 @@ public class BoardImpl implements Board {
 	 */
 	@Override
 	public List<Tile> getTilesAt(Coordinate pos) {
-		if (tiles.size() <= pos.getX()) {
+		if (tiles.size() <= pos.getY()) {
 			return ImmutableList.of(Tiles.HOLE);
 		}
 
-		List<List<Tile>> tilesX = tiles.get(pos.getX());
+		List<List<Tile>> tilesX = tiles.get(pos.getY());
 
-		if (tilesX.size() <= pos.getY()) {
+		if (tilesX.size() <= pos.getX()) {
 			return ImmutableList.of(Tiles.HOLE);
 		}
 
-		return tilesX.get(pos.getY());
+		return tilesX.get(pos.getX());
 	}
 
 	/**
