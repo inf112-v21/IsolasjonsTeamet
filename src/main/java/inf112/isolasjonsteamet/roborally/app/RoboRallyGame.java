@@ -63,6 +63,7 @@ public class RoboRallyGame
 	private Texture card;
 
 	private PrintStream out;
+	private TextField chatField;
 
 	/**
 	 * Create method used to create new items and elements used in the game.
@@ -92,9 +93,21 @@ public class RoboRallyGame
 		table.add(new MapRendererWidget(board, 100));
 		table.row();
 
-		var bottomConsole = new PrintStreamLabel(3, System.out, skin, "default-font", Color.WHITE);
+		var bottomConsole = new PrintStreamLabel(2, System.out, skin, "default-font", Color.WHITE);
 		bottomConsole.setColor(Color.ROYAL);
 		out = bottomConsole.getStream();
+
+		chatField = new TextField("", skin);
+		table.add(chatField).width(500);
+		var chatButton = new TextButton("Chat", skin);
+		table.add(chatButton);
+		chatButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				chat(activePlayer, chatField.getText());
+			}
+		});
+		table.row();
 
 		table.add(bottomConsole).top().left();
 
@@ -253,12 +266,25 @@ public class RoboRallyGame
 		return stage;
 	}
 
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		boolean handled = stage.touchDown(screenX, screenY, pointer, button);
+		if (!handled) {
+			stage.unfocus(chatField);
+		}
+		return handled;
+	}
+
 	/**
 	 * keyUp method that listens for keys released on the keyboard, and performs wanted action based on conditions.
 	 */
 	@SuppressWarnings({"checkstyle:Indentation", "checkstyle:WhitespaceAround"})
 	@Override
 	public boolean keyDown(int keycode) {
+		if (chatField.hasKeyboardFocus()) {
+			return false;
+		}
+
 		boolean handled = switch (keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
@@ -436,6 +462,13 @@ public class RoboRallyGame
 			case SOUTH -> 2;
 			case EAST -> 3;
 		};
+	}
+
+	private void chat(Player player, String message) {
+		out.println(player.getName() + ": " + message);
+		out.flush();
+		stage.unfocus(chatField);
+		chatField.setText("");
 	}
 
 	/**
