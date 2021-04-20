@@ -25,8 +25,11 @@ public class Move implements Action {
 
 		final Coordinate offset = direction.toCoord().mult(numMoves);
 		final Coordinate finalDestination = player.getPos().add(offset);
+		var clampedDestinationX = MathUtils.clamp(finalDestination.getX(), 0, board.getWidth() - 1);
+		var clampedDestinationY = MathUtils.clamp(finalDestination.getY(), 0, board.getWidth() - 1);
+		var clampedFinalDestination = new Coordinate(clampedDestinationX, clampedDestinationY);
 
-		while (!board.hasWallInDir(pos, direction) && !pos.equals(finalDestination)) {
+		while (!board.hasWallInDir(pos, direction) && !pos.equals(clampedFinalDestination)) {
 			pos = pos.add(direction.toCoord());
 		}
 
@@ -39,3 +42,6 @@ public class Move implements Action {
 		player.move(clampedOffset);
 	}
 }
+
+
+

@@ -16,6 +16,7 @@ import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
+import inf112.isolasjonsteamet.roborally.tiles.WallTileType;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.List;
@@ -71,6 +72,7 @@ public class PlayerSpec implements ActionProcessor {
 						.put('o', ImmutableList.of(Tiles.GROUND))
 						.put('x', ImmutableList.of(Tiles.HOLE))
 						.put('f', ImmutableList.of(Tiles.FLAG))
+						.put('w', ImmutableList.of((new WallTileType(true,true,true,true))))
 						.build();
 
 		board = new BoardImpl(ImmutableList.of(player), charMap, """
@@ -78,7 +80,7 @@ public class PlayerSpec implements ActionProcessor {
 				ooooo
 				ooxoo
 				ooooo
-				ooooo""");
+				oowoo""");
 	}
 
 	/**
@@ -231,4 +233,45 @@ public class PlayerSpec implements ActionProcessor {
 
 		assertEquals(player.getDir(), Orientation.NORTH);
 	}
+
+	/**
+	 * Test to check i if Robot facing West at position (3,4) can go through wall at (2,4)
+	 */
+	@Test
+	public void canNotGoThroughWallNorth(){
+		var player = createSimpleActivePlayer(new Coordinate(0,1), Orientation.NORTH);
+		createSimpleBoard(player);
+
+		runAction(new MoveForward(1));
+		assertEquals(new Coordinate(0,1), player.getPos());
+	}
+
+	@Test
+	public void canNotMove2Wall() {
+		var player = createSimpleActivePlayer(new Coordinate(0,4), Orientation.SOUTH);
+		createSimpleBoard(player);
+
+		runAction(new MoveForward(2));
+		System.out.println(board.getTilesAt(new Coordinate(0,2)));
+		assertEquals(new Coordinate(0,3), player.getPos());
+
+	}
+
+/**	@Test
+	public void canNotGoThroughWallEast(){
+		var player = createSimpleActivePlayer(new Coordinate(0,3), Orientation.EAST);
+		createSimpleBoard(player);
+
+		runAction(new MoveForward(1));
+		assertEquals(new Coordinate(0,3), player.getPos());
+	}
+
+	@Test
+	public void canNotGoThroughWallNorth(){
+		var player = createSimpleActivePlayer(new Coordinate(0,3), Orientation.NORTH);
+		createSimpleBoard(player);
+
+		runAction(new MoveForward(1));
+		assertEquals(new Coordinate(0,3), player.getPos());
+	} **/
 }

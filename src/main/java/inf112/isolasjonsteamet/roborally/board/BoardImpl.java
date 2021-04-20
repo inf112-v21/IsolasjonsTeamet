@@ -115,13 +115,13 @@ public class BoardImpl implements Board {
 	 */
 	@Override
 	public List<TileType> getTilesAt(Coordinate pos) {
-		if (tiles.size() <= pos.getX()) {
+		if (tiles.size() <= pos.getX() || pos.getX() < 0) {
 			return ImmutableList.of(Tiles.HOLE);
 		}
 
 		List<List<TileType>> tilesX = tiles.get(pos.getX());
 
-		if (tilesX.size() <= pos.getY()) {
+		if (tilesX.size() <= pos.getY() || pos.getY() < 0) {
 			return ImmutableList.of(Tiles.HOLE);
 		}
 

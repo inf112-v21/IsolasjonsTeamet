@@ -5,6 +5,9 @@ import com.google.common.collect.ImmutableList.Builder;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.List;
 
+/**
+ * Class for WallTileTypes.
+ */
 public class WallTileType extends TileType {
 
 	public static final List<WallTileType> ALL_WALL_TYPES = computeAllWallTypes();
@@ -14,6 +17,9 @@ public class WallTileType extends TileType {
 	private final boolean hasSouthWall;
 	private final boolean hasEastWall;
 
+	/**
+	 * Constructor for creating WallTileType.
+	 */
 	public WallTileType(boolean hasNorthWall, boolean hasWestWall, boolean hasSouthWall, boolean hasEastWall) {
 		this.hasNorthWall = hasNorthWall;
 		this.hasWestWall = hasWestWall;
@@ -21,6 +27,9 @@ public class WallTileType extends TileType {
 		this.hasEastWall = hasEastWall;
 	}
 
+	/**
+	 * Checks if there is an wall in given direction.
+	 */
 	public boolean hasWallInDir(Orientation dir) {
 		return switch (dir) {
 			case NORTH -> hasNorthWall;
@@ -36,8 +45,8 @@ public class WallTileType extends TileType {
 
 		for (boolean hasNorthWall : choices) {
 			for (boolean hasWestWall : choices) {
-				for(boolean hasEastWall : choices){
-					for(boolean hasSouthWall : choices){
+				for (boolean hasEastWall : choices) {
+					for (boolean hasSouthWall : choices) {
 						builder.add(new WallTileType(hasNorthWall, hasWestWall, hasSouthWall, hasEastWall));
 					}
 				}

@@ -90,6 +90,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	/**
 	 * Get tiles from the map.
 	 */
+	@SuppressWarnings("checkstyle:Indentation")
 	private ImmutableList<List<List<TileType>>> tilesFromMap(String boardFilename) {
 		int width = playerLayer.getWidth();
 		int height = playerLayer.getHeight();
@@ -105,7 +106,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 				}
 
 				if (holeLayer.getCell(x, y) != null) {
-					acc.add(Tiles.HOLE);
+					acc.add(Tiles.HOLE);		
 				}
 
 				if (flagLayer.getCell(x, y) != null) {
@@ -130,22 +131,22 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 						case 8 -> new WallTileType(false, false, true, true);
 						case 16 -> new WallTileType(true, false, false, true);
 						case 24 -> new WallTileType(true, true, false, false);
-						case 32 -> new WallTileType(false, true,  true, false);
+						case 32 -> new WallTileType(false, true, true, false);
 
-						case 23 -> new WallTileType(false, false,  false, true);
-						case 31 -> new WallTileType(true, false,  false, false);
-						case 30 -> new WallTileType(false, true,  false, false);
-						case 29 -> new WallTileType(false, false,  true, false);
+						case 23 -> new WallTileType(false, false, false, true);
+						case 31 -> new WallTileType(true, false, false, false);
+						case 30 -> new WallTileType(false, true, false, false);
+						case 29 -> new WallTileType(false, false, true, false);
 
-						case 37 -> new WallTileType(false, false,  true, false);
-						case 38 -> new WallTileType(false, true,  false, false);
-						case 45 -> new WallTileType(true, false,  false, false);
-						case 46 -> new WallTileType(false, false,  false, true);
+						case 37 -> new WallTileType(false, false, true, false);
+						case 38 -> new WallTileType(false, true, false, false);
+						case 45 -> new WallTileType(true, false, false, false);
+						case 46 -> new WallTileType(false, false, false, true);
 
-						case 87 -> new WallTileType(false, false,  true, false);
-						case 93 -> new WallTileType(false, true,  false, false);
-						case 94 -> new WallTileType(true, false,  false, false);
-						case 95 -> new WallTileType(false, false,  false, true);
+						case 87 -> new WallTileType(false, false, true, false);
+						case 93 -> new WallTileType(false, true, false, false);
+						case 94 -> new WallTileType(true, false, false, false);
+						case 95 -> new WallTileType(false, false, false, true);
 
 						default -> null;
 					};

@@ -45,12 +45,15 @@ public interface Board {
 	int getHeight();
 
 	/**
+	 * Checks if there is an in wall in givven direction.
 	 *
-	 * @param coord1
-	 * @param dir
-	 * @return true if there is an wall in direction thats given
+	 * @param coord1 position
+	 * @param dir direction
+	 *
+	 * @return true if there is an wall in direction the given direction
 	 */
-	boolean hasWallInDir (Coordinate coord1, Orientation dir);
+	boolean hasWallInDir(Coordinate coord1, Orientation dir);
+
 }
 
 
