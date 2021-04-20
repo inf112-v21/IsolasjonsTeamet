@@ -143,3 +143,4 @@ To run CheckStyle, use `checkstyleMain`.
 
 
 ## Known bugs
+* All players currently share the same graphical rotation
