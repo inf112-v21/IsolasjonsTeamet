@@ -5,6 +5,8 @@ import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
+import inf112.isolasjonsteamet.roborally.util.Orientation;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -103,13 +105,13 @@ public class BoardImpl implements Board {
 	 */
 	@Override
 	public List<TileType> getTilesAt(Coordinate pos) {
-		if (tiles.size() <= pos.getX()) {
+		if (tiles.size() <= pos.getX() || pos.getX() < 0) {
 			return ImmutableList.of(Tiles.HOLE);
 		}
 
 		List<List<TileType>> tilesX = tiles.get(pos.getX());
 
-		if (tilesX.size() <= pos.getY()) {
+		if (tilesX.size() <= pos.getY() || pos.getY() < 0) {
 			return ImmutableList.of(Tiles.HOLE);
 		}
 
@@ -130,6 +132,54 @@ public class BoardImpl implements Board {
 
 			if (y < 0 || y >= height) {
 				throw new IllegalStateException("Player out of bounds " + player.getPos());
+			}
+		}
+	}
+
+	private boolean hasRobotInWayOfEmitter(Coordinate pos) {
+		Coordinate originalPos = pos;
+
+		boolean hasFoundEmitter = false;
+
+		for (Orientation dir : Orientation.values()) {
+			pos = originalPos;
+			boolean hasEncounteredRobot = false;
+
+			while (true) {
+				pos = pos.add(dir.toCoord());
+
+				var tiles = getTilesAt(pos);
+				hasFoundEmitter = hasFoundEmitter || tiles.contains(Tiles.LASER_EMITTER);
+				if (!tiles.contains(Tiles.LASER) && !tiles.contains(Tiles.LASER_EMITTER)) {
+					break;
+				}
+
+				if(getPlayerAt(pos) != null) {
+					hasEncounteredRobot = true;
+				}
+
+				if (tiles.contains(Tiles.LASER_EMITTER)) {
+					if (!hasEncounteredRobot) {
+						return false;
+					}
+
+					break;
+				}
+			}
+		}
+
+		return hasFoundEmitter;
+	}
+
+	@Override
+	public void fireLaser() {
+		for (Player player : players) {
+			var tiles = getTilesAt(player.getPos());
+
+			if (tiles.contains(Tiles.LASER_EMITTER)) {
+				player.damageRobot();
+			} else if (tiles.contains(Tiles.LASER) && !hasRobotInWayOfEmitter(player.getPos())) {
+				player.damageRobot();
 			}
 		}
 	}

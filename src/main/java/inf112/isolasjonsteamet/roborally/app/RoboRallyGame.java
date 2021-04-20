@@ -219,6 +219,7 @@ public class RoboRallyGame
 		final Orientation oldDir = activePlayer.getDir();
 
 		action.perform(this, board, activePlayer);
+		board.fireLaser();
 		board.checkValid();
 
 		Coordinate newPos = activePlayer.getPos();
