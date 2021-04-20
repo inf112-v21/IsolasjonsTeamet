@@ -46,5 +46,5 @@ public interface Board {
 	/**
 	 * Processes all the laser tiles on this board and damages the players that stand in their way.
 	 */
-    void fireLaser();
+	void fireLaser();
 }

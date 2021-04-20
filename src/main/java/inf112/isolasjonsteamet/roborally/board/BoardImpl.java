@@ -6,7 +6,6 @@ import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -154,7 +153,7 @@ public class BoardImpl implements Board {
 					break;
 				}
 
-				if(getPlayerAt(pos) != null) {
+				if (getPlayerAt(pos) != null) {
 					hasEncounteredRobot = true;
 				}
 

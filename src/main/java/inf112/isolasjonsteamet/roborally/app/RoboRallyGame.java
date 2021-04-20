@@ -215,7 +215,7 @@ public class RoboRallyGame
 	 * {@inheritDoc}
 	 */
 	public void performActionNow(Player player, Action action) {
-		Coordinate oldPos = activePlayer.getPos();
+		final Coordinate oldPos = activePlayer.getPos();
 		final Orientation oldDir = activePlayer.getDir();
 
 		action.perform(this, board, activePlayer);
