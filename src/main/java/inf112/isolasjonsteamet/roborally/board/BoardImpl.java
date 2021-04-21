@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
+import inf112.isolasjonsteamet.roborally.tiles.WallTileType;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
@@ -63,6 +64,19 @@ public class BoardImpl implements Board {
 		return coordTiles.removeAll(dirWalls) || nextCoordTiles.removeAll(oppositeDirWalls);
 	}
 
+	private List<WallTileType> getWallTypesForDir(Orientation dir) {
+		List<WallTileType> allWallTypes = WallTileType.ALL_WALL_TYPES;
+		List<WallTileType> wallTypes = new ArrayList<>();
+
+		for (WallTileType type : allWallTypes) {
+			if (type.hasWallInDir(dir)) {
+				wallTypes.add(type);
+			}
+		}
+		return wallTypes;
+	}
+
+
 	/**
 	 * Get tiles from string.
 	 *
@@ -116,85 +130,85 @@ public class BoardImpl implements Board {
 	 */
 	@Override
 	public List<TileType> getTilesAt(Coordinate pos) {
-		if (tiles.size() <= pos.getX() || pos.getX() < 0) {
-			if (tiles.size() <= pos.getY() || pos.getY() < 0) {
-				return ImmutableList.of(Tiles.HOLE);
+		if (tiles.size() <= pos.getY() || pos.getY() < 0) {
+			return ImmutableList.of(Tiles.HOLE);
+		}
+
+		List<List<TileType>> tilesY = tiles.get(pos.getY());
+
+		if (tilesY.size() <= pos.getX() || pos.getX() < 0) {
+			return ImmutableList.of(Tiles.HOLE);
+		}
+
+		return tilesY.get(pos.getX());
+	}
+	
+	/**
+	 * Check if the board is in a valid state.
+	 */
+	public void checkValid() {
+		for (Player player : players) {
+			int x = player.getPos().getX();
+			int y = player.getPos().getY();
+
+			if (x < 0 || x >= width) {
+				throw new IllegalStateException("Player out of bounds " + player.getPos());
 			}
 
-			List<List<TileType>> tilesY = tiles.get(pos.getY());
-
-			if (tilesY.size() <= pos.getX() || pos.getX() < 0) {
-				return ImmutableList.of(Tiles.HOLE);
+			if (y < 0 || y >= height) {
+				throw new IllegalStateException("Player out of bounds " + player.getPos());
 			}
-
-			return tilesY.get(pos.getX());
 		}
 	}
 
-		/**
-		 * Check if the board is in a valid state.
-		 */
-		public void checkValid(){
-			for (Player player : players) {
-				int x = player.getPos().getX();
-				int y = player.getPos().getY();
+	private boolean hasRobotInWayOfEmitter(Coordinate pos) {
+		Coordinate originalPos = pos;
 
-				if (x < 0 || x >= width) {
-					throw new IllegalStateException("Player out of bounds " + player.getPos());
+		boolean hasFoundEmitter = false;
+
+		for (Orientation dir : Orientation.values()) {
+			pos = originalPos;
+			boolean hasEncounteredRobot = false;
+
+			while (true) {
+				pos = pos.add(dir.toCoord());
+
+				var tiles = getTilesAt(pos);
+				hasFoundEmitter = hasFoundEmitter || tiles.contains(Tiles.LASER_EMITTER);
+				if (!tiles.contains(Tiles.LASER) && !tiles.contains(Tiles.LASER_EMITTER)) {
+					break;
 				}
 
-				if (y < 0 || y >= height) {
-					throw new IllegalStateException("Player out of bounds " + player.getPos());
+				if (getPlayerAt(pos) != null) {
+					hasEncounteredRobot = true;
 				}
-			}
-		}
-
-		private boolean hasRobotInWayOfEmitter (Coordinate pos){
-			Coordinate originalPos = pos;
-
-			boolean hasFoundEmitter = false;
-
-			for (Orientation dir : Orientation.values()) {
-				pos = originalPos;
-				boolean hasEncounteredRobot = false;
-
-				while (true) {
-					pos = pos.add(dir.toCoord());
-
-					var tiles = getTilesAt(pos);
-					hasFoundEmitter = hasFoundEmitter || tiles.contains(Tiles.LASER_EMITTER);
-					if (!tiles.contains(Tiles.LASER) && !tiles.contains(Tiles.LASER_EMITTER)) {
-						break;
-					}
-
-					if (getPlayerAt(pos) != null) {
-						hasEncounteredRobot = true;
-					}
-
-					if (tiles.contains(Tiles.LASER_EMITTER)) {
-						if (!hasEncounteredRobot) {
-							return false;
-						}
-
-						break;
-					}
-				}
-			}
-
-			return hasFoundEmitter;
-		}
-
-		@Override
-		public void fireLaser () {
-			for (Player player : players) {
-				var tiles = getTilesAt(player.getPos());
 
 				if (tiles.contains(Tiles.LASER_EMITTER)) {
-					player.damageRobot();
-				} else if (tiles.contains(Tiles.LASER) && !hasRobotInWayOfEmitter(player.getPos())) {
-					player.damageRobot();
+					if (!hasEncounteredRobot) {
+						return false;
+					}
+
+					break;
 				}
+			}
+		}
+		return hasFoundEmitter;
+	}
+
+	@Override
+	public void fireLaser() {
+		for (Player player : players) {
+			var tiles = getTilesAt(player.getPos());
+
+			if (tiles.contains(Tiles.LASER_EMITTER)) {
+				player.damageRobot();
+			} else if (tiles.contains(Tiles.LASER) && !hasRobotInWayOfEmitter(player.getPos())) {
+				player.damageRobot();
 			}
 		}
 	}
 }
+
+
+
+
