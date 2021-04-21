@@ -30,6 +30,10 @@ public class Move implements Action {
 		var moveTo = new Coordinate(clampedX, clampedY);
 		var clampedOffset = moveTo.sub(player.getPos());
 
+		if (board.getPlayerAt(clampedOffset) != null) {
+			Coordinate cord = direction.toCoord().mult(numMoves);
+			board.getPlayerAt(clampedOffset).move(cord);
+		}
 		player.move(clampedOffset);
 	}
 }

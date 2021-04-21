@@ -231,4 +231,11 @@ public class PlayerSpec implements ActionProcessor {
 
 		assertEquals(player.getDir(), Orientation.NORTH);
 	}
+
+	@Test
+	public void pushRobots() {
+		var player1 =createSimplePlayer(new Coordinate(1,1),Orientation.EAST);
+		var player2 =createSimpleActivePlayer(new Coordinate(1,2),Orientation.EAST);
+
+	}
 }
