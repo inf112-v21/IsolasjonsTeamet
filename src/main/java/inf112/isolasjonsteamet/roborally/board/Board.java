@@ -50,4 +50,9 @@ public interface Board {
 	 * Updates the list of active robots still on the board.
 	 */
 	void updateActiveRobots(List<Robot> robots);
+
+	/*
+	 * Processes all the laser tiles on this board and damages the players that stand in their way.
+	 */
+	void fireLaser();
 }

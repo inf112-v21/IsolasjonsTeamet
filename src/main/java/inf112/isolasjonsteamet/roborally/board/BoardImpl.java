@@ -5,6 +5,7 @@ import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
+import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -91,13 +92,13 @@ public class BoardImpl implements Board {
 	 */
 	@Override
 	public List<Tile> getTilesAt(Coordinate pos) {
-		if (tiles.size() <= pos.getX()) {
+		if (tiles.size() <= pos.getX() || pos.getX() < 0) {
 			return ImmutableList.of(Tiles.HOLE);
 		}
 
 		List<List<Tile>> tilesX = tiles.get(pos.getX());
 
-		if (tilesX.size() <= pos.getY()) {
+		if (tilesX.size() <= pos.getY() || pos.getY() < 0) {
 			return ImmutableList.of(Tiles.HOLE);
 		}
 
@@ -125,5 +126,53 @@ public class BoardImpl implements Board {
 	@Override
 	public void updateActiveRobots(List<Robot> robots) {
 		this.robots = ImmutableList.copyOf(robots);
+	}
+
+	private boolean hasRobotInWayOfEmitter(Coordinate pos) {
+		Coordinate originalPos = pos;
+
+		boolean hasFoundEmitter = false;
+
+		for (Orientation dir : Orientation.values()) {
+			pos = originalPos;
+			boolean hasEncounteredRobot = false;
+
+			while (true) {
+				pos = pos.add(dir.toCoord());
+
+				var tiles = getTilesAt(pos);
+				hasFoundEmitter = hasFoundEmitter || tiles.contains(Tiles.LASER_EMITTER);
+				if (!tiles.contains(Tiles.LASER) && !tiles.contains(Tiles.LASER_EMITTER)) {
+					break;
+				}
+
+				if (getRobotAt(pos) != null) {
+					hasEncounteredRobot = true;
+				}
+
+				if (tiles.contains(Tiles.LASER_EMITTER)) {
+					if (!hasEncounteredRobot) {
+						return false;
+					}
+
+					break;
+				}
+			}
+		}
+
+		return hasFoundEmitter;
+	}
+
+	@Override
+	public void fireLaser() {
+		for (Robot robot : robots) {
+			var tiles = getTilesAt(robot.getPos());
+
+			if (tiles.contains(Tiles.LASER_EMITTER)) {
+				robot.damageRobot();
+			} else if (tiles.contains(Tiles.LASER) && !hasRobotInWayOfEmitter(robot.getPos())) {
+				robot.damageRobot();
+			}
+		}
 	}
 }
