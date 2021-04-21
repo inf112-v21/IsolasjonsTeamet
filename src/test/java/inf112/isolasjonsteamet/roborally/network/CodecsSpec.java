@@ -7,6 +7,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import inf112.isolasjonsteamet.roborally.cards.Card;
 import inf112.isolasjonsteamet.roborally.cards.Cards;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientChatPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.GameJoinPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStatePacket;
@@ -23,6 +24,7 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerChatPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
@@ -118,7 +120,7 @@ public class CodecsSpec {
 
 	//Lobby packets
 
-	@DisplayName("LobbyReadyUpdate" + SURVIVE_ENCODE_DECODE)
+	@DisplayName("LobbyReadyUpdatePacket" + SURVIVE_ENCODE_DECODE)
 	@Test
 	public void lobbyReadyUpdate() {
 		assertSurvivesRoundtrip(new LobbyReadyUpdatePacket(true));
@@ -131,6 +133,12 @@ public class CodecsSpec {
 	}
 
 	//Misc packets
+
+	@DisplayName("ClientChatPacket" + SURVIVE_ENCODE_DECODE)
+	@Test
+	public void clientChat() {
+		assertSurvivesRoundtrip(new ClientChatPacket("foobar"));
+	}
 
 	@Nested
 	@DisplayName("ClientDisconnectingPacket" + SURVIVE_ENCODE_DECODE)
@@ -350,6 +358,12 @@ public class CodecsSpec {
 		protected Packet makePacket(String reason) {
 			return new PlayerLeftGamePacket("foobar", reason);
 		}
+	}
+
+	@DisplayName("ServerChatPacket" + SURVIVE_ENCODE_DECODE)
+	@Test
+	public void serverChat() {
+		assertSurvivesRoundtrip(new ServerChatPacket("foo", "foobar"));
 	}
 
 	@Nested

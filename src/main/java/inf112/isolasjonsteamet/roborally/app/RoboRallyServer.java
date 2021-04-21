@@ -11,11 +11,13 @@ import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.network.Server;
 import inf112.isolasjonsteamet.roborally.network.ServerPacketAdapter;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientChatPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.KickPlayerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStatePacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerChatPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
@@ -176,6 +178,11 @@ public class RoboRallyServer implements ActionProcessor {
 			robot.setDir(packet.getRotation());
 
 			server.sendToAllPlayers(UpdatePlayerStatesPacket.fromPlayers(ImmutableList.copyOf(players.values())));
+		}
+
+		@Override
+		public void onClientChat(String player, ClientChatPacket packet) {
+			server.sendToAllPlayers(new ServerChatPacket(player, packet.getMessage()));
 		}
 
 		@Override
