@@ -93,7 +93,6 @@ public class RoboRallyServer extends RoboRallyShared {
 	 */
 	public void performActionNow(Robot robot, Action action, Phase phase) {
 		action.perform(this, board, robot, phase);
-		board.fireLaser();
 
 		if (boardValidationChecks) {
 			board.checkValid();

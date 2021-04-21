@@ -25,27 +25,13 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
-public class ConveyorsSpec {
+public class ConveyorsSpec extends RoboRallySharedSpec {
 
 	private final TestingRoboRallyShared roboShared = new TestingRoboRallyShared();
-	private Board board;
-	private List<Player> players = new ArrayList<>();
-	private boolean doBoardCheck = true;
-	private int playerNum;
 
-	private PlayerImpl newPlayer(String name, Coordinate pos, Orientation dir) {
-		var player = new PlayerImpl(name, roboShared, pos, dir);
-		players.add(player);
-		board.updateActiveRobots(players.stream().map(Player::getRobot).collect(Collectors.toList()));
-		return player;
-	}
-
-	private PlayerImpl newPlayer(Coordinate pos, Orientation dir) {
-		return newPlayer("player" + playerNum++, pos, dir);
-	}
-
-	private Coordinate coord(int x, int y) {
-		return new Coordinate(x, y);
+	@Override
+	protected TestingRoboRallyShared roboShared() {
+		return roboShared;
 	}
 
 	@DisplayName("Given a board with conveyors")
@@ -200,40 +186,7 @@ public class ConveyorsSpec {
 	}
 
 
-	class TestingRoboRallyShared extends RoboRallyShared {
-
-		@Override
-		public void performActionNow(Robot robot, Action action, Phase phase) {
-			action.perform(this, board, robot, phase);
-
-			if (doBoardCheck) {
-				board.checkValid();
-			}
-		}
-
-		@Override
-		protected void foreachPlayerTile(BiConsumer<Player, Tile> handler) {
-			for (Player player : players) {
-				for (Tile tile : board.getTilesAt(player.getRobot().getPos())) {
-					handler.accept(player, tile);
-				}
-			}
-		}
-
-		@Override
-		protected Board board() {
-			return board;
-		}
-
-		@Override
-		protected void skipBoardValidChecks() {
-			doBoardCheck = false;
-		}
-
-		@Override
-		protected void enableBoardValidChecks() {
-			doBoardCheck = true;
-		}
+	class TestingRoboRallyShared extends AbstractTestingRoboRallyShared {
 
 		@Override
 		protected void processBoardElements() {

@@ -47,6 +47,11 @@ public interface Robot {
 	void repairRobot();
 
 	/**
+	 * Gets the amount of damage this robot has taken.
+	 */
+	int getDamageTokens();
+
+	/**
 	 * Decrements life from player and rests damage token for robot.
 	 */
 	void killRobot();

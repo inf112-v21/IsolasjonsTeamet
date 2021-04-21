@@ -278,7 +278,6 @@ public class RoboRallyClient
 	@Override
 	public void performActionNow(Robot robot, Action action, Phase phase) {
 		action.perform(this, board, robot, phase);
-		board.fireLaser();
 		showingAction = action;
 		showingRobot = robot;
 	}

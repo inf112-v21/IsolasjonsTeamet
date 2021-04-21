@@ -6,8 +6,10 @@ import inf112.isolasjonsteamet.roborally.actions.Move;
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.tiles.ConveyorBeltTile;
 import inf112.isolasjonsteamet.roborally.tiles.Tile;
+import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.function.BiConsumer;
@@ -136,8 +138,56 @@ public abstract class RoboRallyShared implements ActionProcessor {
 		processPlayerTiles(Phase.BOARD_ELEMENTS_ROTATE);
 	}
 
+	private boolean hasRobotInWayOfEmitter(Coordinate pos) {
+		Board board = board();
+		Coordinate originalPos = pos;
+
+		boolean hasFoundEmitter = false;
+
+		for (Orientation dir : Orientation.values()) {
+			pos = originalPos;
+			boolean hasEncounteredRobot = false;
+
+			while (true) {
+				pos = pos.add(dir.toCoord());
+
+				var tiles = board.getTilesAt(pos);
+				hasFoundEmitter = hasFoundEmitter || tiles.contains(Tiles.LASER_EMITTER);
+				if (!tiles.contains(Tiles.LASER) && !tiles.contains(Tiles.LASER_EMITTER)) {
+					break;
+				}
+
+				if (board.getRobotAt(pos) != null) {
+					hasEncounteredRobot = true;
+				}
+
+				if (tiles.contains(Tiles.LASER_EMITTER)) {
+					if (!hasEncounteredRobot) {
+						return false;
+					}
+
+					break;
+				}
+			}
+		}
+
+		return hasFoundEmitter;
+	}
+
+	/*
+	 * Processes all the laser tiles on this board and damages the players that stand in their way.
+	 */
 	protected void fireLasers() {
-		//TODO: Implement me Noora
+		Board board = board();
+		for (Robot robot : board.getRobots()) {
+			var tiles = board.getTilesAt(robot.getPos());
+
+			if (tiles.contains(Tiles.LASER_EMITTER)) {
+				robot.damageRobot();
+			} else if (tiles.contains(Tiles.LASER) && !hasRobotInWayOfEmitter(robot.getPos())) {
+				robot.damageRobot();
+			}
+		}
 	}
 
 	protected void processCheckpoints() {
