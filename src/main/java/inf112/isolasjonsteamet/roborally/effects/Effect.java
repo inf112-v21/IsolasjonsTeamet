@@ -7,6 +7,6 @@ import com.badlogic.gdx.graphics.g2d.Batch;
  */
 public interface Effect {
 
-    default void render(Batch batch) {}
-
+	default void render(Batch batch) {
+	}
 }

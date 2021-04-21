@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
+import inf112.isolasjonsteamet.roborally.util.Orientation;
 
 /**
  * Player effect class.
@@ -20,6 +21,7 @@ public class PlayerEffect implements Effect {
 		PLAYER_TEXTURE = tReg[0][0];
 	}
 
+	Orientation dir;
 	private final Sprite sprite;
 
 	/**
@@ -31,6 +33,7 @@ public class PlayerEffect implements Effect {
 		Coordinate pos = player.getPos();
 		int x = pos.getX();
 		int y = pos.getY();
+		Orientation dir = player.getDir();
 
 		sprite.setPosition((x + 2) * 100 + 50, (y + 1) * 100);
 		sprite.setScale(0.33F);
@@ -41,7 +44,22 @@ public class PlayerEffect implements Effect {
 		sprite.draw(batch);
 	}
 
+	/**
+	 * Move the player effect.
+	 */
 	public void move(float dx, float dy) {
-		sprite.setPosition(sprite.getX() + dx * 100, sprite.getY() + dy * 100);
+		float currentX = sprite.getX() + dx * 100;
+		float currentY = sprite.getY() + dy * 100;
+		System.out.println(currentX);
+		System.out.println(currentY);
+		
+		//Warning: this out of bounds check works only for the example map.
+		if ((currentX >= 250 && currentX <= 650) && (currentY >= 100 && currentY <= 500)) {
+			sprite.setPosition(sprite.getX() + dx * 100, sprite.getY() + dy * 100);
+		}
+	}
+
+	public void rotate() {
+		sprite.rotate(90);
 	}
 }

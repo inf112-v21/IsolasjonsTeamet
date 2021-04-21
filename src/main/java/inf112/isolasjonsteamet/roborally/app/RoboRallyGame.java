@@ -225,6 +225,8 @@ public class RoboRallyGame
 	 */
 	@Override
 	public void performActionNow(Player player, Action action) {
+		@SuppressWarnings("VariableDeclarationUsageDistance")
+		Coordinate oldPos = activePlayer.getPos();
 		final Orientation oldDir = activePlayer.getDir();
 
 		action.initialize(board, player);
@@ -238,7 +240,7 @@ public class RoboRallyGame
 
 		Coordinate newPos = activePlayer.getPos();
 		final Orientation newDir = activePlayer.getDir();
-		Coordinate oldPos = activePlayer.getPos();
+
 		if (!oldPos.equals(newPos)) {
 			if (board.getPlayerAt(oldPos) == null) {
 				//Only one player was standing on the old position, so we clear the cell
@@ -256,6 +258,9 @@ public class RoboRallyGame
 		}
 	}
 
+	/**
+	 * Schedule an action.
+	 */
 	@Override
 	public void scheduleAction(Player player, Action action) {
 		if (scheduledActions.isEmpty() && showingAction == null) {
@@ -267,6 +272,9 @@ public class RoboRallyGame
 		scheduledActions.add(Map.entry(action, player));
 	}
 
+	/**
+	 * Perform action on active player.
+	 */
 	private void performActionActivePlayer(Action action) {
 		performActionNow(activePlayer, action);
 	}
