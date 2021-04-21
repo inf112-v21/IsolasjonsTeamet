@@ -76,7 +76,6 @@ public class BoardImpl implements Board {
 		return wallTypes;
 	}
 
-
 	/**
 	 * Get tiles from string.
 	 *

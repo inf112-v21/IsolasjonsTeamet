@@ -238,22 +238,21 @@ public class PlayerSpec implements ActionProcessor {
 	 * Test to check i if Robot facing West at position (3,4) can go through wall at (2,4)
 	 */
 	@Test
-	public void canNotGoThroughWallNorth(){
-		var player = createSimpleActivePlayer(new Coordinate(0,1), Orientation.NORTH);
+	public void canNotGoThroughWallEast(){
+		var player = createSimpleActivePlayer(new Coordinate(1,0), Orientation.EAST);
 		createSimpleBoard(player);
 
 		runAction(new MoveForward(1));
-		assertEquals(new Coordinate(0,1), player.getPos());
+		assertEquals(new Coordinate(1,0), player.getPos());
 	}
 
 	@Test
 	public void canNotMove2Wall() {
-		var player = createSimpleActivePlayer(new Coordinate(0,4), Orientation.SOUTH);
+		var player = createSimpleActivePlayer(new Coordinate(0,0), Orientation.EAST);
 		createSimpleBoard(player);
 
 		runAction(new MoveForward(2));
-		System.out.println(board.getTilesAt(new Coordinate(0,2)));
-		assertEquals(new Coordinate(0,3), player.getPos());
+		assertEquals(new Coordinate(1,0), player.getPos());
 
 	}
 
