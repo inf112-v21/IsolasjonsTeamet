@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally.network;
 
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientChatPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.GameJoinPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.KickPlayerPacket;
@@ -17,6 +18,11 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 @SuppressWarnings("unused")
 public abstract class ServerPacketAdapter implements ServerPacketListener<Client2ServerPacket> {
 
+	//Misc packets
+
+	public void onClientChat(@Nullable String player, ClientChatPacket packet) {
+	}
+
 	public void onClientDisconnecting(@Nullable String player, ClientDisconnectingPacket packet) {
 	}
 
@@ -26,11 +32,15 @@ public abstract class ServerPacketAdapter implements ServerPacketListener<Client
 	public void onKickPlayer(@Nullable String player, KickPlayerPacket packet) {
 	}
 
+	//Game packets
+
 	public void onUpdatePlayerState(@Nullable String player, UpdatePlayerStatePacket packet) {
 	}
 
 	public void onUpdateRoundReady(@Nullable String player, UpdateRoundReadyPacket packet) {
 	}
+
+	//Lobby packets
 
 	public void onRequestLobbyInfo(@Nullable String player, RequestLobbyInfoPacket packet) {
 	}
@@ -48,6 +58,8 @@ public abstract class ServerPacketAdapter implements ServerPacketListener<Client
 			onUpdatePlayerState(player, (UpdatePlayerStatePacket) packet);
 		} else if (packet instanceof UpdateRoundReadyPacket) {
 			onUpdateRoundReady(player, (UpdateRoundReadyPacket) packet);
+		} else if (packet instanceof ClientChatPacket) {
+			onClientChat(player, (ClientChatPacket) packet);
 		} else if (packet instanceof ClientDisconnectingPacket) {
 			onClientDisconnecting(player, (ClientDisconnectingPacket) packet);
 		} else if (packet instanceof GameJoinPacket) {

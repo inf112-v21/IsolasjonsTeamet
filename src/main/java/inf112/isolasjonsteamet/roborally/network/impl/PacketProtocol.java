@@ -1,5 +1,6 @@
 package inf112.isolasjonsteamet.roborally.network.impl;
 
+import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientChatPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.GameJoinPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.KickPlayerPacket;
@@ -13,6 +14,7 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerChatPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
@@ -44,8 +46,9 @@ public class PacketProtocol {
 			PacketRegistration.findCodec(RequestLobbyInfoPacket.class),
 
 			//Misc
-			PacketRegistration.findCodec(GameJoinPacket.class),
+			PacketRegistration.findCodec(ClientChatPacket.class),
 			PacketRegistration.findCodec(ClientDisconnectingPacket.class),
+			PacketRegistration.findCodec(GameJoinPacket.class),
 			PacketRegistration.findCodec(KickPlayerPacket.class),
 
 			//Server -> Client packets
@@ -65,6 +68,7 @@ public class PacketProtocol {
 			PacketRegistration.findCodec(OtherPlayerKickedPacket.class),
 			PacketRegistration.findCodec(PlayerJoinedGamePacket.class),
 			PacketRegistration.findCodec(PlayerLeftGamePacket.class),
+			PacketRegistration.findCodec(ServerChatPacket.class),
 			PacketRegistration.findCodec(ServerClosingPacket.class),
 	};
 }

@@ -36,12 +36,14 @@ import inf112.isolasjonsteamet.roborally.gui.screens.GameScreen;
 import inf112.isolasjonsteamet.roborally.gui.screens.NotificationScreen;
 import inf112.isolasjonsteamet.roborally.network.Client;
 import inf112.isolasjonsteamet.roborally.network.ClientPacketAdapter;
+import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientChatPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStatePacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerChatPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
@@ -85,6 +87,7 @@ public class RoboRallyClient
 	private Table playerList;
 
 	private PrintStream out;
+	private TextField chatField;
 
 	private ToggleButton roundReadyButton;
 
@@ -150,6 +153,21 @@ public class RoboRallyClient
 
 		cardArea = new CardArea(skin, this::movePlayerCard);
 		leftGroup.add(cardArea.getTable());
+		leftGroup.row();
+
+		chatField = new TextField("", skin);
+		leftGroup.add(chatField).width(500);
+		var chatButton = new TextButton("Chat", skin);
+		leftGroup.add(chatButton);
+		chatButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				chat(chatField.getText());
+			}
+		});
+		leftGroup.row();
+
+
 
 		//table.debug();
 		//leftGroup.debug();
@@ -260,6 +278,7 @@ public class RoboRallyClient
 	@Override
 	public void performActionNow(Robot robot, Action action, Phase phase) {
 		action.perform(this, board, robot, phase);
+		board.fireLaser();
 		showingAction = action;
 		showingRobot = robot;
 	}
@@ -295,13 +314,23 @@ public class RoboRallyClient
 		return stage;
 	}
 
+
+	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		boolean handled = stage.touchDown(screenX, screenY, pointer, button);
+		if (!handled) {
+			stage.unfocus(chatField);
+		}
+		return handled;
+	}
+
 	/**
 	 * keyUp method that listens for keys released on the keyboard, and performs wanted action based on conditions.
 	 */
 	@SuppressWarnings({"checkstyle:Indentation", "checkstyle:WhitespaceAround"})
 	@Override
 	public boolean keyDown(int keycode) {
-		if (clientPlayer == null) {
+		if (clientPlayer == null || chatField.hasKeyboardFocus()) {
 			return false;
 		}
 
@@ -372,6 +401,12 @@ public class RoboRallyClient
 		out.flush();
 
 		return handled || stage.keyDown(keycode);
+	}
+
+	private void chat(String message) {
+		client.sendToServer(new ClientChatPacket(message));
+		stage.unfocus(chatField);
+		chatField.setText("");
 	}
 
 	private void sendPlayerStateToServer() {
@@ -498,6 +533,12 @@ public class RoboRallyClient
 			refreshShownCards();
 
 			roundReadyButton.setState(false);
+		}
+
+		@Override
+		public void onServerChat(ServerChatPacket packet) {
+			out.println(packet.getPlayer() + ": " + packet.getMessage());
+			out.flush();
 		}
 
 		@Override

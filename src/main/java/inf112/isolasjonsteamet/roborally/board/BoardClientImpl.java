@@ -93,9 +93,9 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		int width = boardLayer.getWidth();
 		int height = boardLayer.getHeight();
 
-		List<List<List<Tile>>> accY = new ArrayList<>(width);
+		List<List<List<Tile>>> accY = new ArrayList<>(height);
 		for (int y = 0; y < height; y++) {
-			List<List<Tile>> accX = new ArrayList<>(height);
+			List<List<Tile>> accX = new ArrayList<>(width);
 			for (int x = 0; x < width; x++) {
 				List<Tile> acc = new ArrayList<>();
 
