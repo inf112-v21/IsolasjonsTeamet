@@ -84,8 +84,12 @@ public class RoboRallyServer implements ActionProcessor {
 		server.close("Disposing");
 	}
 
+	/**
+	 * {@inheritDoc}
+	 */
 	public void performActionNow(Robot robot, Action action) {
 		action.perform(this, board, robot);
+		board.fireLaser();
 		board.checkValid();
 	}
 

@@ -269,6 +269,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	@Override
 	public void performActionNow(Robot robot, Action action) {
 		action.perform(this, board, robot);
+		board.fireLaser();
 		showingAction = action;
 		showingRobot = robot;
 	}
