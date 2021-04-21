@@ -5,11 +5,11 @@ import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
+import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import javax.annotation.Nullable;
 
@@ -30,8 +30,8 @@ public class BoardImpl implements Board {
 	protected BoardImpl(List<Player> players, List<List<List<TileType>>> tiles) {
 		this.players = ImmutableList.copyOf(players);
 		this.tiles = tiles;
-		width = tiles.size();
-		height = tiles.isEmpty() ? 0 : tiles.get(0).size();
+		height = tiles.size();
+		width = tiles.isEmpty() ? 0 : tiles.get(0).size();
 	}
 
 	public BoardImpl(List<Player> players, Map<Character, List<TileType>> charMap, String board) {
@@ -63,18 +63,20 @@ public class BoardImpl implements Board {
 		Map<Character, List<TileType>> immutableCharMap = new HashMap<>();
 		charMap.forEach((k, v) -> immutableCharMap.put(k, ImmutableList.copyOf(v)));
 
-		List<List<List<TileType>>> accX = new ArrayList<>(width);
-		for (String line : board.lines().collect(Collectors.toList())) {
-			List<List<TileType>> accY = new ArrayList<>(height);
+		List<List<List<TileType>>> accY = new ArrayList<>(height);
+		var lines = board.lines().collect(Collectors.toList());
+		for (int i = lines.size() - 1; i >= 0; i--) {
+			var line = lines.get(i);
+			List<List<TileType>> accX = new ArrayList<>(width);
 
 			for (char c : line.toCharArray()) {
-				accY.add(immutableCharMap.get(c));
+				accX.add(immutableCharMap.get(c));
 			}
 
-			accX.add(ImmutableList.copyOf(accY));
+			accY.add(ImmutableList.copyOf(accX));
 		}
 
-		return ImmutableList.copyOf(accX);
+		return ImmutableList.copyOf(accY);
 	}
 
 	/**
@@ -103,17 +105,17 @@ public class BoardImpl implements Board {
 	 */
 	@Override
 	public List<TileType> getTilesAt(Coordinate pos) {
-		if (tiles.size() <= pos.getX()) {
+		if (tiles.size() <= pos.getY() || pos.getY() < 0) {
 			return ImmutableList.of(Tiles.HOLE);
 		}
 
-		List<List<TileType>> tilesX = tiles.get(pos.getX());
+		List<List<TileType>> tilesY = tiles.get(pos.getY());
 
-		if (tilesX.size() <= pos.getY()) {
+		if (tilesY.size() <= pos.getX() || pos.getX() < 0) {
 			return ImmutableList.of(Tiles.HOLE);
 		}
 
-		return tilesX.get(pos.getY());
+		return tilesY.get(pos.getX());
 	}
 
 	/**
@@ -130,6 +132,54 @@ public class BoardImpl implements Board {
 
 			if (y < 0 || y >= height) {
 				throw new IllegalStateException("Player out of bounds " + player.getPos());
+			}
+		}
+	}
+
+	private boolean hasRobotInWayOfEmitter(Coordinate pos) {
+		Coordinate originalPos = pos;
+
+		boolean hasFoundEmitter = false;
+
+		for (Orientation dir : Orientation.values()) {
+			pos = originalPos;
+			boolean hasEncounteredRobot = false;
+
+			while (true) {
+				pos = pos.add(dir.toCoord());
+
+				var tiles = getTilesAt(pos);
+				hasFoundEmitter = hasFoundEmitter || tiles.contains(Tiles.LASER_EMITTER);
+				if (!tiles.contains(Tiles.LASER) && !tiles.contains(Tiles.LASER_EMITTER)) {
+					break;
+				}
+
+				if (getPlayerAt(pos) != null) {
+					hasEncounteredRobot = true;
+				}
+
+				if (tiles.contains(Tiles.LASER_EMITTER)) {
+					if (!hasEncounteredRobot) {
+						return false;
+					}
+
+					break;
+				}
+			}
+		}
+
+		return hasFoundEmitter;
+	}
+
+	@Override
+	public void fireLaser() {
+		for (Player player : players) {
+			var tiles = getTilesAt(player.getPos());
+
+			if (tiles.contains(Tiles.LASER_EMITTER)) {
+				player.damageRobot();
+			} else if (tiles.contains(Tiles.LASER) && !hasRobotInWayOfEmitter(player.getPos())) {
+				player.damageRobot();
 			}
 		}
 	}

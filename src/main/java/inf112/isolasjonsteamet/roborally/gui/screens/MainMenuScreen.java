@@ -1,5 +1,6 @@
 package inf112.isolasjonsteamet.roborally.gui.screens;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
@@ -59,6 +60,16 @@ public class MainMenuScreen extends StageScreen {
 
 		var instructionsButton = new TextButton("How to play", skin);
 		table.add(instructionsButton);
+		table.row();
+
+		var exitButton = new TextButton("Exit game", skin);
+		exitButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				Gdx.app.exit();
+			}
+		});
+		table.add(exitButton);
 		table.row();
 
 		startGameButton.addListener(new ChangeListener() {
