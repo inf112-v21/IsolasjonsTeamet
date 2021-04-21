@@ -3,6 +3,7 @@ package inf112.isolasjonsteamet.roborally.network;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import io.netty.buffer.ByteBuf;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -19,15 +20,25 @@ public class ByteBufHelper {
 	@SuppressWarnings("checkstyle:Indentation")
 	@Nullable
 	public static String readString(ByteBuf buf, int maxSize) {
-		int length = switch (maxSize) {
+		long length = switch (maxSize) {
 			case 1 -> buf.readUnsignedByte();
 			case 2 -> buf.readUnsignedShort();
 			case 3 -> buf.readUnsignedMedium();
-			case 4 -> buf.readInt();
+			case 4 -> buf.readUnsignedInt();
+			default -> throw new IllegalArgumentException("Illegal max size %d specified".formatted(maxSize));
+		};
+		int intLength = (int) length;
+		Charset utf8 = StandardCharsets.UTF_8;
+
+		var res = switch (maxSize) {
+			case 1 -> length == (short) (Byte.MAX_VALUE * 2 + 1) ? null : buf.readCharSequence(intLength, utf8);
+			case 2 -> length == Short.MAX_VALUE * 2 + 1 ? null : buf.readCharSequence(intLength, utf8);
+			case 3 -> length == (1 << 24) - 1 ? null : buf.readCharSequence(intLength, utf8);
+			case 4 -> length == Integer.MAX_VALUE * 2L + 1 ? null : buf.readCharSequence(intLength, utf8);
 			default -> throw new IllegalArgumentException("Illegal max size %d specified".formatted(maxSize));
 		};
 
-		return length == -1 ? null : buf.readCharSequence(length, StandardCharsets.UTF_8).toString();
+		return res != null ? res.toString() : null;
 	}
 
 	/**

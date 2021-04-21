@@ -26,6 +26,7 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePack
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerChatPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.SetNewHostPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
@@ -261,25 +262,25 @@ public class CodecsSpec {
 		@DisplayName("with one player not ready")
 		@Test
 		public void onePlayer() {
-			assertSurvivesRoundtrip(new LobbyInfoPacket(ImmutableMap.of("foo", false), "foo"));
+			assertSurvivesRoundtrip(new LobbyInfoPacket(ImmutableMap.of("foo", false), "foo", "foo"));
 		}
 
 		@DisplayName("with one player ready")
 		@Test
 		public void onePlayerReady() {
-			assertSurvivesRoundtrip(new LobbyInfoPacket(ImmutableMap.of("foo", true), "foo"));
+			assertSurvivesRoundtrip(new LobbyInfoPacket(ImmutableMap.of("foo", true), "foo", "foo"));
 		}
 
 		@DisplayName("with two players, one ready")
 		@Test
 		public void twoPlayers() {
-			assertSurvivesRoundtrip(new LobbyInfoPacket(ImmutableMap.of("foo", false, "bar", true), "foo"));
+			assertSurvivesRoundtrip(new LobbyInfoPacket(ImmutableMap.of("foo", false, "bar", true), "foo", "bar"));
 		}
 
 		@DisplayName("with two players, both ready")
 		@Test
 		public void twoPlayersReady() {
-			assertSurvivesRoundtrip(new LobbyInfoPacket(ImmutableMap.of("foo", true, "bar", true), "foo"));
+			assertSurvivesRoundtrip(new LobbyInfoPacket(ImmutableMap.of("foo", true, "bar", true), "foo", null));
 		}
 	}
 
@@ -374,6 +375,12 @@ public class CodecsSpec {
 		protected Packet makePacket(String reason) {
 			return new ServerClosingPacket(reason);
 		}
+	}
+
+	@DisplayName("SetNewHostPacket" + SURVIVE_ENCODE_DECODE)
+	@Test
+	public void setNewHost() {
+		assertSurvivesRoundtrip(new SetNewHostPacket("bar"));
 	}
 
 	@SuppressWarnings("unused")

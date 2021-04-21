@@ -16,6 +16,7 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePack
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerChatPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.SetNewHostPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
@@ -70,5 +71,6 @@ public class PacketProtocol {
 			PacketRegistration.findCodec(PlayerLeftGamePacket.class),
 			PacketRegistration.findCodec(ServerChatPacket.class),
 			PacketRegistration.findCodec(ServerClosingPacket.class),
+			PacketRegistration.findCodec(SetNewHostPacket.class),
 	};
 }

@@ -18,6 +18,7 @@ import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerSta
 import inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerChatPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.SetNewHostPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
@@ -44,7 +45,8 @@ public class RoboRallyServer implements ActionProcessor {
 	private final Server server;
 
 	private final Map<String, ServerStatePlayer> players;
-	private final String host;
+	private String host;
+	private final @Nullable String serverPlayer;
 	private final CardDeck deck;
 	private final Board board;
 
@@ -55,12 +57,21 @@ public class RoboRallyServer implements ActionProcessor {
 	 * @param server The server to use for sending packets.
 	 * @param players Info about the players that will participate.
 	 * @param host The player which has been designated host.
+	 * @param serverPlayer The player which is hosting the server (us).
 	 * @param deck The deck to use.
 	 * @param board The board to use.
 	 */
-	public RoboRallyServer(Server server, List<PlayerInfo> players, String host, CardDeck deck, Board board) {
+	public RoboRallyServer(
+			Server server,
+			List<PlayerInfo> players,
+			String host,
+			@Nullable String serverPlayer,
+			CardDeck deck,
+			Board board
+	) {
 		this.server = server;
 		this.host = host;
+		this.serverPlayer = serverPlayer;
 
 		//We need to keep the player order, so we use a tree map
 		var playersMap = new TreeMap<String, ServerStatePlayer>();
@@ -191,17 +202,24 @@ public class RoboRallyServer implements ActionProcessor {
 
 		@Override
 		public void onClientDisconnecting(String player, ClientDisconnectingPacket packet) {
-			if (player.equals(host)) {
-				server.close("Host left");
+			if (player.equals(serverPlayer)) {
+				server.close("Server player left");
 			} else {
 				players.remove(player);
 				server.sendToAllPlayers(new PlayerLeftGamePacket(player, packet.getReason()));
+
+				if (player.equals(host)) {
+					@SuppressWarnings("OptionalGetWithoutIsPresent")
+					ServerStatePlayer newHostPlayer = players.values().stream().findAny().get();
+					host = newHostPlayer.getName();
+					server.sendToAllPlayers(new SetNewHostPacket(host));
+				}
 			}
 		}
 
 		@Override
 		public void onKickPlayer(String player, KickPlayerPacket packet) {
-			if (player.equals(host)) {
+			if (player.equals(host) && !packet.getPlayerName().equals(serverPlayer)) {
 				server.kickPlayer(packet.getPlayerName(), packet.getReason());
 			}
 		}

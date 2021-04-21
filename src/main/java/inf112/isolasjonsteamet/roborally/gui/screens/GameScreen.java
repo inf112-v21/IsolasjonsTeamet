@@ -39,12 +39,14 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 	 * @param boardFileName The name of the board to play.
 	 * @param playerInfos Info about the players that will participate.
 	 * @param host The name of the designated host.
+	 * @param serverPlayer The player which is hosting the server.
 	 * @param server The server, if this player is also the server.
 	 */
 	public GameScreen(
 			String boardFileName,
 			List<PlayerInfo> playerInfos,
 			String host,
+			@Nullable String serverPlayer,
 			ScreenController screenController,
 			@Nullable Server server
 	) {
@@ -61,7 +63,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 
 			var board = new BoardClientImpl(boardFileName);
 			var game = new RoboRallyClient(
-					playerInfo.getClient(), board, playerInfo.getName(), host, screenController, this
+					playerInfo.getClient(), board, playerInfo.getName(), host, serverPlayer, screenController, this
 			);
 
 			game.create();
@@ -85,7 +87,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 			var deck = new DequeCardDeckImpl(allCardsRepeated.build());
 
 			var board = new BoardClientImpl(boardFileName);
-			gameServer = new RoboRallyServer(server, playerInfos, host, deck, board);
+			gameServer = new RoboRallyServer(server, playerInfos, host, serverPlayer, deck, board);
 			gameServer.prepareRound();
 		}
 

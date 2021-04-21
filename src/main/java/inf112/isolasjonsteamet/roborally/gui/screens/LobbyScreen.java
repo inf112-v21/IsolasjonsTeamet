@@ -23,6 +23,7 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPac
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.SetNewHostPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.GameStartingPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.LobbyInfoPacket;
 import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
@@ -53,6 +54,7 @@ public class LobbyScreen extends StageScreen {
 	private Table playerList;
 	private Map<String, Boolean> players = new TreeMap<>();
 	private String currentHost;
+	private @Nullable String serverPlayer;
 
 	/**
 	 * Creates a new lobby screen as the host player.
@@ -61,11 +63,13 @@ public class LobbyScreen extends StageScreen {
 	 * @param hostPlayer Name of the host player.
 	 * @param client The client to communicate to the server like any other player.
 	 */
+	@SuppressWarnings("NullableProblems")
 	public LobbyScreen(ScreenController screenController, Server server, String hostPlayer, Client client) {
 		this.screenController = screenController;
 		this.server = server;
 		this.client = client;
 
+		serverPlayer = hostPlayer;
 		serverLobby = new ServerLobby(hostPlayer);
 		clientLobby = new ClientLobby();
 	}
@@ -152,6 +156,8 @@ public class LobbyScreen extends StageScreen {
 		players.forEach((player, ready) -> {
 			if (player.equals(currentHost)) {
 				playerList.add("Host").width(40);
+			} else if (player.equals(serverPlayer)) {
+				playerList.add("Server").width(40);
 			} else {
 				playerList.add().width(40);
 			}
@@ -163,7 +169,7 @@ public class LobbyScreen extends StageScreen {
 				playerList.add();
 			}
 
-			if (server != null && !player.equals(currentHost)) {
+			if (server != null && !player.equals(currentHost) && !player.equals(serverPlayer)) {
 				var kickButton = new TextButton("Kick", skin);
 				var kickReasonField = new TextField("", skin);
 
@@ -222,7 +228,7 @@ public class LobbyScreen extends StageScreen {
 					playerInfos.add(new PlayerInfo(playerName, playerClient, playerClient != null));
 				}
 
-				screenController.startGame("example.tmx", playerInfos.build(), currentHost, server);
+				screenController.startGame("example.tmx", playerInfos.build(), currentHost, serverPlayer, server);
 			}
 		}
 	}
@@ -281,12 +287,12 @@ public class LobbyScreen extends StageScreen {
 		@Override
 		public void onLobbyReadyUpdate(String player, LobbyReadyUpdatePacket packet) {
 			isPlayerReady.put(player, packet.isReady());
-			server.sendToAllPlayers(new LobbyInfoPacket(isPlayerReady, hostPlayer));
+			server.sendToAllPlayers(new LobbyInfoPacket(isPlayerReady, hostPlayer, serverPlayer));
 		}
 
 		@Override
 		public void onRequestLobbyInfo(String player, RequestLobbyInfoPacket packet) {
-			server.sendToPlayer(player, new LobbyInfoPacket(isPlayerReady, hostPlayer));
+			server.sendToPlayer(player, new LobbyInfoPacket(isPlayerReady, hostPlayer, serverPlayer));
 		}
 
 		@Override
@@ -297,7 +303,7 @@ public class LobbyScreen extends StageScreen {
 
 		@Override
 		public void onKickPlayer(String player, KickPlayerPacket packet) {
-			if (player.equals(hostPlayer)) {
+			if (player.equals(hostPlayer) && !packet.getPlayerName().equals(serverPlayer)) {
 				LobbyScreen.this.kickPlayer(packet.getPlayerName(), packet.getReason());
 			}
 		}
@@ -323,7 +329,13 @@ public class LobbyScreen extends StageScreen {
 		public void onLobbyInfo(LobbyInfoPacket packet) {
 			players = new HashMap<>(packet.getIsPlayerReady());
 			currentHost = packet.getHost();
+			serverPlayer = packet.getServerPlayer();
 			refreshPlayerList();
+		}
+
+		@Override
+		public void onSetNewHost(SetNewHostPacket packet) {
+			currentHost = packet.getNewHost();
 		}
 
 		@Override

@@ -8,6 +8,7 @@ import inf112.isolasjonsteamet.roborally.network.Codec;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import io.netty.buffer.ByteBuf;
 import java.util.Map;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Sent to players to inform them of the current state of the lobby. Contains the current host, all the players, and if
@@ -17,10 +18,15 @@ public class LobbyInfoPacket implements Server2ClientPacket {
 
 	private final Map<String, Boolean> isPlayerReady;
 	private final String host;
+	private final @Nullable String serverPlayer;
 
-	public LobbyInfoPacket(Map<String, Boolean> isPlayerReady, String host) {
+	/**
+	 * Creates a new lobby packet. All the players should be included in isPlayerReady.
+	 */
+	public LobbyInfoPacket(Map<String, Boolean> isPlayerReady, String host, @Nullable String serverPlayer) {
 		this.isPlayerReady = isPlayerReady;
 		this.host = host;
+		this.serverPlayer = serverPlayer;
 	}
 
 	public Map<String, Boolean> getIsPlayerReady() {
@@ -29,6 +35,11 @@ public class LobbyInfoPacket implements Server2ClientPacket {
 
 	public String getHost() {
 		return host;
+	}
+
+	@Nullable
+	public String getServerPlayer() {
+		return serverPlayer;
 	}
 
 	@Override
@@ -40,12 +51,16 @@ public class LobbyInfoPacket implements Server2ClientPacket {
 			return false;
 		}
 		LobbyInfoPacket that = (LobbyInfoPacket) o;
-		return Objects.equal(isPlayerReady, that.isPlayerReady) && Objects.equal(host, that.host);
+		//@formatter:off
+		return Objects.equal(isPlayerReady, that.isPlayerReady)
+			&& Objects.equal(host, that.host)
+			&& Objects.equal(serverPlayer, that.serverPlayer);
+		//@formatter:on
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(isPlayerReady, host);
+		return Objects.hashCode(isPlayerReady, host, serverPlayer);
 	}
 
 	@Override
@@ -53,6 +68,7 @@ public class LobbyInfoPacket implements Server2ClientPacket {
 		return MoreObjects.toStringHelper(this)
 				.add("isPlayerReady", isPlayerReady)
 				.add("host", host)
+				.add("serverPlayer", serverPlayer)
 				.toString();
 	}
 
@@ -75,8 +91,9 @@ public class LobbyInfoPacket implements Server2ClientPacket {
 				builder.put(player, ready);
 			}
 			var host = ByteBufHelper.readString(in, 1);
+			var serverPlayer = ByteBufHelper.readString(in, 1);
 
-			return new LobbyInfoPacket(builder.build(), host);
+			return new LobbyInfoPacket(builder.build(), host, serverPlayer);
 		}
 
 		@Override
@@ -89,6 +106,7 @@ public class LobbyInfoPacket implements Server2ClientPacket {
 			});
 
 			ByteBufHelper.writeString(msg.host, buf, 1);
+			ByteBufHelper.writeString(msg.serverPlayer, buf, 1);
 		}
 	}
 }

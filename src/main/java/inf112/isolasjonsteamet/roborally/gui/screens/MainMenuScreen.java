@@ -152,7 +152,11 @@ public class MainMenuScreen extends StageScreen {
 				}
 
 				screenController.startGame(
-						"example.tmx", playersBuilder.build(), playerNames.asList().get(0), localServerClient
+						"example.tmx",
+						playersBuilder.build(),
+						playerNames.asList().get(0),
+						playerNames.asList().get(0),
+						localServerClient
 				);
 			}
 		});

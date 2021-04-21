@@ -41,6 +41,7 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPac
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerChatPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.SetNewHostPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
@@ -54,6 +55,7 @@ import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * Game class that starts a new game.
@@ -64,7 +66,8 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	private final ClientBoard board;
 	private final ClientPlayer clientPlayer;
 	private final List<Player> players = new ArrayList<>();
-	private final String host;
+	private String host;
+	private final @Nullable String serverPlayer;
 	private final ScreenController screenController;
 	private final GameScreen gameScreen;
 
@@ -89,17 +92,21 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	 * @param board The board to use.
 	 * @param clientName The name of the client player.
 	 * @param host The name of the host player.
+	 * @param serverPlayer The player which is hosting the server.
 	 */
 	public RoboRallyClient(
 			Client client,
 			ClientBoard board,
 			String clientName,
-			String host, ScreenController screenController,
+			String host,
+			@Nullable String serverPlayer,
+			ScreenController screenController,
 			GameScreen gameScreen) {
 		this.client = client;
 		this.board = board;
 		this.clientPlayer = new PlayerImpl(clientName, this, new Coordinate(0, 0), Orientation.NORTH);
 		this.host = host;
+		this.serverPlayer = serverPlayer;
 		this.screenController = screenController;
 		this.gameScreen = gameScreen;
 	}
@@ -216,7 +223,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 			}
 			 */
 
-			if (clientPlayer.getName().equals(host) && !playerName.equals(host)) {
+			if (clientPlayer.getName().equals(host) && !playerName.equals(host) && !playerName.equals(serverPlayer)) {
 				var kickButton = new TextButton("Kick", skin);
 				var kickReasonField = new TextField("", skin);
 
@@ -495,6 +502,11 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 		public void onServerChat(ServerChatPacket packet) {
 			out.println(packet.getPlayer() + ": " + packet.getMessage());
 			out.flush();
+		}
+
+		@Override
+		public void onSetNewHost(SetNewHostPacket packet) {
+			host = packet.getNewHost();
 		}
 
 		@Override

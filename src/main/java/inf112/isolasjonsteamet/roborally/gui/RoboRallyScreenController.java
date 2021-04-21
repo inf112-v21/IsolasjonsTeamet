@@ -57,8 +57,14 @@ public class RoboRallyScreenController extends Game implements DelegatingInputPr
 	}
 
 	@Override
-	public void startGame(String boardFileName, List<PlayerInfo> players, String host, @Nullable Server server) {
-		pushInputScreen(new GameScreen(boardFileName, players, host, this, server));
+	public void startGame(
+			String boardFileName,
+			List<PlayerInfo> players,
+			String host,
+			@Nullable String serverPlayer,
+			@Nullable Server server
+	) {
+		pushInputScreen(new GameScreen(boardFileName, players, host, serverPlayer, this, server));
 	}
 
 	@Override

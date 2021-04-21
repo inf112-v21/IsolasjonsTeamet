@@ -38,5 +38,11 @@ public interface ScreenController {
 	/**
 	 * Starts a game and pushes that screen to the stack.
 	 */
-	void startGame(String boardFileName, List<PlayerInfo> players, String host, @Nullable Server server);
+	void startGame(
+			String boardFileName,
+			List<PlayerInfo> players,
+			String host,
+			@Nullable String serverPlayer,
+			@Nullable Server server
+	);
 }

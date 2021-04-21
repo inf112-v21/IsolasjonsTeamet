@@ -9,6 +9,7 @@ import inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerChatPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.SetNewHostPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket;
@@ -45,6 +46,9 @@ public abstract class ClientPacketAdapter implements ClientPacketListener<Server
 	}
 
 	public void onServerClosing(ServerClosingPacket packet) {
+	}
+
+	public void onSetNewHost(SetNewHostPacket packet) {
 	}
 
 	//Game packets
@@ -94,6 +98,8 @@ public abstract class ClientPacketAdapter implements ClientPacketListener<Server
 			onServerChat((ServerChatPacket) packet);
 		} else if (packet instanceof ServerClosingPacket) {
 			onServerClosing((ServerClosingPacket) packet);
+		} else if (packet instanceof SetNewHostPacket) {
+			onSetNewHost((SetNewHostPacket) packet);
 		} else {
 			throw new IllegalArgumentException("Unknown S2C packet type " + packet.getClass());
 		}
