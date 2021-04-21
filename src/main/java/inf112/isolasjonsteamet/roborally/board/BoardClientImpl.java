@@ -52,7 +52,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	 * Load cells needed to build the board.
 	 */
 	private void loadCells() {
-	    layers = map.getLayers();
+		layers = map.getLayers();
 
 		boardLayer = (TiledMapTileLayer) layers.get("Board");
 		playerLayer = (TiledMapTileLayer) layers.get("Player");
@@ -144,30 +144,30 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		return 300; //TODO: Make configurable somehow
 	}
 
-    @Override
-    public void show(Player player) {
-        layers.add(playerLayer);
-    }
+	@Override
+	public void show(Player player) {
+		layers.add(playerLayer);
+	}
 
-    @Override
-    public void hide(Player player) {
-	    layers.remove(playerLayer);
-    }
+	@Override
+	public void hide(Player player) {
+		layers.remove(playerLayer);
+	}
 
-    @Override
-    public void addEffect(Effect effect) {
-	    effects.add(effect);
-    }
+	@Override
+	public void addEffect(Effect effect) {
+		effects.add(effect);
+	}
 
-    @Override
-    public void removeEffect(Effect effect) {
-        effects.remove(effect);
-    }
+	@Override
+	public void removeEffect(Effect effect) {
+		effects.remove(effect);
+	}
 
-    @Override
-    public void renderEffects(Batch batch) {
-        for (Effect effect : effects) {
-            effect.render(batch);
-        }
-    }
+	@Override
+	public void renderEffects(Batch batch) {
+		for (Effect effect : effects) {
+			effect.render(batch);
+		}
+	}
 }

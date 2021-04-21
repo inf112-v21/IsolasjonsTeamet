@@ -30,6 +30,9 @@ public class MapRendererWidget extends Widget {
 		sizeChanged();
 	}
 
+	/**
+	 * Draw method.
+	 */
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
@@ -37,7 +40,7 @@ public class MapRendererWidget extends Widget {
 		// so we need to stop the current one, and restart it after we have rendered the map.
 		batch.end();
 		mapRenderer.render();
-        batch.begin();
+		batch.begin();
 
 		board.renderEffects(batch);
 	}

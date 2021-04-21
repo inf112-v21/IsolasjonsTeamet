@@ -9,8 +9,8 @@ import inf112.isolasjonsteamet.roborally.players.Player;
  */
 public interface Action {
 
-    default void initialize(Board board, Player player) {
-    }
+	default void initialize(Board board, Player player) {
+	}
 
 	/**
 	 * Perform an action on the board.
@@ -18,7 +18,7 @@ public interface Action {
 	void perform(ActionProcessor processor, Board board, Player player);
 
 	default void initializeShow(Player player, ClientBoard board) {
-    }
+	}
 
 	/**
 	 * Shows the action being executed.

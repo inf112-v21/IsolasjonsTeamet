@@ -39,25 +39,25 @@ public class Move implements Action {
 
 	@Override
 	public void initializeShow(Player player, ClientBoard board) {
-	    board.hide(player);
-	    playerEffect = new PlayerEffect(player);
-	    board.addEffect(playerEffect);
-    }
+		board.hide(player);
+		playerEffect = new PlayerEffect(player);
+		board.addEffect(playerEffect);
+	}
 
-    @Override
-    public boolean show(Player player, ClientBoard board, int framesSinceStart) {
-	    if (framesSinceStart == 10 * numMoves) {
-	        board.show(player);
-	        board.removeEffect(playerEffect);
-	        return true;
-        }
+	@Override
+	public boolean show(Player player, ClientBoard board, int framesSinceStart) {
+		if (framesSinceStart == 10 * numMoves) {
+			board.show(player);
+			board.removeEffect(playerEffect);
+			return true;
+		}
 
-        Coordinate coord = direction.toCoord();
-        int x = coord.getX();
-        int y = coord.getY();
+		Coordinate coord = direction.toCoord();
+		int x = coord.getX();
+		int y = coord.getY();
 
-        playerEffect.move(x * 0.1F, y * 0.1F);
+		playerEffect.move(x * 0.1F, y * 0.1F);
 
-	    return false;
-    }
+		return false;
+	}
 }
