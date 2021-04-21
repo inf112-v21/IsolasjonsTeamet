@@ -22,6 +22,7 @@ public class LaserSpec {
                 "l"
         );
 
+        board.checkValid();
         board.fireLaser();
 
         assertEquals(1, player.getDamageTokens());
@@ -36,6 +37,7 @@ public class LaserSpec {
                 "l"
         );
 
+        board.checkValid();
         board.fireLaser();
 
         assertEquals(1, player.getDamageTokens());
@@ -44,7 +46,7 @@ public class LaserSpec {
     @Test
     public void laserDoesNotPassThroughPlayers() {
         var player1 = new PlayerImpl(null, "foo", new Coordinate(0, 0), Orientation.NORTH);
-        var player2 = new PlayerImpl(null, "bar", new Coordinate(0, 1), Orientation.NORTH);
+        var player2 = new PlayerImpl(null, "bar", new Coordinate(1, 0), Orientation.NORTH);
         var board = new BoardImpl(
                 ImmutableList.of(player1, player2),
                 ImmutableMap.of(
@@ -54,6 +56,7 @@ public class LaserSpec {
                 "el"
         );
 
+        board.checkValid();
         board.fireLaser();
 
         assertEquals(1, player1.getDamageTokens());
@@ -62,9 +65,9 @@ public class LaserSpec {
 
     @Test
     public void laserCanComeFromMultipleDirections() {
-        var player1 = new PlayerImpl(null, "foo", new Coordinate(0, 1), Orientation.NORTH);
-        var player2 = new PlayerImpl(null, "bar", new Coordinate(0, 2), Orientation.NORTH);
-        var player3 = new PlayerImpl(null, "baz", new Coordinate(0, 3), Orientation.NORTH);
+        var player1 = new PlayerImpl(null, "foo", new Coordinate(1, 0), Orientation.NORTH);
+        var player2 = new PlayerImpl(null, "bar", new Coordinate(2, 0), Orientation.NORTH);
+        var player3 = new PlayerImpl(null, "baz", new Coordinate(3, 0), Orientation.NORTH);
         var board = new BoardImpl(
                 ImmutableList.of(player1, player2, player3),
                 ImmutableMap.of(
@@ -74,6 +77,7 @@ public class LaserSpec {
                 "ellle"
         );
 
+        board.checkValid();
         board.fireLaser();
 
         assertEquals(1, player1.getDamageTokens());
