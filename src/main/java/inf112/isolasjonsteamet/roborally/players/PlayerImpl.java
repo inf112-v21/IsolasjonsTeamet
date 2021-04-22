@@ -9,6 +9,7 @@ import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -44,8 +45,8 @@ public class PlayerImpl implements ClientPlayer, ServerPlayer {
 	}
 
 	@Override
-	public int getStuckCardAmount() {
-		return 0;
+	public int getGivenCardsReduction() {
+		return robot.getDamageTokens();
 	}
 
 	@Override
@@ -59,10 +60,41 @@ public class PlayerImpl implements ClientPlayer, ServerPlayer {
 		List<Card> chosenCards = this.cards.get(CardRow.CHOSEN);
 
 		ImmutableList.Builder<Card> builder = ImmutableList.builder();
-		builder.addAll(givenCards);
-		builder.addAll(chosenCards);
+
+		var damage = robot.getDamageTokens();
+		int lockedCards = damage - 4;
+		ImmutableList.Builder<Card> newChosenCards = ImmutableList.builder();
+
+		Iterator<Card> chosenIt = chosenCards.iterator();
+
+		int i = 5;
+		while (chosenIt.hasNext() && i > lockedCards) {
+			builder.add(chosenIt.next());
+			newChosenCards.add(Cards.NO_CARD);
+			i--;
+		}
+
+		boolean hasAddedNewChosenCards = false;
+		while (chosenIt.hasNext()) {
+			Card card = chosenIt.next();
+			if (!card.equals(Cards.NO_CARD)) {
+				hasAddedNewChosenCards = true;
+				newChosenCards.add(card);
+			}
+		}
+
+		for (Card card : givenCards) {
+			if (!card.equals(Cards.NO_CARD)) {
+				builder.add(card);
+			}
+		}
+
 		this.cards.put(CardRow.GIVEN, ImmutableList.of());
-		this.cards.put(CardRow.CHOSEN, ImmutableList.of());
+		if (hasAddedNewChosenCards) {
+			this.cards.put(CardRow.CHOSEN, newChosenCards.build());
+		} else {
+			this.cards.put(CardRow.CHOSEN, ImmutableList.of());
+		}
 
 		return builder.build();
 	}

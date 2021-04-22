@@ -124,7 +124,7 @@ public class RoboRallyServer implements ActionProcessor {
 
 	private void dealCards() {
 		for (ServerStatePlayer player : players.values()) {
-			var newCards = deck.grabCards(8 - player.getStuckCardAmount());
+			var newCards = deck.grabCards(CardRow.GIVEN.getSize() - player.getGivenCardsReduction());
 			player.giveCards(newCards);
 			server.sendToPlayer(player.getName(), new DealNewCardsPacket(newCards));
 		}
@@ -265,8 +265,8 @@ public class RoboRallyServer implements ActionProcessor {
 		}
 
 		@Override
-		public int getStuckCardAmount() {
-			return player.getStuckCardAmount();
+		public int getGivenCardsReduction() {
+			return player.getGivenCardsReduction();
 		}
 
 		@Override
