@@ -19,10 +19,13 @@ import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.tiles.WallTileType;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.function.IntFunction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -38,6 +41,9 @@ public class PlayerSpec implements ActionProcessor {
 
 	private BoardImpl board;
 	private Player activePlayer;
+
+	private boolean performingAction = false;
+	private final Queue<Entry<Action, Player>> scheduledActions = new ArrayDeque<>();
 
 	/**
 	 * Creates a new simple player for testing.
@@ -123,10 +129,28 @@ public class PlayerSpec implements ActionProcessor {
 		assertEquals(player, board.getPlayerAt(coord));
 	}
 
+	/**
+	 * Perform one action.
+	 *
+	 * @param player The player to run the action for.
+	 */
 	@Override
 	public void performActionNow(Player player, Action action) {
+		action.initialize(board, player);
 		action.perform(this, board, player);
 		board.checkValid();
+	}
+
+	/**
+	 * Schedule an action.
+	 */
+	@Override
+	public void scheduleAction(Player player, Action action) {
+		if (scheduledActions.isEmpty() && !performingAction) {
+			performActionNow(player, action);
+		} else {
+			scheduledActions.add(Map.entry(action, player));
+		}
 	}
 
 	/**

@@ -1,13 +1,16 @@
 package inf112.isolasjonsteamet.roborally.board;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.google.common.collect.ImmutableList;
+import inf112.isolasjonsteamet.roborally.effects.Effect;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
@@ -22,6 +25,7 @@ import java.util.List;
 public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
 	private final TiledMap map;
+	private MapLayers layers;
 	public TiledMapTileLayer boardLayer;
 	public TiledMapTileLayer playerLayer;
 	public TiledMapTileLayer holeLayer;
@@ -32,6 +36,8 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	public TiledMapTileLayer.Cell playerDiedCell;
 	public TiledMapTileLayer.Cell playerCell;
 	public TiledMapTileLayer.Cell transparentCell;
+
+	private final List<Effect> effects = new ArrayList<>();
 
 	/**
 	 * Create a new instance of BoardClientImpl.
@@ -49,10 +55,12 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	 * Load cells needed to build the board.
 	 */
 	private void loadCells() {
-		boardLayer = (TiledMapTileLayer) map.getLayers().get("Board");
-		playerLayer = (TiledMapTileLayer) map.getLayers().get("Player");
-		holeLayer = (TiledMapTileLayer) map.getLayers().get("Hole");
-		flagLayer = (TiledMapTileLayer) map.getLayers().get("Flag");
+		layers = map.getLayers();
+
+		boardLayer = (TiledMapTileLayer) layers.get("Board");
+		playerLayer = (TiledMapTileLayer) layers.get("Player");
+		holeLayer = (TiledMapTileLayer) layers.get("Hole");
+		flagLayer = (TiledMapTileLayer) layers.get("Flag");
 
 		var wallLayerRaw = map.getLayers().get("Wall");
 		if (wallLayerRaw == null) {
@@ -193,5 +201,32 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	@Override
 	public int getTextureTileSize() {
 		return 300; //TODO: Make configurable somehow
+	}
+
+	@Override
+	public void show(Player player) {
+		layers.add(playerLayer);
+	}
+
+	@Override
+	public void hide(Player player) {
+		layers.remove(playerLayer);
+	}
+
+	@Override
+	public void addEffect(Effect effect) {
+		effects.add(effect);
+	}
+
+	@Override
+	public void removeEffect(Effect effect) {
+		effects.remove(effect);
+	}
+
+	@Override
+	public void renderEffects(Batch batch) {
+		for (Effect effect : effects) {
+			effect.render(batch);
+		}
 	}
 }
