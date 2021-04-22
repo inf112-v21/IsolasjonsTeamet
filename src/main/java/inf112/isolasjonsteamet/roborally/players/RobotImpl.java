@@ -3,7 +3,6 @@ package inf112.isolasjonsteamet.roborally.players;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.KillRobot;
 import inf112.isolasjonsteamet.roborally.board.Board;
-import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
@@ -89,7 +88,7 @@ public class RobotImpl implements Robot {
 	@Override
 	public void damageRobot() {
 		if (++this.damageToken >= 10) {
-			actionProcessor.performActionNow(this, new KillRobot(), Phase.MISC);
+			actionProcessor.scheduleAction(this, new KillRobot());
 		}
 	}
 

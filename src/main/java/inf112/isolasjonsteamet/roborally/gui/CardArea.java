@@ -59,7 +59,7 @@ public class CardArea {
 			table.add(cardsGroup).padBottom(10F);
 			table.row();
 
-			for (int col = 0; col < 8; col++) {
+			for (int col = 0; col < row.getSize(); col++) {
 				var stack = new Stack();
 				stacks.add(stack);
 				stack.add(new Image(noCardDrawable));

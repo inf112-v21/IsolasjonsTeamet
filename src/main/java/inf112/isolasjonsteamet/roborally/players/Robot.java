@@ -47,7 +47,7 @@ public interface Robot {
 	void repairRobot();
 
 	/**
-	 * Gets the amount of damage this robot has taken.
+	 * Gets the amount of damage tokens this robot has.
 	 */
 	int getDamageTokens();
 

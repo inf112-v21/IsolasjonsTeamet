@@ -20,9 +20,9 @@ public interface Player {
 	String getName();
 
 	/**
-	 * How many cards the player has stuck, and can as such not remove.
+	 * The reduction in the amount of cards the player can get.
 	 */
-	int getStuckCardAmount();
+	int getGivenCardsReduction();
 
 	/**
 	 * Give the player new cards.

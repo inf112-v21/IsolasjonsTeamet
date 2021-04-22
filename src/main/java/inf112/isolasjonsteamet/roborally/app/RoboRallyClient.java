@@ -543,7 +543,7 @@ public class RoboRallyClient
 		public void onRunRound(RunRoundPacket packet) {
 			var cards = packet.getPlayedCards();
 
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < CardRow.CHOSEN.getSize(); i++) {
 				currentPhase = Phase.CARDS;
 				for (Player player : players) {
 					processPlayerCard(cards, player, i);

@@ -21,7 +21,7 @@ public class LaserSpec extends RoboRallySharedSpec {
 
     @Test
     public void laserDamagesPlayers() {
-		board = new BoardImpl(
+		var board = new BoardImpl(
 				ImmutableMap.of('l', ImmutableList.of(Tiles.GROUND, Tiles.LASER)),
 				"l"
 		);
