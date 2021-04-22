@@ -1,7 +1,7 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
-import inf112.isolasjonsteamet.roborally.effects.CheckPointEffect;
+import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 import inf112.isolasjonsteamet.roborally.effects.KillEffect;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
@@ -23,7 +23,7 @@ public class KillRobot implements Action {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean show(Player player, Board board, int framesSinceStarted) {
+	public boolean show(Player player, ClientBoard board, int framesSinceStarted) {
 		if (framesSinceStarted != 2) {
 			Coordinate effPos = player.getPos();
 			KillEffect eff = new KillEffect(effPos);

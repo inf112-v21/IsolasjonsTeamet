@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 import inf112.isolasjonsteamet.roborally.effects.DamageEffect;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
@@ -19,7 +20,7 @@ public class Damage implements Action {
 	}
 
 	@Override
-	public boolean show(Player player, Board board, int framesSinceStarted) {
+	public boolean show(Player player, ClientBoard board, int framesSinceStarted) {
 		if (framesSinceStarted != 4) {
 			Coordinate effPos = player.getPos();
 			DamageEffect eff = new DamageEffect(effPos);
