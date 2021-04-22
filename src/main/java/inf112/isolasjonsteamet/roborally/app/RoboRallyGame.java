@@ -279,7 +279,6 @@ public class RoboRallyGame
 			return;
 		}
 
-		action.initialize(board, player);
 		scheduledActions.add(Map.entry(action, player));
 	}
 
