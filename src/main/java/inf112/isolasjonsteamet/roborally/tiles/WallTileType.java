@@ -1,5 +1,7 @@
 package inf112.isolasjonsteamet.roborally.tiles;
 
+import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableList.Builder;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
@@ -53,5 +55,32 @@ public class WallTileType extends TileType {
 			}
 		}
 		return builder.build();
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) {
+			return true;
+		}
+		if (o == null || getClass() != o.getClass()) {
+			return false;
+		}
+		WallTileType that = (WallTileType) o;
+		return hasNorthWall == that.hasNorthWall && hasWestWall == that.hasWestWall && hasSouthWall == that.hasSouthWall && hasEastWall == that.hasEastWall;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(hasNorthWall, hasWestWall, hasSouthWall, hasEastWall);
+	}
+
+	@Override
+	public String toString() {
+		return MoreObjects.toStringHelper(this)
+				.add("hasNorthWall", hasNorthWall)
+				.add("hasWestWall", hasWestWall)
+				.add("hasSouthWall", hasSouthWall)
+				.add("hasEastWall", hasEastWall)
+				.toString();
 	}
 }
