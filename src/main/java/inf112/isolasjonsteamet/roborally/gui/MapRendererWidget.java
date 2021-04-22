@@ -30,9 +30,6 @@ public class MapRendererWidget extends Widget {
 		sizeChanged();
 	}
 
-	/**
-	 * Draw method.
-	 */
 	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
@@ -67,9 +64,6 @@ public class MapRendererWidget extends Widget {
 		return board.getWidth() * tileSize;
 	}
 
-	/**
-	 * Check if position is changed.
-	 */
 	@Override
 	protected void positionChanged() {
 		super.positionChanged();
@@ -80,9 +74,6 @@ public class MapRendererWidget extends Widget {
 		mapRenderer.setView(camera);
 	}
 
-	/**
-	 * Check if size changed.
-	 */
 	@Override
 	protected void sizeChanged() {
 		super.sizeChanged();

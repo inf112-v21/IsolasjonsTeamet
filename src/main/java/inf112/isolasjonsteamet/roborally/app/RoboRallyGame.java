@@ -66,6 +66,7 @@ public class RoboRallyGame
 	private Texture card;
 
 	private PrintStream out;
+	private TextField chatField;
 
 	/**
 	 * Create method used to create new items and elements used in the game.
@@ -95,9 +96,21 @@ public class RoboRallyGame
 		table.add(new MapRendererWidget(board, 100));
 		table.row();
 
-		var bottomConsole = new PrintStreamLabel(3, System.out, skin, "default-font", Color.WHITE);
+		var bottomConsole = new PrintStreamLabel(2, System.out, skin, "default-font", Color.WHITE);
 		bottomConsole.setColor(Color.ROYAL);
 		out = bottomConsole.getStream();
+
+		chatField = new TextField("", skin);
+		table.add(chatField).width(500);
+		var chatButton = new TextButton("Chat", skin);
+		table.add(chatButton);
+		chatButton.addListener(new ChangeListener() {
+			@Override
+			public void changed(ChangeEvent event, Actor actor) {
+				chat(activePlayer, chatField.getText());
+			}
+		});
+		table.row();
 
 		table.add(bottomConsole).top().left();
 
@@ -236,6 +249,7 @@ public class RoboRallyGame
 		showingPlayer = player;
 
 		action.perform(this, board, activePlayer);
+		board.fireLaser();
 		board.checkValid();
 
 		Coordinate newPos = activePlayer.getPos();
@@ -274,6 +288,15 @@ public class RoboRallyGame
 	}
 
 	@Override
+	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+		boolean handled = stage.touchDown(screenX, screenY, pointer, button);
+		if (!handled) {
+			stage.unfocus(chatField);
+		}
+		return handled;
+	}
+
+	@Override
 	public InputProcessor delegateInputsTo() {
 		return stage;
 	}
@@ -284,7 +307,7 @@ public class RoboRallyGame
 	@SuppressWarnings({"checkstyle:Indentation", "checkstyle:WhitespaceAround"})
 	@Override
 	public boolean keyDown(int keycode) {
-		if (showingAction != null) {
+		if (showingAction != null || chatField.hasKeyboardFocus()) {
 			return false;
 		}
 
@@ -440,6 +463,13 @@ public class RoboRallyGame
 		out.flush();
 
 		return handled || stage.keyDown(keycode);
+	}
+
+	private void chat(Player player, String message) {
+		out.println(player.getName() + ": " + message);
+		out.flush();
+		stage.unfocus(chatField);
+		chatField.setText("");
 	}
 
 	private void switchToPlayer(int playerNum) {
