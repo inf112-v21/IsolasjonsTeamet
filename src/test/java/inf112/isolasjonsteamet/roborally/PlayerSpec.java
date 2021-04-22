@@ -16,15 +16,21 @@ import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
+import inf112.isolasjonsteamet.roborally.tiles.WallTileType;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Queue;
+import java.util.function.IntFunction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 
 /**
  * Class to test player code, and see if it is successful.
@@ -84,8 +90,35 @@ public class PlayerSpec implements ActionProcessor {
 				oooof
 				ooooo
 				ooxoo
-				ooooo
 				ooooo""");
+	}
+
+	private List<TileType> wall(Orientation... hasWallIn) {
+		var wallDirs = Arrays.asList(hasWallIn);
+		return ImmutableList.of(new WallTileType(
+				wallDirs.contains(Orientation.NORTH),
+				wallDirs.contains(Orientation.WEST),
+				wallDirs.contains(Orientation.SOUTH),
+				wallDirs.contains(Orientation.EAST)
+		));
+	}
+
+	private void createWallBoard(Player player) {
+		var charMap =
+				ImmutableMap.<Character, List<TileType>>builder()
+						.put('o', ImmutableList.of(Tiles.GROUND))
+						.put(' ', ImmutableList.of(Tiles.HOLE))
+						.put('w', wall(Orientation.WEST))
+						.put('e', wall(Orientation.EAST))
+						.put('n', wall(Orientation.NORTH))
+						.put('s', wall(Orientation.SOUTH))
+						.build();
+
+		board = new BoardImpl(ImmutableList.of(player), charMap, """
+				owo oooo
+				oso oooo
+				ono ensw
+				oeo oooo""");
 	}
 
 	/**
@@ -255,5 +288,112 @@ public class PlayerSpec implements ActionProcessor {
 		runAction(new RotateLeft());
 
 		assertEquals(player.getDir(), Orientation.NORTH);
+	}
+
+	static class TestWallPassageData {
+
+		private final Coordinate playerCoord;
+		private final Orientation playerDir;
+		private final Orientation wallDir;
+
+		private final Coordinate expectedLocation1;
+		private final Coordinate expectedLocation2;
+
+		TestWallPassageData(
+				Coordinate playerCoord,
+				Orientation playerDir,
+				Orientation wallDir, Coordinate expectedLocation1,
+				Coordinate expectedLocation2
+		) {
+			this.playerCoord = playerCoord;
+			this.playerDir = playerDir;
+			this.wallDir = wallDir;
+			this.expectedLocation1 = expectedLocation1;
+			this.expectedLocation2 = expectedLocation2;
+		}
+
+		@Override
+		public String toString() {
+			return ("Starting at %s facing %s with the wall facing %s, "
+					+ "moving one should land us at %s and two at %s"
+			).formatted(playerCoord, playerDir, wallDir, expectedLocation1, expectedLocation2);
+		}
+	}
+
+	@ParameterizedTest
+	@MethodSource("testWallPassageValues")
+	public void testWallPassageStepwise(TestWallPassageData testData) {
+		var player = createSimpleActivePlayer(testData.playerCoord, testData.playerDir);
+		createWallBoard(player);
+
+		runAction(new MoveForward(1));
+		assertEquals(testData.expectedLocation1, player.getPos());
+
+		runAction(new MoveForward(1));
+		assertEquals(testData.expectedLocation2, player.getPos());
+	}
+
+	@ParameterizedTest
+	@MethodSource("testWallPassageValues")
+	public void testWallPassageMove2(TestWallPassageData testData) {
+		var player = createSimpleActivePlayer(testData.playerCoord, testData.playerDir);
+		createWallBoard(player);
+
+		runAction(new MoveForward(2));
+		assertEquals(testData.expectedLocation2, player.getPos());
+	}
+
+	private static Coordinate coord(int x, int y) {
+		return new Coordinate(x, y);
+	}
+
+	private static List<TestWallPassageData> testWallPassageValues() {
+		var acc = new ArrayList<TestWallPassageData>();
+		var wallDirs =
+				ImmutableList.of(Orientation.EAST, Orientation.NORTH, Orientation.SOUTH, Orientation.WEST);
+
+		//The starting position for the robot when it is facing in a given direction
+		Map<Orientation, IntFunction<Coordinate>> startPoses = ImmutableMap.of(
+				Orientation.EAST, i -> coord(0, i),
+				Orientation.WEST, i -> coord(2, i),
+				Orientation.NORTH, i -> coord(i + 4, 0),
+				Orientation.SOUTH, i -> coord(i + 4, 2)
+		);
+
+		startPoses.forEach((facing, makeStartPos) -> {
+			for (int i = 0; i < wallDirs.size(); i++) {
+				var wallDir = wallDirs.get(i);
+				var facingOffset = facing.toCoord();
+
+				// If the wall in front of us is facing the opposite direction
+				// as we are, and thus immediately blocking our path.
+				var oppositeFacing = wallDir.getOpposingDir().equals(facing);
+
+				// If the wall in front of us is facing the same direction as
+				// we are, and thus eventually blocking our path.
+				var sameFacing = wallDir.equals(facing);
+
+				//The max amount of step we can take before we are blocked by a wall
+				int maxProgress;
+				if (oppositeFacing) {
+					maxProgress = 0;
+				} else if (sameFacing) {
+					maxProgress = 1;
+				} else {
+					maxProgress = 2;
+				}
+
+				var startPos = makeStartPos.apply(i);
+				acc.add(new TestWallPassageData(
+						startPos,
+						facing,
+						wallDir,
+						startPos.add(facingOffset.mult(Math.min(maxProgress, 1))),
+						startPos.add(facingOffset.mult(maxProgress))
+				));
+			}
+		});
+
+		return acc;
 	}
 }

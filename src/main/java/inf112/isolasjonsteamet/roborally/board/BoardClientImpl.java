@@ -6,6 +6,7 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.google.common.collect.ImmutableList;
@@ -13,6 +14,7 @@ import inf112.isolasjonsteamet.roborally.effects.Effect;
 import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.tiles.TileType;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
+import inf112.isolasjonsteamet.roborally.tiles.WallTileType;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import java.util.ArrayList;
 import java.util.List;
@@ -28,6 +30,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	public TiledMapTileLayer playerLayer;
 	public TiledMapTileLayer holeLayer;
 	public TiledMapTileLayer flagLayer;
+	public TiledMapTileLayer wallLayer;
 
 	public TiledMapTileLayer.Cell playerWonCell;
 	public TiledMapTileLayer.Cell playerDiedCell;
@@ -59,6 +62,17 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		holeLayer = (TiledMapTileLayer) layers.get("Hole");
 		flagLayer = (TiledMapTileLayer) layers.get("Flag");
 
+		var wallLayerRaw = map.getLayers().get("Wall");
+		if (wallLayerRaw == null) {
+			int width = playerLayer.getWidth();
+			int height = playerLayer.getHeight();
+			int tileWidth = playerLayer.getTileWidth();
+			int tileHeight = playerLayer.getTileHeight();
+			wallLayer = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
+		} else {
+			wallLayer = (TiledMapTileLayer) wallLayerRaw;
+		}
+
 		var tileSize = getTextureTileSize();
 
 		Texture playerTx = new Texture("player.png");
@@ -84,6 +98,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	/**
 	 * Get tiles from the map.
 	 */
+	@SuppressWarnings("checkstyle:Indentation")
 	private ImmutableList<List<List<TileType>>> tilesFromMap(String boardFilename) {
 		int width = playerLayer.getWidth();
 		int height = playerLayer.getHeight();
@@ -99,12 +114,56 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 				}
 
 				if (holeLayer.getCell(x, y) != null) {
-					acc.add(Tiles.HOLE);
+					acc.add(Tiles.HOLE);		
 				}
 
 				if (flagLayer.getCell(x, y) != null) {
 					acc.add(Tiles.FLAG);
 				}
+
+				if (wallLayer.getCell(x, y) != null) {
+					Cell cell = wallLayer.getCell(x, y);
+					int id = cell.getTile().getId();
+
+					var tileType = switch (id) {
+						case 1 -> new WallTileType(true, false, false, false);
+						case 2 -> new WallTileType(false, false, false, true);
+						case 3 -> new WallTileType(false, false, true, false);
+						case 4 -> new WallTileType(false, true, false, false);
+
+						case 9 -> new WallTileType(true, false, false, false);
+						case 10 -> new WallTileType(false, false, false, true);
+						case 11 -> new WallTileType(false, false, true, false);
+						case 12 -> new WallTileType(false, true, false, false);
+
+						case 8 -> new WallTileType(false, false, true, true);
+						case 16 -> new WallTileType(true, false, false, true);
+						case 24 -> new WallTileType(true, true, false, false);
+						case 32 -> new WallTileType(false, true, true, false);
+
+						case 23 -> new WallTileType(false, false, false, true);
+						case 31 -> new WallTileType(true, false, false, false);
+						case 30 -> new WallTileType(false, true, false, false);
+						case 29 -> new WallTileType(false, false, true, false);
+
+						case 37 -> new WallTileType(false, false, true, false);
+						case 38 -> new WallTileType(false, true, false, false);
+						case 45 -> new WallTileType(true, false, false, false);
+						case 46 -> new WallTileType(false, false, false, true);
+
+						case 87 -> new WallTileType(false, false, true, false);
+						case 93 -> new WallTileType(false, true, false, false);
+						case 94 -> new WallTileType(true, false, false, false);
+						case 95 -> new WallTileType(false, false, false, true);
+
+						default -> null;
+					};
+
+					if (tileType != null) {
+						acc.add(tileType);
+					}
+				}
+
 
 				accX.add(ImmutableList.copyOf(acc));
 			}
