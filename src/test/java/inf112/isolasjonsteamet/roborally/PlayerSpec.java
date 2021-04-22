@@ -65,7 +65,7 @@ public class PlayerSpec implements ActionProcessor {
 	/**
 	 * Method for creating a new simple board we will be running our tests on.
 	 */
-	private void createSimpleBoard(Player player) {
+	private void createSimpleBoard(Player player1) {
 		var charMap =
 				ImmutableMap.<Character, List<TileType>>builder()
 						.put('o', ImmutableList.of(Tiles.GROUND))
@@ -73,7 +73,7 @@ public class PlayerSpec implements ActionProcessor {
 						.put('f', ImmutableList.of(Tiles.FLAG))
 						.build();
 
-		board = new BoardImpl(ImmutableList.of(player), charMap, """
+		board = new BoardImpl(ImmutableList.of(player1), charMap, """
 				oooof
 				ooooo
 				ooxoo
@@ -81,6 +81,21 @@ public class PlayerSpec implements ActionProcessor {
 				ooooo""");
 	}
 
+	private void createBoardFor2Robots(Player player1, Player player2) {
+		var charMap =
+				ImmutableMap.<Character, List<TileType>>builder()
+						.put('o', ImmutableList.of(Tiles.GROUND))
+						.put('x', ImmutableList.of(Tiles.HOLE))
+						.put('f', ImmutableList.of(Tiles.FLAG))
+						.build();
+
+		board = new BoardImpl(ImmutableList.of(player1,player2), charMap, """
+				oooof
+				ooooo
+				ooxoo
+				ooooo
+				ooooo""");
+	}
 	/**
 	 * Assert current playerpos with wanted pos.
 	 */
@@ -234,8 +249,13 @@ public class PlayerSpec implements ActionProcessor {
 
 	@Test
 	public void pushRobots() {
-		var player1 =createSimplePlayer(new Coordinate(1,1),Orientation.EAST);
-		var player2 =createSimpleActivePlayer(new Coordinate(1,2),Orientation.EAST);
+		var player1 =createSimplePlayer(new Coordinate(0,0),Orientation.EAST);
+		var player2 =createSimpleActivePlayer(new Coordinate(1,0),Orientation.EAST);
+		createBoardFor2Robots(player1,player2);
+
+		performActionNow(player1,new MoveForward(1));
+		assertEquals(new Coordinate(1,0),player1.getPos());
+		assertEquals(new Coordinate(2,0),player2.getPos());
 
 	}
 }
