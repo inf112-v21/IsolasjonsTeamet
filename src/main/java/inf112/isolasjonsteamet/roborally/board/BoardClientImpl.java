@@ -19,11 +19,18 @@ import java.util.List;
  */
 public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
-	private final TiledMap map;
+	private TiledMap map;
 	public TiledMapTileLayer boardLayer;
 	public TiledMapTileLayer playerLayer;
 	public TiledMapTileLayer holeLayer;
 	public TiledMapTileLayer flagLayer;
+	public TiledMapTileLayer wallLayer;
+	public TiledMapTileLayer laserLayer;
+	public TiledMapTileLayer wrenchLayer;
+	public TiledMapTileLayer wrench2Layer;
+	public TiledMapTileLayer gearLayer;
+	public TiledMapTileLayer startLayer;
+	public TiledMapTileLayer conveyorLayer;
 
 	public TiledMapTileLayer.Cell playerWonCell;
 	public TiledMapTileLayer.Cell playerDiedCell;
@@ -35,7 +42,8 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	 */
 	public BoardClientImpl(List<Player> players, String boardFilename) {
 		super(players, new ArrayList<>());
-		map = new TmxMapLoader().load(boardFilename);
+		TmxMapLoader mapLoader = new TmxMapLoader();
+		map = mapLoader.load(boardFilename);
 		loadCells();
 		tiles = tilesFromMap(boardFilename);
 		height = playerLayer.getHeight();
@@ -50,6 +58,14 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		playerLayer = (TiledMapTileLayer) map.getLayers().get("Player");
 		holeLayer = (TiledMapTileLayer) map.getLayers().get("Hole");
 		flagLayer = (TiledMapTileLayer) map.getLayers().get("Flag");
+		wallLayer = (TiledMapTileLayer) map.getLayers().get("Wall");
+		laserLayer = (TiledMapTileLayer) map.getLayers().get("Laser");
+		wrenchLayer = (TiledMapTileLayer) map.getLayers().get("Wrench");
+		wrench2Layer = (TiledMapTileLayer) map.getLayers().get("Wrench2");
+		gearLayer = (TiledMapTileLayer) map.getLayers().get("Gear");
+		startLayer = (TiledMapTileLayer) map.getLayers().get("Start");
+		conveyorLayer = (TiledMapTileLayer) map.getLayers().get("Conveyor");
+
 
 		var tileSize = getTextureTileSize();
 
@@ -96,6 +112,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
 				if (flagLayer.getCell(x, y) != null) {
 					acc.add(Tiles.FLAG);
+
 				}
 
 				accY.add(ImmutableList.copyOf(acc));

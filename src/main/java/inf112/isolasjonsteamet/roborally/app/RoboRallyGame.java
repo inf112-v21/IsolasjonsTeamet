@@ -77,7 +77,7 @@ public class RoboRallyGame
 		//Create new player
 		switchToPlayer(1);
 
-		board = new BoardClientImpl(ImmutableList.copyOf(players), "example.tmx");
+		board = new BoardClientImpl(ImmutableList.copyOf(players), "RiskyExchangeBoard.tmx");
 
 		var viewport = new ScalingViewport(Scaling.fit, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
@@ -89,7 +89,7 @@ public class RoboRallyGame
 		stage.addActor(table);
 
 		table.top();
-		table.add(new MapRendererWidget(board, 100));
+		table.add(new MapRendererWidget(board, 35));
 		table.row();
 
 		var bottomConsole = new PrintStreamLabel(3, System.out, skin, "default-font", Color.WHITE);

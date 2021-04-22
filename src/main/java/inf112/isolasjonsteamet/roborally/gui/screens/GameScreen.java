@@ -38,7 +38,6 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 
 	@Override
 	public void show() {
-
 	}
 
 	@Override
