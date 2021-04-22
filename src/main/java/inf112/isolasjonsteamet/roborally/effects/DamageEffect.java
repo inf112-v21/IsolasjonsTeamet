@@ -21,7 +21,6 @@ public class DamageEffect implements Effect {
 		this.effPos = pos;
 	}
 
-	@Override
 	public void setEffect(Coordinate pos, Robot robot) {
 		/*
 		Texture texture = new Texture("player.png");

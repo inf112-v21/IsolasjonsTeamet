@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
+import inf112.isolasjonsteamet.roborally.tiles.WallTileType;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
@@ -49,6 +50,29 @@ public class BoardImpl implements Board {
 	 */
 	public int getHeight() {
 		return height;
+	}
+
+	@Override
+	public boolean hasWallInDir(Coordinate coord, Orientation dir) {
+		var coordTiles = new ArrayList<>(getTilesAt(coord));
+		var nextCoordTiles = new ArrayList<>(getTilesAt(coord.add(dir.toCoord())));
+
+		var dirWalls = getWallTypesForDir(dir);
+		var oppositeDirWalls = getWallTypesForDir(dir.getOpposingDir());
+
+		return coordTiles.removeAll(dirWalls) || nextCoordTiles.removeAll(oppositeDirWalls);
+	}
+
+	private List<WallTileType> getWallTypesForDir(Orientation dir) {
+		List<WallTileType> allWallTypes = WallTileType.ALL_WALL_TYPES;
+		List<WallTileType> wallTypes = new ArrayList<>();
+
+		for (WallTileType type : allWallTypes) {
+			if (type.hasWallInDir(dir)) {
+				wallTypes.add(type);
+			}
+		}
+		return wallTypes;
 	}
 
 	/**
@@ -106,7 +130,7 @@ public class BoardImpl implements Board {
 
 		return tilesY.get(pos.getX());
 	}
-
+	
 	/**
 	 * {@inheritDoc}.
 	 */
@@ -161,7 +185,6 @@ public class BoardImpl implements Board {
 				}
 			}
 		}
-
 		return hasFoundEmitter;
 	}
 
@@ -178,3 +201,7 @@ public class BoardImpl implements Board {
 		}
 	}
 }
+
+
+
+
