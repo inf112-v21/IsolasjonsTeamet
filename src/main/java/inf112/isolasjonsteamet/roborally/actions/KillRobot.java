@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.effects.KillEffect;
 import inf112.isolasjonsteamet.roborally.players.Robot;
@@ -23,7 +24,7 @@ public class KillRobot implements Action {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public boolean show(Robot robot, Board board, int framesSinceStarted) {
+	public boolean show(Robot robot, ClientBoard board, int framesSinceStarted) {
 		if (framesSinceStarted != 2) {
 			Coordinate effPos = robot.getPos();
 			KillEffect eff = new KillEffect(effPos);

@@ -1,6 +1,5 @@
 package inf112.isolasjonsteamet.roborally;
 
-import inf112.isolasjonsteamet.roborally.ConveyorsSpec.TestingRoboRallyShared;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.app.RoboRallyShared;
 import inf112.isolasjonsteamet.roborally.board.Board;
@@ -11,8 +10,12 @@ import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Queue;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -21,6 +24,7 @@ public abstract class RoboRallySharedSpec {
 	protected Board board;
 	protected List<Player> players = new ArrayList<>();
 	protected boolean doBoardCheck = true;
+	protected Phase currentPhase = Phase.CARDS;
 	protected int playerNum;
 
 	protected abstract AbstractTestingRoboRallyShared roboShared();
@@ -42,13 +46,38 @@ public abstract class RoboRallySharedSpec {
 	}
 
 	class AbstractTestingRoboRallyShared extends RoboRallyShared {
+		private boolean performingAction = false;
+		private final Queue<Entry<Action, Robot>> scheduledActions = new ArrayDeque<>();
 
 		@Override
 		public void performActionNow(Robot robot, Action action, Phase phase) {
-			action.perform(this, board, robot, phase);
+			boolean hasWork;
+			do {
+				action.initialize(board, robot);
 
-			if (doBoardCheck) {
-				board.checkValid();
+				performingAction = true;
+				action.perform(this, board, robot, phase);
+				performingAction = false;
+
+				if (doBoardCheck) {
+					board.checkValid();
+				}
+
+				Map.Entry<Action, Robot> nextActionEntry = scheduledActions.poll();
+				hasWork = nextActionEntry != null;
+				if (nextActionEntry != null) {
+					robot = nextActionEntry.getValue();
+					action = nextActionEntry.getKey();
+				}
+			} while (hasWork);
+		}
+
+		@Override
+		public void scheduleAction(Robot robot, Action action) {
+			if (scheduledActions.isEmpty() && !performingAction) {
+				performActionNow(robot, action, currentPhase);
+			} else {
+				scheduledActions.add(Map.entry(action, robot));
 			}
 		}
 
@@ -64,6 +93,11 @@ public abstract class RoboRallySharedSpec {
 		@Override
 		protected Board board() {
 			return board;
+		}
+
+		@Override
+		protected void setCurrentPhase(Phase phase) {
+			currentPhase = phase;
 		}
 
 		@Override

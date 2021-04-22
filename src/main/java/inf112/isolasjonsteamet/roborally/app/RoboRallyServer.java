@@ -29,9 +29,11 @@ import inf112.isolasjonsteamet.roborally.players.ServerPlayer;
 import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -51,6 +53,10 @@ public class RoboRallyServer extends RoboRallyShared {
 	private final Board board;
 
 	private boolean boardValidationChecks = true;
+
+	private final Queue<Map.Entry<Action, Robot>> scheduledActions = new ArrayDeque<>();
+	private Phase currentPhase;
+	private boolean performingAction = false;
 
 	/**
 	 * Initializes a new server, and sends a state packet to all players when everything is ready. You still need to
@@ -92,10 +98,33 @@ public class RoboRallyServer extends RoboRallyShared {
 	 * {@inheritDoc}.
 	 */
 	public void performActionNow(Robot robot, Action action, Phase phase) {
-		action.perform(this, board, robot, phase);
+		boolean hasWork;
+		do {
+			action.initialize(board, robot);
 
-		if (boardValidationChecks) {
-			board.checkValid();
+			performingAction = true;
+			action.perform(this, board, robot, phase);
+			performingAction = false;
+
+			if (boardValidationChecks) {
+				board.checkValid();
+			}
+
+			Map.Entry<Action, Robot> nextActionEntry = scheduledActions.poll();
+			hasWork = nextActionEntry != null;
+			if (nextActionEntry != null) {
+				robot = nextActionEntry.getValue();
+				action = nextActionEntry.getKey();
+			}
+		} while (hasWork);
+	}
+
+	@Override
+	public void scheduleAction(Robot robot, Action action) {
+		if (scheduledActions.isEmpty() && !performingAction) {
+			performActionNow(robot, action, currentPhase);
+		} else {
+			scheduledActions.add(Map.entry(action, robot));
 		}
 	}
 
@@ -166,6 +195,11 @@ public class RoboRallyServer extends RoboRallyShared {
 	}
 
 	@Override
+	protected void setCurrentPhase(Phase phase) {
+		currentPhase = phase;
+	}
+
+	@Override
 	protected void skipBoardValidChecks() {
 		boardValidationChecks = false;
 	}
@@ -182,6 +216,7 @@ public class RoboRallyServer extends RoboRallyShared {
 		sendRoundPacket();
 
 		for (int i = 0; i < 5; i++) {
+			currentPhase = Phase.CARDS;
 			for (ServerStatePlayer player : players.values()) {
 				processPlayerCard(player, i);
 			}

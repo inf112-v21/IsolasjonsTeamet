@@ -3,6 +3,7 @@ package inf112.isolasjonsteamet.roborally.board;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
+import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.List;
 import javax.annotation.Nullable;
 
@@ -50,4 +51,16 @@ public interface Board {
 	 * Updates the list of active robots still on the board.
 	 */
 	void updateActiveRobots(List<Robot> robots);
+
+	/*
+	 * Checks if there is an in wall in givven direction.
+	 *
+	 * @param coord1 position
+	 * @param dir direction
+	 *
+	 * @return true if there is an wall in direction the given direction
+	 */
+	boolean hasWallInDir(Coordinate coord1, Orientation dir);
 }
+
+

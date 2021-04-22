@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 
@@ -9,17 +10,23 @@ import inf112.isolasjonsteamet.roborally.players.Robot;
  */
 public interface Action {
 
+	default void initialize(Board board, Robot robot) {
+	}
+
 	/**
 	 * Perform an action on the board.
 	 */
 	void perform(ActionProcessor processor, Board board, Robot robot, Phase phase);
+
+	default void initializeShow(Robot robot, ClientBoard board) {
+	}
 
 	/**
 	 * Shows the action being executed.
 	 *
 	 * @return If the effect is done being showed.
 	 */
-	default boolean show(Robot robot, Board board, int framesSinceStarted) {
+	default boolean show(Robot robot, ClientBoard board, int framesSinceStarted) {
 		return true;
 	}
 }

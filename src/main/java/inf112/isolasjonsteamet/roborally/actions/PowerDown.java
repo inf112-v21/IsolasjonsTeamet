@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.effects.PowerDownEffect;
 import inf112.isolasjonsteamet.roborally.players.Robot;
@@ -17,7 +18,7 @@ public class PowerDown implements Action {
 	}
 
 	@Override
-	public boolean show(Robot robot, Board board, int framesSinceStarted) {
+	public boolean show(Robot robot, ClientBoard board, int framesSinceStarted) {
 		if (framesSinceStarted != 3) {
 			Coordinate effPos = robot.getPos();
 			PowerDownEffect eff = new PowerDownEffect(effPos);

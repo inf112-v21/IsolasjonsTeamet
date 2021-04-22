@@ -24,7 +24,11 @@ public abstract class RoboRallyShared implements ActionProcessor {
 	 */
 	protected abstract void foreachPlayerTile(BiConsumer<Player, Tile> handler);
 
+	/** Access to the board. */
 	protected abstract Board board();
+
+	/** Signals what the current phase is. */
+	protected abstract void setCurrentPhase(Phase phase);
 
 	/**
 	 * Disables board validation checks.
@@ -37,6 +41,7 @@ public abstract class RoboRallyShared implements ActionProcessor {
 	protected abstract void enableBoardValidChecks();
 
 	protected void processPlayerTiles(Phase phase) {
+		setCurrentPhase(phase);
 		foreachPlayerTile((player, tile) -> {
 			for (Action action : tile.getActions()) {
 				performActionNow(player.getRobot(), action, phase);
@@ -132,6 +137,7 @@ public abstract class RoboRallyShared implements ActionProcessor {
 	}
 
 	protected void processBoardElements() {
+		setCurrentPhase(Phase.BOARD_ELEMENTS_CONVEYOR);
 		processConveyorBelts(true);
 		processConveyorBelts(false);
 		processPlayerTiles(Phase.BOARD_ELEMENTS_PUSH);
@@ -178,6 +184,7 @@ public abstract class RoboRallyShared implements ActionProcessor {
 	 * Processes all the laser tiles on this board and damages the players that stand in their way.
 	 */
 	protected void fireLasers() {
+		setCurrentPhase(Phase.LASERS);
 		Board board = board();
 		for (Robot robot : board.getRobots()) {
 			var tiles = board.getTilesAt(robot.getPos());

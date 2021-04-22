@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally.board;
 
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.maps.MapLayers;
 import com.badlogic.gdx.maps.tiled.TiledMap;
@@ -9,9 +10,11 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer.Cell;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile;
 import com.google.common.collect.ImmutableList;
+import inf112.isolasjonsteamet.roborally.effects.Effect;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
+import inf112.isolasjonsteamet.roborally.tiles.WallTileType;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
@@ -27,13 +30,16 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	private TiledMapTileLayer boardLayer;
 	private TiledMapTileLayer holeLayer;
 	private TiledMapTileLayer flagLayer;
-
+	private TiledMapTileLayer wallLayer;
 	private MapLayers layers;
+
 	private StaticTiledMapTile robotTile;
 	private StaticTiledMapTile robotWonTile;
 	private StaticTiledMapTile robotDiedTile;
 
 	private final List<BoardRobot> boardRobots = new ArrayList<>();
+
+	private final List<Effect> effects = new ArrayList<>();
 
 	/**
 	 * Create a new instance of BoardClientImpl.
@@ -56,6 +62,17 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 		boardLayer = (TiledMapTileLayer) layers.get("Board");
 		holeLayer = (TiledMapTileLayer) layers.get("Hole");
 		flagLayer = (TiledMapTileLayer) layers.get("Flag");
+
+		var wallLayerRaw = map.getLayers().get("Wall");
+		if (wallLayerRaw == null) {
+			int width = boardLayer.getWidth();
+			int height = boardLayer.getHeight();
+			int tileWidth = boardLayer.getTileWidth();
+			int tileHeight = boardLayer.getTileHeight();
+			wallLayer = new TiledMapTileLayer(width, height, tileWidth, tileHeight);
+		} else {
+			wallLayer = (TiledMapTileLayer) wallLayerRaw;
+		}
 
 		var tileSize = getTextureTileSize();
 
@@ -89,6 +106,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	/**
 	 * Get tiles from the map.
 	 */
+	@SuppressWarnings("checkstyle:Indentation")
 	private ImmutableList<List<List<Tile>>> tilesFromMap() {
 		int width = boardLayer.getWidth();
 		int height = boardLayer.getHeight();
@@ -109,6 +127,49 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
 				if (flagLayer.getCell(x, y) != null) {
 					acc.add(Tiles.FLAG);
+				}
+
+				if (wallLayer.getCell(x, y) != null) {
+					Cell cell = wallLayer.getCell(x, y);
+					int id = cell.getTile().getId();
+
+					var tileType = switch (id) {
+						case 1 -> new WallTileType(true, false, false, false);
+						case 2 -> new WallTileType(false, false, false, true);
+						case 3 -> new WallTileType(false, false, true, false);
+						case 4 -> new WallTileType(false, true, false, false);
+
+						case 9 -> new WallTileType(true, false, false, false);
+						case 10 -> new WallTileType(false, false, false, true);
+						case 11 -> new WallTileType(false, false, true, false);
+						case 12 -> new WallTileType(false, true, false, false);
+
+						case 8 -> new WallTileType(false, false, true, true);
+						case 16 -> new WallTileType(true, false, false, true);
+						case 24 -> new WallTileType(true, true, false, false);
+						case 32 -> new WallTileType(false, true, true, false);
+
+						case 23 -> new WallTileType(false, false, false, true);
+						case 31 -> new WallTileType(true, false, false, false);
+						case 30 -> new WallTileType(false, true, false, false);
+						case 29 -> new WallTileType(false, false, true, false);
+
+						case 37 -> new WallTileType(false, false, true, false);
+						case 38 -> new WallTileType(false, true, false, false);
+						case 45 -> new WallTileType(true, false, false, false);
+						case 46 -> new WallTileType(false, false, false, true);
+
+						case 87 -> new WallTileType(false, false, true, false);
+						case 93 -> new WallTileType(false, true, false, false);
+						case 94 -> new WallTileType(true, false, false, false);
+						case 95 -> new WallTileType(false, false, false, true);
+
+						default -> null;
+					};
+
+					if (tileType != null) {
+						acc.add(tileType);
+					}
 				}
 
 				accX.add(ImmutableList.copyOf(acc));
@@ -170,6 +231,41 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	@Override
 	public int getTextureTileSize() {
 		return 300; //TODO: Make configurable somehow
+	}
+
+	@Override
+	public void show(Robot robot) {
+		for (BoardRobot boardRobot : boardRobots) {
+			if (boardRobot.robot.equals(robot)) {
+				layers.add(boardRobot.layer);
+			}
+		}
+	}
+
+	@Override
+	public void hide(Robot robot) {
+		for (BoardRobot boardRobot : boardRobots) {
+			if (boardRobot.robot.equals(robot)) {
+				layers.remove(boardRobot.layer);
+			}
+		}
+	}
+
+	@Override
+	public void addEffect(Effect effect) {
+		effects.add(effect);
+	}
+
+	@Override
+	public void removeEffect(Effect effect) {
+		effects.remove(effect);
+	}
+
+	@Override
+	public void renderEffects(Batch batch) {
+		for (Effect effect : effects) {
+			effect.render(batch);
+		}
 	}
 
 	private class BoardRobot {
