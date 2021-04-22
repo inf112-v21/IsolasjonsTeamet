@@ -3,7 +3,6 @@ package inf112.isolasjonsteamet.roborally.tiles;
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableList.Builder;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.List;
 
@@ -43,7 +42,7 @@ public class WallTileType extends TileType {
 
 	private static List<WallTileType> computeAllWallTypes() {
 		ImmutableList.Builder<WallTileType> builder = ImmutableList.builder();
-		boolean[] choices = new boolean[] {true, false};
+		boolean[] choices = new boolean[]{true, false};
 
 		for (boolean hasNorthWall : choices) {
 			for (boolean hasWestWall : choices) {
@@ -66,7 +65,12 @@ public class WallTileType extends TileType {
 			return false;
 		}
 		WallTileType that = (WallTileType) o;
-		return hasNorthWall == that.hasNorthWall && hasWestWall == that.hasWestWall && hasSouthWall == that.hasSouthWall && hasEastWall == that.hasEastWall;
+		//@formatter:off
+		return hasNorthWall == that.hasNorthWall
+			&& hasWestWall == that.hasWestWall
+			&& hasSouthWall == that.hasSouthWall
+			&& hasEastWall == that.hasEastWall;
+		//@formatter:on
 	}
 
 	@Override
