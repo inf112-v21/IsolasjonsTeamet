@@ -3,17 +3,22 @@ package inf112.isolasjonsteamet.roborally.network.impl;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkState;
 
+import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.network.Client;
 import inf112.isolasjonsteamet.roborally.network.ClientPacketListener;
 import inf112.isolasjonsteamet.roborally.network.Server;
 import inf112.isolasjonsteamet.roborally.network.ServerPacketListener;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket;
 import inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket;
+import inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket;
 import inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
@@ -31,7 +36,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 public class SingleplayerClientServer implements Client, Server {
 
 	private final List<ServerPacketListener<?>> serverPacketListeners = new CopyOnWriteArrayList<>();
-	private final List<ClientPacketListener<?>> clientPacketListeners = new CopyOnWriteArrayList<>();
+	private final Map<String, List<ClientPacketListener<?>>> clientPacketListeners = new ConcurrentHashMap<>();
 
 	private final List<String> players;
 	private String activePlayer;
@@ -44,6 +49,10 @@ public class SingleplayerClientServer implements Client, Server {
 		checkArgument(!players.isEmpty(), "Can't construct a singleplayer client server with no players");
 		this.players = new CopyOnWriteArrayList<>(players);
 		this.activePlayer = this.players.get(0);
+
+		for (String player : players) {
+			clientPacketListeners.put(player, new CopyOnWriteArrayList<>());
+		}
 	}
 
 	private void checkNotClosed() {
@@ -56,29 +65,37 @@ public class SingleplayerClientServer implements Client, Server {
 		serverPacketListeners.forEach(listener -> listener.handleIfPossible(activePlayer, packet));
 	}
 
+	@Override
+	public String getUsername() {
+		checkNotClosed();
+		return activePlayer;
+	}
+
 	public void setActivePlayer(String player) {
 		checkNotClosed();
-		this.activePlayer = activePlayer;
+		this.activePlayer = player;
 	}
 
 	@Override
 	public void sendToAllPlayers(Server2ClientPacket packet) {
 		checkNotClosed();
-		clientPacketListeners.forEach(listener -> listener.handleIfPossible(packet));
+		clientPacketListeners.values().forEach(
+				listeners -> listeners.forEach(listener -> listener.handleIfPossible(packet))
+		);
 	}
 
 	@Override
 	public void sendToPlayer(String player, Server2ClientPacket packet) {
 		checkNotClosed();
 		if (players.contains(player)) {
-			clientPacketListeners.forEach(listener -> listener.handleIfPossible(packet));
+			clientPacketListeners.get(player).forEach(listener -> listener.handleIfPossible(packet));
 		}
 	}
 
 	@Override
 	public void addListener(ClientPacketListener<?> listener) {
 		checkNotClosed();
-		clientPacketListeners.add(listener);
+		clientPacketListeners.get(activePlayer).add(listener);
 	}
 
 	@Override
@@ -90,7 +107,7 @@ public class SingleplayerClientServer implements Client, Server {
 	@Override
 	public void removeListener(ClientPacketListener<?> listener) {
 		checkNotClosed();
-		clientPacketListeners.remove(listener);
+		clientPacketListeners.get(activePlayer).remove(listener);
 	}
 
 	@Override
@@ -103,6 +120,8 @@ public class SingleplayerClientServer implements Client, Server {
 	public CompletableFuture<Void> disconnect(@Nullable String reason) {
 		sendToServer(new ClientDisconnectingPacket(reason));
 		players.remove(activePlayer);
+		clientPacketListeners.remove(activePlayer);
+
 		if (!players.isEmpty()) {
 			activePlayer = players.get(0);
 		} else {
@@ -118,5 +137,19 @@ public class SingleplayerClientServer implements Client, Server {
 		players.clear();
 		isClosed = true;
 		return CompletableFuture.completedFuture(null);
+	}
+
+	@Override
+	public void kickPlayer(String player, String reason) {
+		if (players.contains(player)) {
+			sendToPlayer(player, new KickedPacket(reason));
+			players.remove(player);
+			sendToAllPlayers(new OtherPlayerKickedPacket(player, reason));
+		}
+	}
+
+	@Override
+	public List<String> getPlayers() {
+		return ImmutableList.copyOf(players);
 	}
 }

@@ -15,5 +15,4 @@ public class FlagEffect implements Effect {
 		this.effTxt = new Texture("FlagEffect.png");
 		this.effPos = pos;
 	}
-
 }

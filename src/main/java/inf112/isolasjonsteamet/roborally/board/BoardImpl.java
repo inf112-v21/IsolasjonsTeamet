@@ -1,8 +1,8 @@
 package inf112.isolasjonsteamet.roborally.board;
 
 import com.google.common.collect.ImmutableList;
-import inf112.isolasjonsteamet.roborally.players.Player;
-import inf112.isolasjonsteamet.roborally.tiles.TileType;
+import inf112.isolasjonsteamet.roborally.players.Robot;
+import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.tiles.WallTileType;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
@@ -19,8 +19,8 @@ import javax.annotation.Nullable;
  */
 public class BoardImpl implements Board {
 
-	protected final List<Player> players;
-	protected List<List<List<TileType>>> tiles;
+	protected List<Robot> robots = ImmutableList.of();
+	protected List<List<List<Tile>>> tiles;
 
 	protected int width;
 	protected int height;
@@ -28,15 +28,14 @@ public class BoardImpl implements Board {
 	/**
 	 * New instance of BoardImpl.
 	 */
-	protected BoardImpl(List<Player> players, List<List<List<TileType>>> tiles) {
-		this.players = ImmutableList.copyOf(players);
+	protected BoardImpl(List<List<List<Tile>>> tiles) {
 		this.tiles = tiles;
 		height = tiles.size();
 		width = tiles.isEmpty() ? 0 : tiles.get(0).size();
 	}
 
-	public BoardImpl(List<Player> players, Map<Character, List<TileType>> charMap, String board) {
-		this(players, tilesFromString(charMap, board));
+	public BoardImpl(Map<Character, List<Tile>> charMap, String board) {
+		this(tilesFromString(charMap, board));
 	}
 
 	/**
@@ -81,17 +80,17 @@ public class BoardImpl implements Board {
 	 *
 	 * @return list
 	 */
-	private static List<List<List<TileType>>> tilesFromString(Map<Character, List<TileType>> charMap, String board) {
+	private static List<List<List<Tile>>> tilesFromString(Map<Character, List<Tile>> charMap, String board) {
 		int width = board.split("\n", 2)[0].length();
 		int height = (int) board.lines().count();
-		Map<Character, List<TileType>> immutableCharMap = new HashMap<>();
+		Map<Character, List<Tile>> immutableCharMap = new HashMap<>();
 		charMap.forEach((k, v) -> immutableCharMap.put(k, ImmutableList.copyOf(v)));
 
-		List<List<List<TileType>>> accY = new ArrayList<>(height);
+		List<List<List<Tile>>> accY = new ArrayList<>(height);
 		var lines = board.lines().collect(Collectors.toList());
 		for (int i = lines.size() - 1; i >= 0; i--) {
 			var line = lines.get(i);
-			List<List<TileType>> accX = new ArrayList<>(width);
+			List<List<Tile>> accX = new ArrayList<>(width);
 
 			for (char c : line.toCharArray()) {
 				accX.add(immutableCharMap.get(c));
@@ -103,37 +102,27 @@ public class BoardImpl implements Board {
 		return ImmutableList.copyOf(accY);
 	}
 
-	/**
-	 * Get a list of the Players on the Board.
-	 *
-	 * @return playerList
-	 */
 	@Override
-	public List<Player> getPlayers() {
-		return this.players;
+	public List<Robot> getRobots() {
+		return this.robots;
 	}
 
-	/**
-	 * Get a player at a given pos.
-	 *
-	 * @return Player
-	 */
 	@Nullable
 	@Override
-	public Player getPlayerAt(Coordinate pos) {
-		return players.stream().filter(p -> p.getPos().equals(pos)).findAny().orElse(null);
+	public Robot getRobotAt(Coordinate pos) {
+		return robots.stream().filter(p -> p.getPos().equals(pos)).findAny().orElse(null);
 	}
 
 	/**
 	 * Get tiles at a given position.
 	 */
 	@Override
-	public List<TileType> getTilesAt(Coordinate pos) {
+	public List<Tile> getTilesAt(Coordinate pos) {
 		if (tiles.size() <= pos.getY() || pos.getY() < 0) {
 			return ImmutableList.of(Tiles.HOLE);
 		}
 
-		List<List<TileType>> tilesY = tiles.get(pos.getY());
+		List<List<Tile>> tilesY = tiles.get(pos.getY());
 
 		if (tilesY.size() <= pos.getX() || pos.getX() < 0) {
 			return ImmutableList.of(Tiles.HOLE);
@@ -143,21 +132,26 @@ public class BoardImpl implements Board {
 	}
 	
 	/**
-	 * Check if the board is in a valid state.
+	 * {@inheritDoc}.
 	 */
 	public void checkValid() {
-		for (Player player : players) {
-			int x = player.getPos().getX();
-			int y = player.getPos().getY();
+		for (Robot robot : robots) {
+			int x = robot.getPos().getX();
+			int y = robot.getPos().getY();
 
 			if (x < 0 || x >= width) {
-				throw new IllegalStateException("Player out of bounds " + player.getPos());
+				throw new IllegalStateException("Robot out of bounds " + robot.getPos());
 			}
 
 			if (y < 0 || y >= height) {
-				throw new IllegalStateException("Player out of bounds " + player.getPos());
+				throw new IllegalStateException("Robot out of bounds " + robot.getPos());
 			}
 		}
+	}
+
+	@Override
+	public void updateActiveRobots(List<Robot> robots) {
+		this.robots = ImmutableList.copyOf(robots);
 	}
 
 	private boolean hasRobotInWayOfEmitter(Coordinate pos) {
@@ -178,7 +172,7 @@ public class BoardImpl implements Board {
 					break;
 				}
 
-				if (getPlayerAt(pos) != null) {
+				if (getRobotAt(pos) != null) {
 					hasEncounteredRobot = true;
 				}
 
@@ -196,13 +190,13 @@ public class BoardImpl implements Board {
 
 	@Override
 	public void fireLaser() {
-		for (Player player : players) {
-			var tiles = getTilesAt(player.getPos());
+		for (Robot robot : robots) {
+			var tiles = getTilesAt(robot.getPos());
 
 			if (tiles.contains(Tiles.LASER_EMITTER)) {
-				player.damageRobot();
-			} else if (tiles.contains(Tiles.LASER) && !hasRobotInWayOfEmitter(player.getPos())) {
-				player.damageRobot();
+				robot.damageRobot();
+			} else if (tiles.contains(Tiles.LASER) && !hasRobotInWayOfEmitter(robot.getPos())) {
+				robot.damageRobot();
 			}
 		}
 	}

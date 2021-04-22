@@ -9,7 +9,7 @@ import java.util.List;
 /**
  * Class for WallTileTypes.
  */
-public class WallTileType extends TileType {
+public class WallTileType extends Tile {
 
 	public static final List<WallTileType> ALL_WALL_TYPES = computeAllWallTypes();
 

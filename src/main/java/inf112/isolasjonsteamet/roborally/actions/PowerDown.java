@@ -3,7 +3,7 @@ package inf112.isolasjonsteamet.roborally.actions;
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 import inf112.isolasjonsteamet.roborally.effects.PowerDownEffect;
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 
 /**
@@ -12,16 +12,16 @@ import inf112.isolasjonsteamet.roborally.util.Coordinate;
 public class PowerDown implements Action {
 
 	@Override
-	public void perform(ActionProcessor processor, Board board, Player player) {
+	public void perform(ActionProcessor processor, Board board, Robot robot) {
 
 	}
 
 	@Override
-	public boolean show(Player player, ClientBoard board, int framesSinceStarted) {
+	public boolean show(Robot robot, ClientBoard board, int framesSinceStarted) {
 		if (framesSinceStarted != 3) {
-			Coordinate effPos = player.getPos();
+			Coordinate effPos = robot.getPos();
 			PowerDownEffect eff = new PowerDownEffect(effPos);
-			eff.setEffect(effPos, player);
+			eff.setEffect(effPos, robot);
 			return false;
 		}
 		return true;

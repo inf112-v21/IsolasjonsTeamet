@@ -1,12 +1,16 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.Robot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Class to move or item forward.
  */
 public class MoveForward implements Action {
+
+	public static final Logger LOGGER = LoggerFactory.getLogger(MoveForward.class);
 
 	private final int numMoves;
 
@@ -15,9 +19,9 @@ public class MoveForward implements Action {
 	}
 
 	@Override
-	public void perform(ActionProcessor processor, Board board, Player player) {
-		processor.scheduleAction(player, new Move(player.getDir(), numMoves));
-		System.out.println(player.getName() + " moved " + numMoves + " forward. Current pos: " + player.getPos());
+	public void perform(ActionProcessor processor, Board board, Robot robot) {
+		processor.scheduleAction(robot, new Move(robot.getDir(), numMoves));
+		LOGGER.debug(robot.getDebugName() + " moved " + numMoves + " forward. Current pos: " + robot.getPos());
 	}
 
 	@Override

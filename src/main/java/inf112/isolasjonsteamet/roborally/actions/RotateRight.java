@@ -2,21 +2,23 @@ package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.ClientBoard;
-import inf112.isolasjonsteamet.roborally.effects.PlayerEffect;
-import inf112.isolasjonsteamet.roborally.players.Player;
-import inf112.isolasjonsteamet.roborally.util.Coordinate;
+import inf112.isolasjonsteamet.roborally.effects.RobotEffect;
+import inf112.isolasjonsteamet.roborally.players.Robot;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- * An action which indicates the player will rotate to the right.
+ * An action which indicates the robot will rotate to the right.
  */
 public class RotateRight implements Action {
 
-	private PlayerEffect playerEffect;
+	public static final Logger LOGGER = LoggerFactory.getLogger(RotateRight.class);
+	private RobotEffect playerEffect;
 
 	@Override
-	public void perform(ActionProcessor processor, Board board, Player player) {
-		player.setDir(player.getDir().rotateRight());
-		System.out.println(player.getName() + " rotated right. Current dir: " + player.getDir());
+	public void perform(ActionProcessor processor, Board board, Robot robot) {
+		robot.setDir(robot.getDir().rotateRight());
+		LOGGER.debug(robot.getDebugName() + " rotated right. Current dir: " + robot.getDir());
 	}
 
 	@Override
@@ -25,16 +27,16 @@ public class RotateRight implements Action {
 	}
 
 	@Override
-	public void initializeShow(Player player, ClientBoard board) {
-		board.hide(player);
-		playerEffect = new PlayerEffect(player);
+	public void initializeShow(Robot robot, ClientBoard board) {
+		board.hide(robot);
+		playerEffect = new RobotEffect(robot);
 		board.addEffect(playerEffect);
 	}
 
 	@Override
-	public boolean show(Player player, ClientBoard board, int framesSinceStart) {
+	public boolean show(Robot robot, ClientBoard board, int framesSinceStart) {
 		if (framesSinceStart == 10) {
-			board.show(player);
+			board.show(robot);
 			board.removeEffect(playerEffect);
 			return true;
 		}

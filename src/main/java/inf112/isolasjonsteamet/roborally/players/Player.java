@@ -1,52 +1,41 @@
 package inf112.isolasjonsteamet.roborally.players;
 
-import inf112.isolasjonsteamet.roborally.util.Coordinate;
-import inf112.isolasjonsteamet.roborally.util.Orientation;
+import inf112.isolasjonsteamet.roborally.cards.Card;
+import inf112.isolasjonsteamet.roborally.cards.CardRow;
+import java.util.List;
 
 /**
- * A player on the board.
+ * An active player in a game.
  */
 public interface Player {
 
 	/**
-	 * Get the position of a player.
+	 * The robot associated with this player.
 	 */
-	Coordinate getPos();
+	Robot getRobot();
 
 	/**
-	 * Move the player on the board.
-	 */
-	void move(Coordinate offset);
-
-	/**
-	 * Returns the name of the player.
+	 * The name of the player.
 	 */
 	String getName();
 
 	/**
-	 * Gets direction of the player.
-	 *
-	 * @return direction
+	 * How many cards the player has stuck, and can as such not remove.
 	 */
-	Orientation getDir();
+	int getStuckCardAmount();
 
 	/**
-	 * Sets direction of the player.
+	 * Give the player new cards.
 	 */
-	void setDir(Orientation dir);
+	void giveCards(List<Card> cards);
 
 	/**
-	 * Damage a players robot with 1 damage token.
+	 * Take all the non stuck cards the player has back.
 	 */
-	void damageRobot();
+	List<Card> takeNonStuckCardsBack();
 
 	/**
-	 * Repair a players robot with 1 damage token.
+	 * Gets all the cards of the player in the specific row.
 	 */
-	void repairRobot();
-
-	/**
-	 * Decrements life from player and rests damage token for robot.
-	 */
-	void killRobot();
+	List<Card> getCards(CardRow row);
 }

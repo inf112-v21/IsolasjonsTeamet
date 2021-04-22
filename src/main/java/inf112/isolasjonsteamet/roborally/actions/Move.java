@@ -3,20 +3,21 @@ package inf112.isolasjonsteamet.roborally.actions;
 import com.badlogic.gdx.math.MathUtils;
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.ClientBoard;
-import inf112.isolasjonsteamet.roborally.effects.PlayerEffect;
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.effects.RobotEffect;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
 /**
- * An action which indicates the player will move forward.
+ * An action which indicates the robot will move forward.
  */
 public class Move implements Action {
 
 	private final Orientation direction;
 	private final int numMoves;
 
-	private PlayerEffect playerEffect;
+	private RobotEffect playerEffect;
+	private boolean moved = false;
 
 	public Move(Orientation direction, int numMoves) {
 		this.direction = direction;
@@ -27,11 +28,12 @@ public class Move implements Action {
 	 * {@inheritDoc}
 	 */
 	@Override
-	public void perform(ActionProcessor processor, Board board, Player player) {
-		Coordinate pos = player.getPos();
+	public void perform(ActionProcessor processor, Board board, Robot robot) {
+		Coordinate pos = robot.getPos();
+		final var originalPos = pos;
 
 		final Coordinate offset = direction.toCoord().mult(numMoves);
-		final Coordinate finalDestination = player.getPos().add(offset);
+		final Coordinate finalDestination = robot.getPos().add(offset);
 		var clampedDestinationX = MathUtils.clamp(finalDestination.getX(), 0, board.getWidth() - 1);
 		var clampedDestinationY = MathUtils.clamp(finalDestination.getY(), 0, board.getWidth() - 1);
 		var clampedFinalDestination = new Coordinate(clampedDestinationX, clampedDestinationY);
@@ -44,22 +46,26 @@ public class Move implements Action {
 		int clampedY = MathUtils.clamp(pos.getY(), 0, board.getHeight() - 1);
 
 		var moveTo = new Coordinate(clampedX, clampedY); //absolute coordinate
-		var clampedOffset = moveTo.sub(player.getPos()); //relative coordinate
+		var clampedOffset = moveTo.sub(robot.getPos()); //relative coordinate
 
-		player.move(clampedOffset);
+		robot.move(clampedOffset);
+
+		moved = !originalPos.equals(moveTo);
+		System.out.println("Moved = " + moved);
 	}
 
 	@Override
-	public void initializeShow(Player player, ClientBoard board) {
-		board.hide(player);
-		playerEffect = new PlayerEffect(player);
+	public void initializeShow(Robot robot, ClientBoard board) {
+		board.hide(robot);
+		playerEffect = new RobotEffect(robot);
 		board.addEffect(playerEffect);
 	}
 
 	@Override
-	public boolean show(Player player, ClientBoard board, int framesSinceStart) {
-		if (framesSinceStart == 10 * numMoves) {
-			board.show(player);
+	public boolean show(Robot robot, ClientBoard board, int framesSinceStart) {
+		if (framesSinceStart == 20 * numMoves || !moved) {
+			System.out.println("Moved was " + moved);
+			board.show(robot);
 			board.removeEffect(playerEffect);
 			return true;
 		}
@@ -68,7 +74,7 @@ public class Move implements Action {
 		int x = coord.getX();
 		int y = coord.getY();
 
-		playerEffect.move(x * 0.1F, y * 0.1F);
+		playerEffect.move(x * 0.05F, y * 0.05F);
 
 		return false;
 	}

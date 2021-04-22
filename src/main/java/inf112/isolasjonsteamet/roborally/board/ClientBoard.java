@@ -3,7 +3,7 @@ package inf112.isolasjonsteamet.roborally.board;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import inf112.isolasjonsteamet.roborally.effects.Effect;
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 
 /**
  * Data and behavior about boards only found on the client side.
@@ -21,14 +21,19 @@ public interface ClientBoard extends Board {
 	int getTextureTileSize();
 
 	/**
-	 * Show method.
+	 * Updates the state of the board to how it should, before rendering it.
 	 */
-	void show(Player player);
+	void act();
 
 	/**
-	 * Hide method.
+	 * Show robot.
 	 */
-	void hide(Player player);
+	void show(Robot robot);
+
+	/**
+	 * Hide robot.
+	 */
+	void hide(Robot robot);
 
 	/**
 	 * Add an effect.

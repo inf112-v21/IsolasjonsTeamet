@@ -2,6 +2,10 @@ package inf112.isolasjonsteamet.roborally.gui;
 
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Screen;
+import inf112.isolasjonsteamet.roborally.network.Server;
+import inf112.isolasjonsteamet.roborally.players.PlayerInfo;
+import java.util.List;
+import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
  * An object which allows control over the active screen being shown by libGDX. Has a stack structure where active
@@ -34,5 +38,5 @@ public interface ScreenController {
 	/**
 	 * Starts a game and pushes that screen to the stack.
 	 */
-	void startGame();
+	void startGame(String boardFileName, List<PlayerInfo> players, String host, @Nullable Server server);
 }

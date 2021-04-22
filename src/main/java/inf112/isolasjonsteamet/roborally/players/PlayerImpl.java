@@ -1,115 +1,101 @@
 package inf112.isolasjonsteamet.roborally.players;
 
+import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
-import inf112.isolasjonsteamet.roborally.actions.KillRobot;
-import inf112.isolasjonsteamet.roborally.board.Board;
-import inf112.isolasjonsteamet.roborally.tiles.Tiles;
+import inf112.isolasjonsteamet.roborally.cards.Card;
+import inf112.isolasjonsteamet.roborally.cards.CardRow;
+import inf112.isolasjonsteamet.roborally.cards.Cards;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
- * Player class that holds player methods.
+ * A simple implementation of {@link Player}, {@link ClientPlayer} and {@link ServerPlayer} all in one.
  */
-public class PlayerImpl implements Player {
+public class PlayerImpl implements ClientPlayer, ServerPlayer {
 
-	private final ActionProcessor actionProcessor;
+	private final Robot robot;
+	private final String name;
 
-	private final String playerName;
-	private Orientation direction;
-	private int life;
-	private int damageToken;
-	private Coordinate pos;
+	protected final Map<CardRow, List<Card>> cards = new HashMap<>();
 
 	/**
-	 * Constructor of a new player.
+	 * Creates a new player, with a name and position.
 	 */
-	public PlayerImpl(ActionProcessor actionProcessor, String playerName, Coordinate pos, Orientation orientation) {
-		this.actionProcessor = actionProcessor;
-		this.playerName = playerName;
-		this.life = 5;
-		this.direction = orientation;
-		this.pos = pos;
-		this.damageToken = 0;
+	public PlayerImpl(String name, ActionProcessor actionProcessor, Coordinate robotPos, Orientation robotDir) {
+		this.name = name;
+		this.robot = new RobotImpl(actionProcessor, robotPos, robotDir);
+
+		cards.put(CardRow.CHOSEN, new ArrayList<>());
+		cards.put(CardRow.GIVEN, new ArrayList<>());
 	}
 
-	/**
-	 * Get the position of a player.
-	 */
 	@Override
-	public Coordinate getPos() {
-		return pos;
+	public Robot getRobot() {
+		return robot;
 	}
 
-	/**
-	 * Move the player on the board.
-	 */
-	@Override
-	public void move(Coordinate offset) {
-		pos = pos.add(offset);
-	}
-
-
-	public boolean checkWinCondition(Board board) {
-		return board.getTilesAt(pos).contains(Tiles.FLAG);
-	}
-
-	public boolean checkLossCondition(Board board) {
-		return board.getTilesAt(pos).contains(Tiles.HOLE);
-	}
-
-	/**
-	 * Returns the name of the player.
-	 */
 	@Override
 	public String getName() {
-		return playerName;
-	}
-
-	/**
-	 * Gets direction of the player.
-	 *
-	 * @return direction
-	 */
-	@Override
-	public Orientation getDir() {
-		return direction;
-	}
-
-	/**
-	 * Sets direction of the player.
-	 */
-	@Override
-	public void setDir(Orientation dir) {
-		this.direction = dir;
+		return name;
 	}
 
 	@Override
-	public void damageRobot() {
-		if (++this.damageToken >= 10) {
-			actionProcessor.performActionNow(this, new KillRobot());
+	public int getStuckCardAmount() {
+		return 0;
+	}
+
+	@Override
+	public void giveCards(List<Card> cards) {
+		this.cards.put(CardRow.GIVEN, ImmutableList.copyOf(cards));
+	}
+
+	@Override
+	public List<Card> takeNonStuckCardsBack() {
+		List<Card> givenCards = this.cards.get(CardRow.GIVEN);
+		List<Card> chosenCards = this.cards.get(CardRow.CHOSEN);
+
+		ImmutableList.Builder<Card> builder = ImmutableList.builder();
+		builder.addAll(givenCards);
+		builder.addAll(chosenCards);
+		this.cards.put(CardRow.GIVEN, ImmutableList.of());
+		this.cards.put(CardRow.CHOSEN, ImmutableList.of());
+
+		return builder.build();
+	}
+
+	@Override
+	public List<Card> getCards(CardRow row) {
+		return ImmutableList.copyOf(cards.get(row));
+	}
+
+	@Override
+	public void swapCards(CardRow fromRow, int fromCol, CardRow toRow, int toCol) {
+		List<Card> fromCards = new ArrayList<>(cards.get(fromRow));
+		List<Card> toCards = new ArrayList<>(cards.get(toRow));
+
+		while (fromCards.size() <= fromCol) {
+			fromCards.add(Cards.NO_CARD);
 		}
-	}
+		var from = fromCards.get(fromCol);
 
-	@Override
-	public void repairRobot() {
-		if (damageToken == 0) {
-			throw new IllegalStateException("Can not get negative damage tokens");
-		} else {
-			this.damageToken -= 1;
+		while (toCards.size() <= toCol) {
+			toCards.add(Cards.NO_CARD);
 		}
+		var to = toCards.get(toCol);
+
+		toCards.set(toCol, from);
+		fromCards.set(fromCol, to);
+
+		this.cards.put(fromRow, ImmutableList.copyOf(fromCards));
+		this.cards.put(toRow, ImmutableList.copyOf(toCards));
 	}
 
 	@Override
-	public void killRobot() {
-		life -= 1;
-		damageToken = 0;
-	}
-
-	public int getLife() {
-		return life;
-	}
-
-	public int getDamageTokens() {
-		return damageToken;
+	public void setCards(CardRow row, List<Card> cards) {
+		this.cards.put(row, ImmutableList.copyOf(cards));
 	}
 }

@@ -31,6 +31,12 @@ public class MapRendererWidget extends Widget {
 	}
 
 	@Override
+	public void act(float delta) {
+		super.act(delta);
+		board.act();
+	}
+
+	@Override
 	public void draw(Batch batch, float parentAlpha) {
 		super.draw(batch, parentAlpha);
 		// The map renderer does not behave well together with scene2d's sprite batch,
