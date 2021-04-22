@@ -20,13 +20,28 @@ public interface ClientBoard extends Board {
 	 */
 	int getTextureTileSize();
 
+	/**
+	 * Show method.
+	 */
 	void show(Player player);
 
+	/**
+	 * Hide method.
+	 */
 	void hide(Player player);
 
+	/**
+	 * Add an effect.
+	 */
 	void addEffect(Effect effect);
 
+	/**
+	 * Remove an effect.
+	 */
 	void removeEffect(Effect effect);
 
+	/**
+	 * Render the effects.
+	 */
 	void renderEffects(Batch batch);
 }

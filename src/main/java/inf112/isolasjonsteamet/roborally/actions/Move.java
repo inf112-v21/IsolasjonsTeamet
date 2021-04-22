@@ -24,8 +24,9 @@ public class Move implements Action {
 	}
 
 	/**
-	 * Perform method.
+	 * {@inheritDoc}
 	 */
+	@Override
 	public void perform(ActionProcessor processor, Board board, Player player) {
 		final Coordinate offset = direction.toCoord().mult(numMoves);
 		final Coordinate pos = player.getPos().add(offset);

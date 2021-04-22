@@ -21,7 +21,7 @@ public class PlayerEffect implements Effect {
 		PLAYER_TEXTURE = tReg[0][0];
 	}
 
-	Orientation dir;
+	private Orientation dir;
 	private final Sprite sprite;
 
 	/**

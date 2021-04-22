@@ -125,7 +125,7 @@ public class RoboRallyGame
 					if (!orderCards.contains(cards) && orderCards.size() < 5) {
 						orderCards.add(cards);
 						System.out.println(cards.toString() + " added to order.");
-					} else if (orderCards.contains(cards)) {
+					} else if (orderCards.contains(cards))  {
 						orderCards.remove(cards);
 						System.out.println(cards.toString() + " removed from order.");
 					}
@@ -149,6 +149,7 @@ public class RoboRallyGame
 					for (CardType card : orderCards) {
 						for (Action act : card.getActions()) {
 							performActionActivePlayer(act);
+
 						}
 					}
 				}
@@ -225,8 +226,7 @@ public class RoboRallyGame
 	 */
 	@Override
 	public void performActionNow(Player player, Action action) {
-		@SuppressWarnings("VariableDeclarationUsageDistance")
-		Coordinate oldPos = activePlayer.getPos();
+		final Coordinate oldPos = activePlayer.getPos();
 		final Orientation oldDir = activePlayer.getDir();
 
 		action.initialize(board, player);
@@ -258,9 +258,6 @@ public class RoboRallyGame
 		}
 	}
 
-	/**
-	 * Schedule an action.
-	 */
 	@Override
 	public void scheduleAction(Player player, Action action) {
 		if (scheduledActions.isEmpty() && showingAction == null) {
@@ -272,9 +269,6 @@ public class RoboRallyGame
 		scheduledActions.add(Map.entry(action, player));
 	}
 
-	/**
-	 * Perform action on active player.
-	 */
 	private void performActionActivePlayer(Action action) {
 		performActionNow(activePlayer, action);
 	}

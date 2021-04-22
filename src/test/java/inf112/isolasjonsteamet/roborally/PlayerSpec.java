@@ -90,11 +90,24 @@ public class PlayerSpec implements ActionProcessor {
 		assertEquals(player, board.getPlayerAt(coord));
 	}
 
+	/**
+	 * Perform one action.
+	 *
+	 * @param player The player to run the action for.
+	 */
 	@Override
 	public void performActionNow(Player player, Action action) {
-	    action.initialize(board, player);
+		action.initialize(board, player);
 		action.perform(this, board, player);
 		board.checkValid();
+	}
+
+	/**
+	 * Schedule an action.
+	 */
+	@Override
+	public void scheduleAction(Player player, Action action) {
+
 	}
 
 	/**

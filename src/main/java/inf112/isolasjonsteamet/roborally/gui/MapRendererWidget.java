@@ -39,7 +39,9 @@ public class MapRendererWidget extends Widget {
 		// The map renderer does not behave well together with scene2d's sprite batch,
 		// so we need to stop the current one, and restart it after we have rendered the map.
 		batch.end();
+
 		mapRenderer.render();
+
 		batch.begin();
 
 		board.renderEffects(batch);
