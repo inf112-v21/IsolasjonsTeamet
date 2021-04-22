@@ -51,8 +51,11 @@ import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.io.PrintStream;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Queue;
 import java.util.stream.Collectors;
 
 /**
@@ -71,6 +74,8 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	private Action showingAction;
 	private Robot showingRobot;
 	private int framesSinceStartedShowingAction = 0;
+	private final Queue<Map.Entry<Action, Robot>> scheduledActions = new ArrayDeque<>();
+	private boolean sendPlayerStateEventually;
 
 	private Stage stage;
 	private Skin skin;
@@ -260,6 +265,15 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 			if (showingAction.show(showingRobot, board, framesSinceStartedShowingAction++)) {
 				showingAction = null;
 				framesSinceStartedShowingAction = 0;
+
+				Map.Entry<Action, Robot> nextAction = scheduledActions.poll();
+				if (nextAction != null) {
+					Action action = nextAction.getKey();
+					Robot robot = nextAction.getValue();
+					performActionNow(robot, action);
+				} else if (sendPlayerStateEventually) {
+					sendPlayerStateToServer();
+				}
 			}
 		}
 
@@ -268,10 +282,24 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 
 	@Override
 	public void performActionNow(Robot robot, Action action) {
-		action.perform(this, board, robot);
-		board.fireLaser();
+		action.initialize(board, robot);
+		action.initializeShow(robot, board);
+
 		showingAction = action;
 		showingRobot = robot;
+
+		action.perform(this, board, robot);
+		board.fireLaser();
+	}
+
+	@Override
+	public void scheduleAction(Robot robot, Action action) {
+		if (scheduledActions.isEmpty() && showingAction == null) {
+			performActionNow(robot, action);
+			return;
+		}
+
+		scheduledActions.add(Map.entry(action, robot));
 	}
 
 	private void performClientAction(Action action) {
@@ -299,7 +327,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 	@SuppressWarnings({"checkstyle:Indentation", "checkstyle:WhitespaceAround"})
 	@Override
 	public boolean keyDown(int keycode) {
-		if (clientPlayer == null || chatField.hasKeyboardFocus()) {
+		if (clientPlayer == null || showingAction != null || chatField.hasKeyboardFocus()) {
 			return false;
 		}
 
@@ -307,7 +335,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
 				performClientAction(new RotateRight());
-				sendPlayerStateToServer();
+				sendPlayerStateEventually = true;
 				out.println("R-Pressed: " + clientPlayer.getName()
 							+ " is now facing " + clientPlayer.getRobot().getDir());
 				yield true;
@@ -315,7 +343,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 			// If E on the keyboard is pressed, the robot moves 1 step forward in the direction it is facing
 			case Keys.E -> {
 				performClientAction(new MoveForward(1));
-				sendPlayerStateToServer();
+				sendPlayerStateEventually = true;
 				out.println("E-Pressed: " + clientPlayer.getName()
 							+ " moved forward to: " + clientPlayer.getRobot().getPos());
 				yield true;
@@ -323,7 +351,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 			// If Q on the keyboard is pressed, the robot moves 1 step backwards in the direction it is facing
 			case Keys.Q -> {
 				performClientAction(new MoveForward(-1));
-				sendPlayerStateToServer();
+				sendPlayerStateEventually = true;
 				out.println("Q-Pressed: " + clientPlayer.getName()
 							+ " moved backwards to: " + clientPlayer.getRobot().getPos());
 				yield true;
@@ -332,7 +360,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 			case Keys.W -> {
 				clientPlayer.getRobot().setDir(Orientation.NORTH);
 				performClientAction(new MoveForward(1));
-				sendPlayerStateToServer();
+				sendPlayerStateEventually = true;
 				out.println("W-Pressed: " + clientPlayer.getName()
 							+ " moved up. Current pos: " + clientPlayer.getRobot().getPos());
 				yield true;
@@ -341,7 +369,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 			case Keys.A -> {
 				clientPlayer.getRobot().setDir(Orientation.WEST);
 				performClientAction(new MoveForward(1));
-				sendPlayerStateToServer();
+				sendPlayerStateEventually = true;
 				out.println("A-Pressed: " + clientPlayer.getName()
 							+ " moved left. Current pos: " + clientPlayer.getRobot().getPos());
 				yield true;
@@ -350,7 +378,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 			case Keys.S -> {
 				clientPlayer.getRobot().setDir(Orientation.SOUTH);
 				performClientAction(new MoveForward(1));
-				sendPlayerStateToServer();
+				sendPlayerStateEventually = true;
 				out.println("s-Pressed: " + clientPlayer.getName()
 							+ " moved down. Current pos: " + clientPlayer.getRobot().getPos());
 				yield true;
@@ -359,7 +387,7 @@ public class RoboRallyClient implements ApplicationListener, DelegatingInputProc
 			case Keys.D -> {
 				clientPlayer.getRobot().setDir(Orientation.EAST);
 				performClientAction(new MoveForward(1));
-				sendPlayerStateToServer();
+				sendPlayerStateEventually = true;
 				out.println("D-Pressed: " + clientPlayer.getName()
 							+ " moved right. Current pos: " + clientPlayer.getRobot().getPos());
 				yield true;

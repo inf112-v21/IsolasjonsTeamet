@@ -13,4 +13,9 @@ public interface ActionProcessor {
 	 * @param robot The robot to run the action for.
 	 */
 	void performActionNow(Robot robot, Action action);
+
+	/**
+	 * Schedule an action.
+	 */
+	void scheduleAction(Robot robot, Action action);
 }

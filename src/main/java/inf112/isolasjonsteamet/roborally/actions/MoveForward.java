@@ -20,7 +20,7 @@ public class MoveForward implements Action {
 
 	@Override
 	public void perform(ActionProcessor processor, Board board, Robot robot) {
-		processor.performActionNow(robot, new Move(robot.getDir(), numMoves));
+		processor.scheduleAction(robot, new Move(robot.getDir(), numMoves));
 		LOGGER.debug(robot.getDebugName() + " moved " + numMoves + " forward. Current pos: " + robot.getPos());
 	}
 

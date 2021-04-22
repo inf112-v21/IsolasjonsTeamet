@@ -17,7 +17,6 @@ public class CheckPointEffect implements Effect {
 		this.effPos = pos;
 	}
 
-	@Override
 	public void setEffect(Coordinate pos, Robot robot) {
 		//Kode for å presentere grafisk her
 	}

@@ -46,6 +46,8 @@ public class MapRendererWidget extends Widget {
 		mapRenderer.render();
 
 		batch.begin();
+
+		board.renderEffects(batch);
 	}
 
 	@Override

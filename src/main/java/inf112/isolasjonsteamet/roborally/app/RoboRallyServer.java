@@ -28,9 +28,11 @@ import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.players.ServerPlayer;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
+import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -47,6 +49,9 @@ public class RoboRallyServer implements ActionProcessor {
 	private final String host;
 	private final CardDeck deck;
 	private final Board board;
+
+	private final Queue<Map.Entry<Action, Robot>> scheduledActions = new ArrayDeque<>();
+	private boolean performingAction = false;
 
 	/**
 	 * Initializes a new server, and sends a state packet to all players when everything is ready. You still need to
@@ -88,9 +93,33 @@ public class RoboRallyServer implements ActionProcessor {
 	 * {@inheritDoc}
 	 */
 	public void performActionNow(Robot robot, Action action) {
-		action.perform(this, board, robot);
-		board.fireLaser();
-		board.checkValid();
+		boolean hasWork;
+		do {
+			action.initialize(board, robot);
+
+			performingAction = true;
+			action.perform(this, board, robot);
+			performingAction = false;
+
+			board.fireLaser();
+			board.checkValid();
+
+			Map.Entry<Action, Robot> nextActionEntry = scheduledActions.poll();
+			hasWork = nextActionEntry != null;
+			if (nextActionEntry != null) {
+				robot = nextActionEntry.getValue();
+				action = nextActionEntry.getKey();
+			}
+		} while (hasWork);
+	}
+
+	@Override
+	public void scheduleAction(Robot robot, Action action) {
+		if (scheduledActions.isEmpty() && !performingAction) {
+			performActionNow(robot, action);
+		} else {
+			scheduledActions.add(Map.entry(action, robot));
+		}
 	}
 
 	private void dealCards() {
