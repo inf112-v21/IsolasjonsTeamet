@@ -27,7 +27,7 @@ public class LaserSpec extends RoboRallySharedSpec {
 		);
 		var robot = newPlayer(new Coordinate(0, 0), Orientation.NORTH).getRobot();
 
-        roboShared.fireLasers();
+		roboShared.processBoardElements();
 
         assertEquals(1, robot.getDamageTokens());
     }
@@ -40,7 +40,7 @@ public class LaserSpec extends RoboRallySharedSpec {
 		);
 		var robot = newPlayer(new Coordinate(0, 0), Orientation.NORTH).getRobot();
 
-		roboShared.fireLasers();
+		roboShared.processBoardElements();
 
         assertEquals(1, robot.getDamageTokens());
     }
@@ -57,7 +57,7 @@ public class LaserSpec extends RoboRallySharedSpec {
 		var robot1 = newPlayer(new Coordinate(0, 0), Orientation.NORTH).getRobot();
 		var robot2 = newPlayer(new Coordinate(1, 0), Orientation.NORTH).getRobot();
 
-		roboShared.fireLasers();
+		roboShared.processBoardElements();
 
         assertEquals(1, robot1.getDamageTokens());
         assertEquals(0, robot2.getDamageTokens());
@@ -76,7 +76,7 @@ public class LaserSpec extends RoboRallySharedSpec {
 		var robot2 = newPlayer(new Coordinate(2, 0), Orientation.NORTH).getRobot();
 		var robot3 = newPlayer(new Coordinate(3, 0), Orientation.NORTH).getRobot();
 
-		roboShared.fireLasers();
+		roboShared.processBoardElements();
 
         assertEquals(1, robot1.getDamageTokens());
         assertEquals(0, robot2.getDamageTokens());
@@ -87,8 +87,8 @@ public class LaserSpec extends RoboRallySharedSpec {
 	private class TestingRoboRallyShared extends AbstractTestingRoboRallyShared {
 
 		@Override
-		protected void fireLasers() {
-			super.fireLasers();
+		protected void processBoardElements() {
+			super.processBoardElements();
 		}
 	}
 }

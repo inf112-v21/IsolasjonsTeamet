@@ -563,8 +563,6 @@ public class RoboRallyClient
 				}
 
 				processBoardElements();
-				fireLasers();
-				processCheckpoints();
 			}
 
 			processCleanup();

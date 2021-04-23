@@ -57,7 +57,10 @@ public class Move implements Action {
 		while (!board.hasWallInDir(pos, direction) && !pos.equals(clampedFinalDestination) && robotAt == null) {
 			var newPos = pos.add(directionCoord);
 
-			robotAt = board.getRobotAt(newPos);
+			if (push) {
+				robotAt = board.getRobotAt(newPos);
+			}
+
 			if (robotAt == null) {
 				pos = newPos;
 				movesMade++;
@@ -74,7 +77,7 @@ public class Move implements Action {
 
 		// If we crashed into another player, and we didn't do all the intended moves,
 		// then we try to push the encountered player
-		if (push && robotAt != null && movesMade < numMoves) {
+		if (robotAt != null && movesMade < numMoves) {
 
 			// We only push the encountered player if this is either the
 			// first time we're encountering them, or we made movement progress

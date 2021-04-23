@@ -222,8 +222,6 @@ public class RoboRallyServer extends RoboRallyShared {
 			}
 
 			processBoardElements();
-			fireLasers();
-			processCheckpoints();
 		}
 
 		processCleanup();
