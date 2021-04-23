@@ -41,7 +41,7 @@ public class RotateRight implements Action {
 			board.removeEffect(playerEffect);
 			return true;
 		}
-		playerEffect.rotate();
+		playerEffect.rotate(-90F / 10F);
 
 		return false;
 	}

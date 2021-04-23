@@ -63,7 +63,7 @@ public class RobotEffect implements Effect {
 		sprite.setPosition(sprite.getX() + dx * 100, sprite.getY() + dy * 100);
 	}
 
-	public void rotate() {
-		sprite.rotate(90);
+	public void rotate(float amount) {
+		sprite.rotate(amount);
 	}
 }
