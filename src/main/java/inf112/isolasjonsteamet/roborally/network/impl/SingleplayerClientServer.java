@@ -72,7 +72,6 @@ public class SingleplayerClientServer implements Client, Server {
 	}
 
 	public void setActivePlayer(String player) {
-		checkNotClosed();
 		this.activePlayer = player;
 	}
 
