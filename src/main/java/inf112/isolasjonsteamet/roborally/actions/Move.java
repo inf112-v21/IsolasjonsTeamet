@@ -59,10 +59,11 @@ public class Move implements Action {
 
 			if (push) {
 				robotAt = board.getRobotAt(newPos);
-				if (robotAt == null) {
-					pos = newPos;
-					movesMade++;
-				}
+			}
+
+			if (robotAt == null) {
+				pos = newPos;
+				movesMade++;
 			}
 		}
 
