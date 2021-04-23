@@ -234,6 +234,19 @@ Må sørge for roboten beveger mer flytende på brettet. For å få til dette m�
 viser et sprite som har spillerstukrur istendefor. Dette spritet kan flytte og rotere seg friere enn roboten
 på brettet.
 
+### Drag&drop interface for kort
+
+#### Brukerhistorier
+
+1. Som spiller ønsker jeg å kunne bruke musen til å velge hvilke kort jeg vil bruke, slik at det blir enklere å velge kort.
+
+#### Akseptansekrav
+1. Spiller
+    1. Ønsker å kunne dra kortene mine
+    2. Kunne legge til kortene i de kortene jeg skal bruke
+
+#### Arbeidsoppgaver
+Må legge til funksjonaltet for å kunne dra kortene og legge til kort når spilleren slipper musekanppen.
 
 MVP kravene vi har dekket:
 
