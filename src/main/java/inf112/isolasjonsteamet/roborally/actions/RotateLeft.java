@@ -30,7 +30,7 @@ public class RotateLeft implements Action {
 	@Override
 	public void initializeShow(Robot robot, ClientBoard board) {
 		board.hide(robot);
-		playerEffect = new RobotEffect(robot);
+		playerEffect = new RobotEffect(board, robot);
 		board.addEffect(playerEffect);
 	}
 

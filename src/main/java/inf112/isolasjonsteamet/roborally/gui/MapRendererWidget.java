@@ -23,8 +23,8 @@ public class MapRendererWidget extends Widget {
 	/**
 	 * Creates a map renderer widget with an orthogonal map renderer.
 	 */
-	public MapRendererWidget(ClientBoard board, int tileSize) {
-		this.tileSize = tileSize;
+	public MapRendererWidget(ClientBoard board) {
+		this.tileSize = board.getTextureRenderSize();
 		this.board = board;
 		mapRenderer = new OrthogonalTiledMapRenderer(board.getMap(), (float) tileSize / board.getTextureTileSize());
 		sizeChanged();

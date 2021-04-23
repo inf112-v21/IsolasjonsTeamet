@@ -234,6 +234,11 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 	}
 
 	@Override
+	public int getTextureRenderSize() {
+		return 100;
+	}
+
+	@Override
 	public void show(Robot robot) {
 		for (BoardRobot boardRobot : boardRobots) {
 			if (boardRobot.robot.equals(robot)) {

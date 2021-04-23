@@ -4,6 +4,7 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
@@ -21,25 +22,26 @@ public class RobotEffect implements Effect {
 		PLAYER_TEXTURE = tReg[0][0];
 	}
 
-	private final Orientation dir;
 	private final Sprite sprite;
+	private final float tileSize;
 
 	/**
 	 * New intance of PlayerEffect.
 	 */
 	@SuppressWarnings("checkstyle:Indentation")
-	public RobotEffect(Robot robot) {
+	public RobotEffect(ClientBoard board, Robot robot) {
 		sprite = new Sprite(PLAYER_TEXTURE);
 
 		Coordinate pos = robot.getPos();
 		int x = pos.getX();
 		int y = pos.getY();
-		dir = robot.getDir();
 
-		sprite.setPosition((x + 2) * 100 + 350, (y + 1) * 100 + -100);
-		sprite.setScale(0.33F);
+		tileSize = board.getTextureRenderSize();
 
-		float rotateDegrees = switch (dir) {
+		sprite.setPosition((x + 2) * tileSize + 366, (y + 1) * tileSize + -100);
+		sprite.setScale(tileSize / board.getTextureTileSize());
+
+		float rotateDegrees = switch (robot.getDir()) {
 			case NORTH -> 0F;
 			case WEST -> 90F;
 			case SOUTH -> 180F;
@@ -57,10 +59,7 @@ public class RobotEffect implements Effect {
 	 * Move the player effect.
 	 */
 	public void move(float dx, float dy) {
-		float currentX = sprite.getX() + dx * 100;
-		float currentY = sprite.getY() + dy * 100;
-
-		sprite.setPosition(sprite.getX() + dx * 100, sprite.getY() + dy * 100);
+		sprite.setPosition(sprite.getX() + dx * tileSize, sprite.getY() + dy * tileSize);
 	}
 
 	public void rotate(float amount) {

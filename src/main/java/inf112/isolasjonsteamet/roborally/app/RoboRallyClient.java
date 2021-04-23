@@ -139,7 +139,7 @@ public class RoboRallyClient
 		var leftGroup = new Table(skin);
 
 		table.add(leftGroup).top().left().expandY().padRight(10F);
-		table.add(new MapRendererWidget(board, 100));
+		table.add(new MapRendererWidget(board));
 		table.row();
 
 		var playerLabel = new Label(clientPlayer.getName(), skin);
