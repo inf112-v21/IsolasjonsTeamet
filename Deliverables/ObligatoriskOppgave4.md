@@ -108,7 +108,8 @@ Siden den forrige innleveringen har vi jobbet med:
 
 #### Arbeidsoppgaver    
 Må lage server og client arkitektur for å kunne komusnisere over nettverk. 
-Lage multiplayer slik at det kan være flere spillere med i et spill. 
+Lage multiplayer slik at det kan være flere spillere med i et spill. Lage en lobby slik 
+at vi kan sette opp spillet for å spille over nettverk. Det skal være mulig å starte et spill fra lobbyen. 
 
     
 ### Lasere
