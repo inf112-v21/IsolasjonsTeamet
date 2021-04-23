@@ -23,7 +23,6 @@ public abstract class RoboRallySharedSpec {
 
 	protected Board board;
 	protected List<Player> players = new ArrayList<>();
-	protected boolean doBoardCheck = true;
 	protected Phase currentPhase = Phase.CARDS;
 	protected int playerNum;
 
@@ -46,6 +45,7 @@ public abstract class RoboRallySharedSpec {
 	}
 
 	class AbstractTestingRoboRallyShared extends RoboRallyShared {
+
 		private boolean performingAction = false;
 		private final Queue<Entry<Action, Robot>> scheduledActions = new ArrayDeque<>();
 
@@ -59,9 +59,7 @@ public abstract class RoboRallySharedSpec {
 				action.perform(this, board, robot, phase);
 				performingAction = false;
 
-				if (doBoardCheck) {
-					board.checkValid();
-				}
+				board.checkValid();
 
 				Map.Entry<Action, Robot> nextActionEntry = scheduledActions.poll();
 				hasWork = nextActionEntry != null;
@@ -98,16 +96,6 @@ public abstract class RoboRallySharedSpec {
 		@Override
 		protected void setCurrentPhase(Phase phase) {
 			currentPhase = phase;
-		}
-
-		@Override
-		protected void skipBoardValidChecks() {
-			doBoardCheck = false;
-		}
-
-		@Override
-		protected void enableBoardValidChecks() {
-			doBoardCheck = true;
 		}
 	}
 }

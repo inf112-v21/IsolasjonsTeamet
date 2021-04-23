@@ -83,7 +83,7 @@ public class Move implements Action {
 			// first time we're encountering them, or we made movement progress
 			if (!encounteredPlayerObstacleBefore || movesMade > 0) {
 				processor.scheduleAction(robotAt, new Move(direction, 1));
-				processor.scheduleAction(robot, new Move(direction, numMoves - movesMade, false, true));
+				processor.scheduleAction(robot, new Move(direction, numMoves - movesMade, true, true));
 			}
 		}
 
@@ -93,7 +93,7 @@ public class Move implements Action {
 	@Override
 	public void initializeShow(Robot robot, ClientBoard board) {
 		board.hide(robot);
-		playerEffect = new RobotEffect(robot);
+		playerEffect = new RobotEffect(board, robot);
 		board.addEffect(playerEffect);
 	}
 

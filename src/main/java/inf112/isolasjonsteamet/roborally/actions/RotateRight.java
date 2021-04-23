@@ -30,7 +30,7 @@ public class RotateRight implements Action {
 	@Override
 	public void initializeShow(Robot robot, ClientBoard board) {
 		board.hide(robot);
-		playerEffect = new RobotEffect(robot);
+		playerEffect = new RobotEffect(board, robot);
 		board.addEffect(playerEffect);
 	}
 
@@ -41,7 +41,7 @@ public class RotateRight implements Action {
 			board.removeEffect(playerEffect);
 			return true;
 		}
-		playerEffect.rotate();
+		playerEffect.rotate(-90F / 10F);
 
 		return false;
 	}

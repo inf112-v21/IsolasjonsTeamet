@@ -52,8 +52,6 @@ public class RoboRallyServer extends RoboRallyShared {
 	private final CardDeck deck;
 	private final Board board;
 
-	private boolean boardValidationChecks = true;
-
 	private final Queue<Map.Entry<Action, Robot>> scheduledActions = new ArrayDeque<>();
 	private Phase currentPhase;
 	private boolean performingAction = false;
@@ -106,9 +104,7 @@ public class RoboRallyServer extends RoboRallyShared {
 			action.perform(this, board, robot, phase);
 			performingAction = false;
 
-			if (boardValidationChecks) {
-				board.checkValid();
-			}
+			board.checkValid();
 
 			Map.Entry<Action, Robot> nextActionEntry = scheduledActions.poll();
 			hasWork = nextActionEntry != null;
@@ -175,7 +171,7 @@ public class RoboRallyServer extends RoboRallyShared {
 			card = chosenCards.get(cardNum);
 		}
 
-		for (Action action : card.getActions()) {
+		for (Action action : card.createActions()) {
 			performActionNow(player.getRobot(), action, Phase.CARDS);
 		}
 	}
@@ -199,16 +195,6 @@ public class RoboRallyServer extends RoboRallyShared {
 		currentPhase = phase;
 	}
 
-	@Override
-	protected void skipBoardValidChecks() {
-		boardValidationChecks = false;
-	}
-
-	@Override
-	protected void enableBoardValidChecks() {
-		boardValidationChecks = true;
-	}
-
 	/**
 	 * Starts a round with the cards all players have chosen.
 	 */
@@ -222,8 +208,6 @@ public class RoboRallyServer extends RoboRallyShared {
 			}
 
 			processBoardElements();
-			fireLasers();
-			processCheckpoints();
 		}
 
 		processCleanup();

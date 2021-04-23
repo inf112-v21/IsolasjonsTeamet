@@ -147,4 +147,9 @@ To run CheckStyle, use `checkstyleMain`.
 * Multiplayer can be crashy
 * Probably a bunch of race conditions if the ping between players is high enough
 * Rotating conveyor belts are broken in all but the most simple cases (player facing the same way as conveyor belt goes)
-* Robot pushing er buggy generelt, og virker ikke riktig med WASD
+* Robot pushing er buggy i lokal multiplayer.
+* Card movement er buggy i lokal multiplayer.
+* Robot pushing virker ikke med WASD. Dette er et mer fundamentalt problem med hvordan netverksprotokolen vår virker.
+  Ettersom at dette er en debug funksjon, er ikke denne buggen altfor høyt opp på prioritetslisten.
+* Robot pushing med lengre bevegelse (move 2 kortet for eksempel), se grafiskt rart ut
+* Kick player field is moving robot when you are typing WASD

@@ -72,7 +72,6 @@ public class SingleplayerClientServer implements Client, Server {
 	}
 
 	public void setActivePlayer(String player) {
-		checkNotClosed();
 		this.activePlayer = player;
 	}
 
@@ -118,14 +117,20 @@ public class SingleplayerClientServer implements Client, Server {
 
 	@Override
 	public CompletableFuture<Void> disconnect(@Nullable String reason) {
-		sendToServer(new ClientDisconnectingPacket(reason));
-		players.remove(activePlayer);
-		clientPacketListeners.remove(activePlayer);
+		if (!isClosed) {
+			sendToServer(new ClientDisconnectingPacket(reason));
 
-		if (!players.isEmpty()) {
-			activePlayer = players.get(0);
-		} else {
-			isClosed = true;
+			// The server might decide to close itself in the above call if the disconnecting player was the "host"
+			if (!isClosed) {
+				players.remove(activePlayer);
+				clientPacketListeners.remove(activePlayer);
+
+				if (!players.isEmpty()) {
+					activePlayer = players.get(0);
+				} else {
+					isClosed = true;
+				}
+			}
 		}
 
 		return CompletableFuture.completedFuture(null);
@@ -133,9 +138,13 @@ public class SingleplayerClientServer implements Client, Server {
 
 	@Override
 	public CompletableFuture<Void> close(@Nullable String reason) {
-		sendToAllPlayers(new ServerClosingPacket(reason));
-		players.clear();
-		isClosed = true;
+		if (!isClosed) {
+			sendToAllPlayers(new ServerClosingPacket(reason));
+			players.clear();
+			clientPacketListeners.clear();
+			serverPacketListeners.clear();
+			isClosed = true;
+		}
 		return CompletableFuture.completedFuture(null);
 	}
 

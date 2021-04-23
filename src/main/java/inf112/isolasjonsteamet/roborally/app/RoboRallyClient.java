@@ -19,6 +19,7 @@ import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
+import inf112.isolasjonsteamet.roborally.actions.RotateLeft;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.ClientBoard;
@@ -138,7 +139,7 @@ public class RoboRallyClient
 		var leftGroup = new Table(skin);
 
 		table.add(leftGroup).top().left().expandY().padRight(10F);
-		table.add(new MapRendererWidget(board, 100));
+		table.add(new MapRendererWidget(board));
 		table.row();
 
 		var playerLabel = new Label(clientPlayer.getName(), skin);
@@ -308,8 +309,20 @@ public class RoboRallyClient
 		scheduledActions.add(Map.entry(action, robot));
 	}
 
-	private void performClientAction(Action action) {
-		performActionNow(clientPlayer.getRobot(), action, Phase.CARDS);
+	private void scheduleClientAction(Action action) {
+		scheduleAction(clientPlayer.getRobot(), action);
+	}
+
+	private void scheduleClientRotateToDirection(Orientation dir) {
+		Orientation robotDir = clientPlayer.getRobot().getDir();
+		if (dir.equals(robotDir.getOpposingDir())) {
+			scheduleClientAction(new RotateRight());
+			scheduleClientAction(new RotateRight());
+		} else if (robotDir.rotateLeft().equals(dir)) {
+			scheduleClientAction(new RotateLeft());
+		} else if (robotDir.rotateRight().equals(dir)) {
+			scheduleClientAction(new RotateRight());
+		}
 	}
 
 	@Override
@@ -329,14 +342,6 @@ public class RoboRallyClient
 	@Override
 	protected void setCurrentPhase(Phase phase) {
 		currentPhase = phase;
-	}
-
-	@Override
-	protected void skipBoardValidChecks() {
-	}
-
-	@Override
-	protected void enableBoardValidChecks() {
 	}
 
 	@Override
@@ -367,7 +372,7 @@ public class RoboRallyClient
 		boolean handled = switch (keycode) {
 			// If R on the keyboard is pressed, the robot rotates 90 degrees to the right.
 			case Keys.R -> {
-				performClientAction(new RotateRight());
+				scheduleClientAction(new RotateRight());
 				sendPlayerStateEventually = true;
 				out.println("R-Pressed: " + clientPlayer.getName()
 							+ " is now facing " + clientPlayer.getRobot().getDir());
@@ -375,7 +380,7 @@ public class RoboRallyClient
 			}
 			// If E on the keyboard is pressed, the robot moves 1 step forward in the direction it is facing
 			case Keys.E -> {
-				performClientAction(new MoveForward(1));
+				scheduleClientAction(new MoveForward(1));
 				sendPlayerStateEventually = true;
 				out.println("E-Pressed: " + clientPlayer.getName()
 							+ " moved forward to: " + clientPlayer.getRobot().getPos());
@@ -383,7 +388,7 @@ public class RoboRallyClient
 			}
 			// If Q on the keyboard is pressed, the robot moves 1 step backwards in the direction it is facing
 			case Keys.Q -> {
-				performClientAction(new MoveForward(-1));
+				scheduleClientAction(new MoveForward(-1));
 				sendPlayerStateEventually = true;
 				out.println("Q-Pressed: " + clientPlayer.getName()
 							+ " moved backwards to: " + clientPlayer.getRobot().getPos());
@@ -391,8 +396,8 @@ public class RoboRallyClient
 			}
 
 			case Keys.W -> {
-				clientPlayer.getRobot().setDir(Orientation.NORTH);
-				performClientAction(new MoveForward(1));
+				scheduleClientRotateToDirection(Orientation.NORTH);
+				scheduleClientAction(new MoveForward(1));
 				sendPlayerStateEventually = true;
 				out.println("W-Pressed: " + clientPlayer.getName()
 							+ " moved up. Current pos: " + clientPlayer.getRobot().getPos());
@@ -400,8 +405,8 @@ public class RoboRallyClient
 			}
 
 			case Keys.A -> {
-				clientPlayer.getRobot().setDir(Orientation.WEST);
-				performClientAction(new MoveForward(1));
+				scheduleClientRotateToDirection(Orientation.WEST);
+				scheduleClientAction(new MoveForward(1));
 				sendPlayerStateEventually = true;
 				out.println("A-Pressed: " + clientPlayer.getName()
 							+ " moved left. Current pos: " + clientPlayer.getRobot().getPos());
@@ -409,8 +414,8 @@ public class RoboRallyClient
 			}
 
 			case Keys.S -> {
-				clientPlayer.getRobot().setDir(Orientation.SOUTH);
-				performClientAction(new MoveForward(1));
+				scheduleClientRotateToDirection(Orientation.SOUTH);
+				scheduleClientAction(new MoveForward(1));
 				sendPlayerStateEventually = true;
 				out.println("s-Pressed: " + clientPlayer.getName()
 							+ " moved down. Current pos: " + clientPlayer.getRobot().getPos());
@@ -418,8 +423,8 @@ public class RoboRallyClient
 			}
 
 			case Keys.D -> {
-				clientPlayer.getRobot().setDir(Orientation.EAST);
-				performClientAction(new MoveForward(1));
+				scheduleClientRotateToDirection(Orientation.EAST);
+				scheduleClientAction(new MoveForward(1));
 				sendPlayerStateEventually = true;
 				out.println("D-Pressed: " + clientPlayer.getName()
 							+ " moved right. Current pos: " + clientPlayer.getRobot().getPos());
@@ -534,7 +539,7 @@ public class RoboRallyClient
 				chosenCard = playerCards.get(cardNum);
 			}
 
-			for (Action action : chosenCard.getActions()) {
+			for (Action action : chosenCard.createActions()) {
 				performActionNow(player.getRobot(), action, Phase.CARDS);
 			}
 		}
@@ -550,8 +555,6 @@ public class RoboRallyClient
 				}
 
 				processBoardElements();
-				fireLasers();
-				processCheckpoints();
 			}
 
 			processCleanup();

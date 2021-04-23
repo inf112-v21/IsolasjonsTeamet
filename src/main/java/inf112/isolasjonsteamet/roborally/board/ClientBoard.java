@@ -21,6 +21,11 @@ public interface ClientBoard extends Board {
 	int getTextureTileSize();
 
 	/**
+	 * How large the tiles are when they are rendered.
+	 */
+	int getTextureRenderSize();
+
+	/**
 	 * Updates the state of the board to how it should, before rendering it.
 	 */
 	void act();
