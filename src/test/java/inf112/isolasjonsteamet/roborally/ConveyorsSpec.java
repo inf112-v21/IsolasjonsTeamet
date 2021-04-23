@@ -163,7 +163,6 @@ public class ConveyorsSpec extends RoboRallySharedSpec {
 			@DisplayName("When the player is facing north, when the conveyor belts move, the player should be moved to "
 						 + "the new conveyor belt, and facing east")
 			@Test
-			@Disabled("Currently broken")
 			public void faceNorthEast() {
 				var player = newPlayer(coord(2, 2), Orientation.NORTH);
 
@@ -176,6 +175,7 @@ public class ConveyorsSpec extends RoboRallySharedSpec {
 			@DisplayName("When the player is facing west, when the conveyor belts move, the player should be moved to "
 						 + "the new conveyor belt, and facing north")
 			@Test
+			@Disabled("Currently broken")
 			public void faceWestNorth() {
 				var player = newPlayer(new Coordinate(2, 2), Orientation.WEST);
 
