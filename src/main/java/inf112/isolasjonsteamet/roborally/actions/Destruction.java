@@ -1,6 +1,7 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
+import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 
 /**
@@ -9,7 +10,7 @@ import inf112.isolasjonsteamet.roborally.players.Robot;
 public class Destruction implements Action {
 
 	@Override
-	public void perform(ActionProcessor processor, Board board, Robot robot) {
+	public void perform(ActionProcessor processor, Board board, Robot robot, Phase phase) {
 
 	}
 }

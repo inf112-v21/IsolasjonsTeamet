@@ -88,13 +88,8 @@ public class RobotImpl implements Robot {
 	@Override
 	public void damageRobot() {
 		if (++this.damageToken >= 10) {
-			actionProcessor.performActionNow(this, new KillRobot());
+			actionProcessor.scheduleAction(this, new KillRobot());
 		}
-	}
-
-	@Override
-	public int getDamageTokens() {
-		return damageToken;
 	}
 
 	@Override
@@ -114,6 +109,10 @@ public class RobotImpl implements Robot {
 
 	public int getLife() {
 		return life;
+	}
+
+	public int getDamageTokens() {
+		return damageToken;
 	}
 
 	@Override

@@ -146,3 +146,4 @@ To run CheckStyle, use `checkstyleMain`.
 * (Only seen once) On multiplayer, a player can be initialized wrongly, and thus be missing from the board.
 * Multiplayer can be crashy
 * Probably a bunch of race conditions if the ping between players is high enough
+* Rotating conveyor belts are broken in all but the most simple cases (player facing the same way as conveyor belt goes)

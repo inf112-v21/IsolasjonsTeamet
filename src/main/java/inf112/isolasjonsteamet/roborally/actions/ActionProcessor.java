@@ -1,5 +1,6 @@
 package inf112.isolasjonsteamet.roborally.actions;
 
+import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 
 /**
@@ -12,10 +13,10 @@ public interface ActionProcessor {
 	 *
 	 * @param robot The robot to run the action for.
 	 */
-	void performActionNow(Robot robot, Action action);
+	void performActionNow(Robot robot, Action action, Phase phase);
 
 	/**
-	 * Schedule an action.
+	 * Schedule an action to be performed in the phase we are currently in.
 	 */
 	void scheduleAction(Robot robot, Action action);
 }
