@@ -146,3 +146,5 @@ To run CheckStyle, use `checkstyleMain`.
 * (Only seen once) On multiplayer, a player can be initialized wrongly, and thus be missing from the board.
 * Multiplayer can be crashy
 * Probably a bunch of race conditions if the ping between players is high enough
+* Game crashes if closing the window directly
+* Game sometimes throws an exception when exiting local multiplayer
