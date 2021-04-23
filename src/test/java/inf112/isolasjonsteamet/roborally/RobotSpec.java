@@ -405,4 +405,16 @@ public class RobotSpec implements ActionProcessor {
 
 		return acc;
 	}
+
+	@Test
+	public void pushRobots() {
+		var player1 = createSimpleRobot(new Coordinate(0, 0), Orientation.EAST);
+		var player2 = createSimpleRobot(new Coordinate(1, 0), Orientation.EAST);
+		createSimpleBoard(player1);
+		board.updateActiveRobots(ImmutableList.of(player1, player2));
+
+		performActionNow(player1, new MoveForward(1), Phase.MISC);
+		assertEquals(new Coordinate(1, 0), player1.getPos());
+		assertEquals(new Coordinate(2, 0), player2.getPos());
+	}
 }

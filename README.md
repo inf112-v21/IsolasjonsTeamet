@@ -147,3 +147,4 @@ To run CheckStyle, use `checkstyleMain`.
 * Multiplayer can be crashy
 * Probably a bunch of race conditions if the ping between players is high enough
 * Rotating conveyor belts are broken in all but the most simple cases (player facing the same way as conveyor belt goes)
+* Robot pushing er buggy generelt, og virker ikke riktig med WASD
