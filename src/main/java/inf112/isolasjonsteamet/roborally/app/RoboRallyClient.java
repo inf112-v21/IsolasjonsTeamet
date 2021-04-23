@@ -539,7 +539,7 @@ public class RoboRallyClient
 				chosenCard = playerCards.get(cardNum);
 			}
 
-			for (Action action : chosenCard.getActions()) {
+			for (Action action : chosenCard.createActions()) {
 				performActionNow(player.getRobot(), action, Phase.CARDS);
 			}
 		}

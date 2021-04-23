@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import java.util.List;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 /**
  * Describes a unique card type.
@@ -13,13 +14,13 @@ public class Card {
 
 	private final String name;
 	private final int priority;
-	private final List<Action> actions;
+	private final List<Supplier<Action>> actions;
 
 	private final Supplier<Texture> makeTexture;
 	private Texture texture;
 
 	/** Make a new card with a name, priority, texture, and actions. */
-	public Card(String name, int priority, Supplier<Texture> makeTexture, List<Action> actions) {
+	public Card(String name, int priority, Supplier<Texture> makeTexture, List<Supplier<Action>> actions) {
 		this.name = name;
 		this.priority = priority;
 		this.actions = ImmutableList.copyOf(actions);
@@ -27,7 +28,8 @@ public class Card {
 	}
 
 	/** Make a new card with a name, priority, texture, and actions. */
-	public Card(String name, int priority, Supplier<Texture> makeTexture, Action... actions) {
+	@SafeVarargs
+	public Card(String name, int priority, Supplier<Texture> makeTexture, Supplier<Action>... actions) {
 		this.name = name;
 		this.priority = priority;
 		this.makeTexture = makeTexture;
@@ -42,8 +44,8 @@ public class Card {
 		return priority;
 	}
 
-	public List<Action> getActions() {
-		return actions;
+	public List<Action> createActions() {
+		return actions.stream().map(Supplier::get).collect(Collectors.toList());
 	}
 
 	/**

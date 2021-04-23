@@ -16,7 +16,7 @@ public class ConveyorBeltTile extends Tile {
 	 * Constructs a new conveyor belt tile. Only one of rotateLeft or rotateRight should be enabled.
 	 */
 	public ConveyorBeltTile(Orientation direction, boolean rotateBelt, boolean express) {
-		super(new ConveyorAction(direction, express));
+		super(() -> new ConveyorAction(direction, express));
 		this.direction = direction;
 		this.rotateBelt = rotateBelt;
 		this.express = express;

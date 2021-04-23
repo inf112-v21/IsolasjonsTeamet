@@ -5,7 +5,6 @@ import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.players.Player;
-import inf112.isolasjonsteamet.roborally.tiles.ConveyorBeltTile;
 import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import java.util.function.BiConsumer;
 
@@ -31,7 +30,7 @@ public abstract class RoboRallyShared implements ActionProcessor {
 	public void processPlayerTiles(Phase phase) {
 		setCurrentPhase(phase);
 		foreachPlayerTile((player, tile) -> {
-			for (Action action : tile.getActions()) {
+			for (Action action : tile.createActions()) {
 				performActionNow(player.getRobot(), action, phase);
 			}
 		});

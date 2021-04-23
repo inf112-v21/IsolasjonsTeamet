@@ -171,7 +171,7 @@ public class RoboRallyServer extends RoboRallyShared {
 			card = chosenCards.get(cardNum);
 		}
 
-		for (Action action : card.getActions()) {
+		for (Action action : card.createActions()) {
 			performActionNow(player.getRobot(), action, Phase.CARDS);
 		}
 	}
