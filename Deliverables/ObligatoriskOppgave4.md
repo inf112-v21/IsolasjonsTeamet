@@ -3,6 +3,9 @@
 ## Deloppgave 1: Team og prosjekt
 
 ### Project Board:
+![Project board 1](./images/delivery4/project_board_1.png)
+![Project board 2](./images/delivery4/project_board_2.png)
+23.04.21 12:19
 
 ### Roller:
 
