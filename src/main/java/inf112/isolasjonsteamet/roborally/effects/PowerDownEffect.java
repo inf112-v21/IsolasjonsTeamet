@@ -1,7 +1,7 @@
 package inf112.isolasjonsteamet.roborally.effects;
 
 import com.badlogic.gdx.graphics.Texture;
-import inf112.isolasjonsteamet.roborally.players.Player;
+import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 
 /**
@@ -17,8 +17,7 @@ public class PowerDownEffect implements Effect {
 		this.effPos = pos;
 	}
 
-	@Override
-	public void setEffect(Coordinate pos, Player player) {
+	public void setEffect(Coordinate pos, Robot robot) {
 		//Kode for å presentere grafisk her
 	}
 }

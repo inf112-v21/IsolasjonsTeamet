@@ -7,15 +7,19 @@ import java.util.List;
 /**
  * A unique tile type found on the board.
  */
-public class TileType {
+public class Tile {
 
 	private final List<Action> actions;
 
-	public TileType(List<Action> actions) {
+	public Tile(List<Action> actions) {
 		this.actions = ImmutableList.copyOf(actions);
 	}
 
-	public TileType(Action... actions) {
+	public Tile(Action... actions) {
 		this.actions = ImmutableList.copyOf(actions);
+	}
+
+	public List<Action> getActions() {
+		return actions;
 	}
 }

@@ -15,10 +15,22 @@ public interface CardDeck {
 	 * @throws java.util.NoSuchElementException If the desired amount of cards to return is greater than the remaining
 	 * 		cards in the deck.
 	 */
-	List<CardType> grabCards(int amount);
+	List<Card> grabCards(int amount);
 
 	/**
-	 * Resets this card deck to it's initial state, returning all the cards that have been dealt, and shuffles it.
+	 * Adds the given cards to the discard pile, such that when the deck is shuffled next time, they will be a part of
+	 * it.
+	 */
+	void discardCards(List<Card> cards);
+
+	/**
+	 * Adds all cards in the discard pile back to the main deck, and shuffles it.
+	 */
+	void shuffle();
+
+	/**
+	 * Resets this card deck to it's initial state, returning all the cards that have been dealt, and shuffles it. The
+	 * discard pile is also cleared.
 	 */
 	void reset();
 }

@@ -8,9 +8,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import inf112.isolasjonsteamet.roborally.gui.ScreenController;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.Executor;
-import java.util.concurrent.TimeUnit;
+import inf112.isolasjonsteamet.roborally.network.Client;
+import inf112.isolasjonsteamet.roborally.network.impl.NettyServerImpl;
 
 /**
  * A screen allowing users to host a multiplayer game.
@@ -20,6 +19,8 @@ public class HostMultiplayerScreen extends StageScreen {
 	private final ScreenController screenController;
 
 	private TextField portField;
+	private TextField gameNameField;
+	private TextField usernameField;
 	private Label statusLabel;
 
 	public HostMultiplayerScreen(ScreenController screenController) {
@@ -29,8 +30,10 @@ public class HostMultiplayerScreen extends StageScreen {
 	void create() {
 		super.create();
 
-		portField = new TextField("", skin);
+		portField = new TextField("21313", skin);
 		portField.setTextFieldFilter(new TextField.TextFieldFilter.DigitsOnlyFilter());
+		gameNameField = new TextField("", skin);
+		usernameField = new TextField("", skin);
 		statusLabel = new Label("", skin);
 
 		var table = createRootTable();
@@ -39,6 +42,14 @@ public class HostMultiplayerScreen extends StageScreen {
 
 		table.add("Port:");
 		table.add(portField).width(100).spaceLeft(10);
+		table.row();
+
+		table.add("Game name:");
+		table.add(gameNameField).width(100).spaceLeft(10);
+		table.row();
+
+		table.add("Username:");
+		table.add(usernameField).width(100).spaceLeft(10);
 		table.row();
 
 		table.add(statusLabel).colspan(2);
@@ -52,7 +63,6 @@ public class HostMultiplayerScreen extends StageScreen {
 		backButton.addListener(new ChangeListener() {
 			@Override
 			public void changed(ChangeEvent event, Actor actor) {
-				//TODO: Shutdown server here first
 				screenController.popInputScreen();
 			}
 		});
@@ -75,29 +85,72 @@ public class HostMultiplayerScreen extends StageScreen {
 					return;
 				}
 
-				//TODO: Try to actually start the server
-				statusLabel.setText("Starting server");
-				statusLabel.setColor(Color.YELLOW);
-
-				Executor delayedExecutor = CompletableFuture.delayedExecutor(3, TimeUnit.SECONDS);
-				var serverConnected = CompletableFuture.supplyAsync(() -> null, delayedExecutor);
-
-				serverConnected.whenComplete((v, e) -> {
-					if (e != null) {
-						statusLabel.setText("Failed to start server: " + e.getMessage());
-						statusLabel.setColor(Color.RED);
-					} else {
-						//Pass server to game somehow
-						Gdx.app.postRunnable(screenController::startGame);
-					}
-				});
+				startServer(port);
 			}
 		});
 	}
 
 	@Override
 	public void hide() {
-		portField.setText("");
+		portField.setText("21313");
+		gameNameField.setText("");
+		usernameField.setText("");
 		statusLabel.setText("");
+	}
+
+	private void startServer(int port) {
+		statusLabel.setText("Starting server...");
+		statusLabel.setColor(Color.YELLOW);
+
+		NettyServerImpl server = new NettyServerImpl("localhost", port, gameNameField.getText());
+
+		server.ready().whenComplete((v, e) -> {
+			if (e != null) {
+				Gdx.app.postRunnable(() -> {
+					statusLabel.setText("Failed to start server: " + e.getMessage());
+					statusLabel.setColor(Color.RED);
+				});
+			} else {
+				Gdx.app.postRunnable(() -> statusLabel.setText("Server started. Starting client..."));
+				var username = usernameField.getText();
+
+				Client.connectAndVerify("localhost", port, username).whenComplete((tuple, e2) -> {
+					if (e2 != null) {
+						Gdx.app.postRunnable(() -> {
+							statusLabel.setText("Failed to start and connect with client: " + e2.getMessage());
+							statusLabel.setColor(Color.RED);
+						});
+						server.close("Client host connection failed");
+					} else {
+						Client client = tuple.getKey();
+						Gdx.app.postRunnable(() -> statusLabel.setText("Joining the game"));
+						client.joinGame(username).thenAccept(result -> {
+							switch (result) {
+								case DENIED -> {
+									Gdx.app.postRunnable(() -> {
+										statusLabel.setText("Was denied joining the game");
+										statusLabel.setColor(Color.RED);
+									});
+									server.close("Client host connection failed");
+								}
+								case SUCCESS -> Gdx.app.postRunnable(() ->
+										screenController.setInputScreen(
+												new LobbyScreen(screenController, server, username, client)
+										));
+								case NAME_IN_USE -> {
+									Gdx.app.postRunnable(() -> {
+										statusLabel.setText("Someone joined before the host. Unhandled error");
+										statusLabel.setColor(Color.RED);
+									});
+									server.close("Client host connection failed");
+								}
+								default -> throw new IllegalArgumentException("Unknown join result " + result);
+							}
+						});
+					}
+				});
+			}
+		});
+		server.start();
 	}
 }

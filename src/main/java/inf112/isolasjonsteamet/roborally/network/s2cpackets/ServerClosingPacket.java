@@ -2,6 +2,9 @@ package inf112.isolasjonsteamet.roborally.network.s2cpackets;
 
 import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
+import inf112.isolasjonsteamet.roborally.network.ByteBufHelper;
+import inf112.isolasjonsteamet.roborally.network.Codec;
+import io.netty.buffer.ByteBuf;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 /**
@@ -43,5 +46,20 @@ public class ServerClosingPacket implements Server2ClientPacket {
 		return MoreObjects.toStringHelper(this)
 				.add("reason", reason)
 				.toString();
+	}
+
+	@SuppressWarnings("checkstyle:MissingJavadocType")
+	public enum PacketCodec implements Codec<ServerClosingPacket> {
+		INSTANCE;
+
+		@Override
+		public ServerClosingPacket read(ByteBuf in) {
+			return new ServerClosingPacket(ByteBufHelper.readString(in));
+		}
+
+		@Override
+		public void write(ServerClosingPacket msg, ByteBuf buf) {
+			ByteBufHelper.writeString(msg.reason, buf);
+		}
 	}
 }

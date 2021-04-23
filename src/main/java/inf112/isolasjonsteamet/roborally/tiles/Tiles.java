@@ -1,22 +1,15 @@
 package inf112.isolasjonsteamet.roborally.tiles;
 
-import inf112.isolasjonsteamet.roborally.actions.MoveForward;
-import inf112.isolasjonsteamet.roborally.actions.RotateLeft;
-import inf112.isolasjonsteamet.roborally.actions.RotateRight;
-
 /**
  * Holds all the different known tile types.
  */
 public class Tiles {
 
-	public static final TileType HOLE = new TileType(); //TODO: Add actions to this tile
-	public static final TileType LASER = new TileType();
-	public static final TileType LASER_EMITTER = new TileType();
-	public static final TileType FLAG = new TileType(); //TODO: Add actions to this tile
-	public static final TileType REPAIR_SITES_HAMMER_WRENCH = new TileType(); //TODO: Add actions to this tile
-	public static final TileType REPAIR_SITES_WRENCH = new TileType(); //TODO: Add actions to this tile
-	public static final TileType CONVEYOR_BELT = new TileType(new MoveForward(1));
-	public static final TileType ROTATING_CONVEYOR_BELT_LEFT = new TileType(new RotateLeft());
-	public static final TileType ROTATING_CONVEYOR_BELT_RIGHT = new TileType(new RotateRight());
-	public static final TileType GROUND = new TileType();
+	public static final Tile HOLE = new Tile(); //TODO: Add actions to this tile
+	public static final Tile LASER = new Tile();
+	public static final Tile LASER_EMITTER = new Tile();
+	public static final Tile FLAG = new Tile(); //TODO: Add actions to this tile
+	public static final Tile REPAIR_SITES_HAMMER_WRENCH = new Tile(); //TODO: Add actions to this tile
+	public static final Tile REPAIR_SITES_WRENCH = new Tile(); //TODO: Add actions to this tile
+	public static final Tile GROUND = new Tile();
 }
