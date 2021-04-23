@@ -100,12 +100,7 @@ public class ConveyorAction implements Action {
 		boolean processAllBelts = phase.equals(Phase.CONVEYOR_BELTS);
 
 		if (processExpress || processAllBelts) {
-			//board.skipBoardValidChecks();
-
 			processConveyor(processor, board, robot);
-
-			//board.enableBoardValidChecks();
-			//board.checkValid();
 		}
 	}
 }
