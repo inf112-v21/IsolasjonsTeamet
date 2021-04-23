@@ -107,9 +107,11 @@ Siden den forrige innleveringen har vi jobbet med:
     4. Ønsker jeg å kunne påvirke andre spillere
 
 #### Arbeidsoppgaver    
-.................................... //TODO
+Må lage server og client arkitektur for å kunne komusnisere over nettverk. 
+Lage multiplayer slik at det kan være flere spillere med i et spill. 
+
     
-#### Lasere
+### Lasere
 
 #### Brukerhistorer:
 1. Som laser ønsker jeg å vises på brettet og skal kunne skytte på roboten, slik at den git damage til roboten
@@ -244,6 +246,21 @@ MVP kravene vi har dekket:
 7. Velge 5 kort
 8. Bevege robot ut fra valgte kort
 9. Spille fra flere maskiner
+
+Mye av det vi har implementert så langt har ikke en grafisk representasjon, men 
+fungerer i testene. Hadde vi fått laget kode for å representere det grafisk og 
+laget flere maps som har disse elementene. Satser vi på at det hadde virket grafisk siden 
+det virker i testene vi har skrevet. 
+
+### Known bugs
+* (Only seen once) On multiplayer, a player can be initialized wrongly, and thus be missing from the board.
+* Multiplayer can be crashy
+* Probably a bunch of race conditions if the ping between players is high enough
+* Rotating conveyor belts are broken in all but the most simple cases (player facing the same way as conveyor belt goes)
+* Robot pushing er buggy generelt, og virker ikke riktig med WASD
+* Kick player field is moving robot when you are typing WASD
+
+
 
 ## Deloppgave 3: Produktleveranse og Kodekvalitet
 
