@@ -26,16 +26,6 @@ public abstract class RoboRallyShared implements ActionProcessor {
 	protected abstract void setCurrentPhase(Phase phase);
 
 	/**
-	 * Disables board validation checks.
-	 */
-	protected abstract void skipBoardValidChecks();
-
-	/**
-	 * Enables board validation checks.
-	 */
-	protected abstract void enableBoardValidChecks();
-
-	/**
 	 * Processes all the tiles the players are standing on with the given phase.
 	 */
 	public void processPlayerTiles(Phase phase) {
@@ -45,14 +35,6 @@ public abstract class RoboRallyShared implements ActionProcessor {
 				performActionNow(player.getRobot(), action, phase);
 			}
 		});
-	}
-
-	private boolean isConveyorBelt(Tile tile, boolean expressOnly) {
-		if (!(tile instanceof ConveyorBeltTile)) {
-			return false;
-		}
-
-		return !expressOnly || ((ConveyorBeltTile) tile).isExpress();
 	}
 
 	protected void processBoardElements() {

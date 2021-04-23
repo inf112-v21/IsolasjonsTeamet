@@ -345,14 +345,6 @@ public class RoboRallyClient
 	}
 
 	@Override
-	protected void skipBoardValidChecks() {
-	}
-
-	@Override
-	protected void enableBoardValidChecks() {
-	}
-
-	@Override
 	public InputProcessor delegateInputsTo() {
 		return stage;
 	}
