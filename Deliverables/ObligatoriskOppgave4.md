@@ -76,6 +76,175 @@ lært oss masse.
 
 ## Deloppgave 2: Krav
 
+Siden den forrige innleveringen har vi jobbet med:
+
+*   Få multiplayer til å virke over nettverk
+*   Smooth movement for spillet
+*   Vegger
+*   Laser
+*   Chat funskjon
+*   Runder i spillet
+
+
+### Brukerhistorier og akseptansekrav til arbeidsoppgaver
+
+#### Multiplayer
+
+#### Brukerhistorier:
+1. Som spiller ønsker jeg å ha med andre spillere, slik at spillet blir mer dynamisk, og det skjer mer endringer på
+   brettet
+
+##### Akseptansekrav:
+
+1. Gitt at jeg har startet spillet
+    1. Ønsker jeg å kunne bli med i et multiplayer spill noen andre hoster
+    2. Ønsker jeg å kunne hoste et multiplayer spill
+
+2. Gitt at jeg er med i et multiplayer spill
+    1. Ønsker jeg å se flere spillere på brettet enn meg, og deres posisjon
+    2. Ønsker jeg at hver spiller kan utføre handlinger
+    3. Ønsker jeg å se handlinger utført av andre
+    4. Ønsker jeg å kunne påvirke andre spillere
+
+#### Arbeidsoppgaver    
+.................................... //TODO
+    
+#### Lasere
+
+#### Brukerhistorer:
+1. Som laser ønsker jeg å vises på brettet og skal kunne skytte på roboten, slik at den git damage til roboten
+   går den blir truffet av laseren.
+
+
+#### Akseptansekrav:
+1. Gitt at der en laser på brettet
+    1. skal den vises på brettet
+    2. skal den kunne plaseres over flere ruter på brettet
+    3. skal laseren gi damage til roboten hvis den blir truffet av laseren
+
+#### Arbeidsoppgaver
+Trenger funksjon til å sammenligne posisjonen til laseren med spiller slik at vi kan gi damage til spilleren som står i
+en slik posisjon. Vi må gå gjennom brettet og finne ut hvor laserene befinner seg.
+
+
+### Vegger
+
+#### Brukerhistorer:
+
+1. Som vegg ønsker jeg å hindre at roboter ikke kan gå gjennom meg eller stå oppå meg, slik at det ikke er mulig å gå alle plasser på
+   brettet.
+   
+#### Akseptansekriterier:
+
+1. Gitt at det er vegger på brettet
+    1. skal disse vises på brettet slik at spilleren ser hvor det ikke er mulig å gå.
+    2. Trenger en metode for å sjekke om det er en vegg i alle retninger fra posisjonen til roboten.
+    3. Skal den stoppe lasere slik at roboter ikke tar skade.
+
+#### Arbeidsoppgaver
+1. Må kunne legge til vegger på brettet slik at spilleren kan se dem, veggene skal ligge mellom rutene på brettet
+2. Må sørge for at roboten ikke kan flytte seg gjennom eller på veggene.
+
+
+
+### Push robots
+
+#### Brukerhistroer:
+1. Som spiller ønsker jeg at roboten min kan dytte andre roboter på brettet, slik at jeg har mulighet å komme meg til flaget først.
+2.  Som brett ønsker at robotene ikke da dytte andre roboter hvis det er vegg som hindre å flytte robotene
+
+#### Akseptansekriterier
+1. Gitt at spilleren har en robot på brettet og det er en robot som står i den retningen den ønsker å gå
+    1. skal roboten kunne dytte roboten
+    2. hvis det er vegg i veien skal roboten ikke kunne dytte en annen robot
+
+#### Arbeidsoppgaver:
+Robotene skal kunne dytte roboter som er i veien for der de skal gå. Hvis det er vegg som står i veien skal i robotene
+flytte på seg.
+
+### Chat
+
+#### Brukerhistorier:
+1. Som spiller ønsker jeg å kunne snakke med de jeg spiller sammen med slik at
+    1. vi kan kommunsiere mens vi spiller
+    2. det skal bli mer sosialt å spille når vi spiller over nettverk
+
+#### Akseptansekriterier
+1.  Gitt at det er flere spillere som spiller over nettverk skal spillerne kunne
+    1. skrive meldinger til de andre spillerene
+    2. se tidligere meldinger som er sendt
+
+#### Arebidsoppgaver
+Det er nødvendig å lage en felt der vi kan skive meldinger vi ønsker å sende til de andre spillerene. Det må være en boks der vi kan
+se de meldingene som er blitt sendt i chaten. Det må være mulig å skjule chaten slik at vi kan se hele spillebrettet.
+
+
+### Exit button
+
+#### Brukerhistorier:
+1.  Som spill ønsker jeg at der er en exit button som spilleren kan trykke på slik at spillet samles og lukkes på en god måte.
+
+#### Akseptansekriterier
+1. Gitt at du har startet ett spill skal du
+    1. kunne avslutee spillet når du trykker på exit kanppen
+    2. se exit knappen for avsluutee spillet må vises på skjermen slik at spilleren kan se og trykke på den
+
+#### Arbeidsoppgaver
+Må lage en knapp i GUI som spilleren kan trykke på slik at spillet avslutter på en sikker måte.
+
+
+### Rounds
+
+#### Brukerhistorier:
+1. Som spillere ønsker at vi kan velge hvilke trekk vi vil gjøre slik at robotene flytter seg rundt på brettet.
+2. Som spill ønsker vi at spillerne skal få delt ut kort og kan programmere robotene sine slik at robotene kan bevege seg.
+
+#### Akseptansekriterier
+1. Spiller
+    1. Må få  utdelt kort og kunne programere roboten
+2. Spillet
+    1. Må kunne la spillerne programmere robotene sine og gjennomføre trekkene
+    2. Må dele ut kort til spillerne slik at velge hvilke trekk de vil gjøre
+    3. Roboten må flytte seg slik spilleren har programert og etter riktig tur.
+
+#### Arbeidsoppgaver
+Vi må implemetere server oppførsel og at tiles på brettet har riktig oppførsel. Spillere må utdelt kort hver runde slik at de
+kan programere robotene sine. Robotene må flytte seg rundt på brettet etter riktig tur og slik spilleren har programert.
+
+
+### Smooth movement
+
+####  Brukerhistorier:
+1. Som spill ønsker jeg at robotene bevger mer flytende på bretter slik at vi får en finere grafisk presentasjon av bevegelsene
+   på brettet.
+
+#### Akseptansekrav:
+1. Spill
+    1. Må kunne gjøre slik at spilleren ikke har en for brå overgang fra
+       tile til tile.
+    2. Må ikke påvirke andre spillerfunksjoner og moves, men se bra ut når
+       spilleren er i bevegelse.
+    3. Må ha en størrelse som gjør at det ser mest mulig “pent” ut i forhold
+       til brettet.
+
+#### Arbeidsoppgaver
+Må sørge for roboten beveger mer flytende på brettet. For å få til dette må vi gjemme roboten på brettet og
+viser et sprite som har spillerstukrur istendefor. Dette spritet kan flytte og rotere seg friere enn roboten
+på brettet.
+
+
+MVP kravene vi har dekket:
+
+1. Vise et spillebrett
+2. Vise brikke på spillebrett
+3. Flytte brikke (vha taster e.l. for testing)
+4. Robot besøker flagg
+5. Robot vinner ved å besøke flagg
+6. Dele ut kort
+7. Velge 5 kort
+8. Bevege robot ut fra valgte kort
+9. Spille fra flere maskiner
+
 ## Deloppgave 3: Produktleveranse og Kodekvalitet
 
 ### Class diagram
