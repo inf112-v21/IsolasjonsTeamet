@@ -126,7 +126,7 @@ public abstract class RoboRallyShared implements ActionProcessor {
 					}
 
 					performActionNow(
-							robot, new Move(conveyorTile.getDirection(), 1, true), Phase.BOARD_ELEMENTS_CONVEYOR
+							robot, new Move(conveyorTile.getDirection(), 1, false), Phase.BOARD_ELEMENTS_CONVEYOR
 					);
 				}
 			}

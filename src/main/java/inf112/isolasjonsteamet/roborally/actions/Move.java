@@ -16,41 +16,55 @@ public class Move implements Action {
 
 	private final Orientation direction;
 	private final int numMoves;
-	@SuppressWarnings("FieldCanBeLocal") //TODO: Remove when implementing pushing
-	private final boolean noPush;
+	private final boolean encounteredPlayerObstacleBefore;
+	private final boolean push;
 
 	private RobotEffect playerEffect;
 	private boolean moved = false;
 
+	private Move(Orientation direction, int numMoves, boolean push, boolean encounteredPlayerObstacleBefore) {
+		this.direction = direction;
+		this.numMoves = numMoves;
+		this.encounteredPlayerObstacleBefore = encounteredPlayerObstacleBefore;
+		this.push = push;
+	}
+
 	/**
 	 * Constructs a move action with the option if disabling pushing other robots.
 	 */
-	public Move(Orientation direction, int numMoves, boolean noPush) {
-		this.direction = direction;
-		this.numMoves = numMoves;
-		this.noPush = noPush;
+	public Move(Orientation direction, int numMoves, boolean push) {
+		this(direction, numMoves, push, false);
 	}
 
 	public Move(Orientation direction, int numMoves) {
-		this(direction, numMoves, false);
+		this(direction, numMoves, true);
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public void perform(ActionProcessor processor, Board board, Robot robot, Phase phase) {
 		Coordinate pos = robot.getPos();
+		var directionCoord = direction.toCoord();
 		final var originalPos = pos;
 
-		final Coordinate offset = direction.toCoord().mult(numMoves);
+		final Coordinate offset = directionCoord.mult(numMoves);
 		final Coordinate finalDestination = robot.getPos().add(offset);
 		var clampedDestinationX = MathUtils.clamp(finalDestination.getX(), 0, board.getWidth() - 1);
 		var clampedDestinationY = MathUtils.clamp(finalDestination.getY(), 0, board.getWidth() - 1);
 		var clampedFinalDestination = new Coordinate(clampedDestinationX, clampedDestinationY);
 
-		while (!board.hasWallInDir(pos, direction) && !pos.equals(clampedFinalDestination)) {
-			pos = pos.add(direction.toCoord());
+		Robot robotAt = null;
+		int movesMade = 0;
+		while (!board.hasWallInDir(pos, direction) && !pos.equals(clampedFinalDestination) && robotAt == null) {
+			var newPos = pos.add(directionCoord);
+
+			if (push) {
+				robotAt = board.getRobotAt(newPos);
+			}
+
+			if (robotAt == null) {
+				pos = newPos;
+				movesMade++;
+			}
 		}
 
 		int clampedX = MathUtils.clamp(pos.getX(), 0, board.getWidth() - 1);
@@ -61,8 +75,19 @@ public class Move implements Action {
 
 		robot.move(clampedOffset);
 
+		// If we crashed into another player, and we didn't do all the intended moves,
+		// then we try to push the encountered player
+		if (robotAt != null && movesMade < numMoves) {
+
+			// We only push the encountered player if this is either the
+			// first time we're encountering them, or we made movement progress
+			if (!encounteredPlayerObstacleBefore || movesMade > 0) {
+				processor.scheduleAction(robotAt, new Move(direction, 1));
+				processor.scheduleAction(robot, new Move(direction, numMoves - movesMade, false, true));
+			}
+		}
+
 		moved = !originalPos.equals(moveTo);
-		System.out.println("Moved = " + moved);
 	}
 
 	@Override
@@ -75,7 +100,6 @@ public class Move implements Action {
 	@Override
 	public boolean show(Robot robot, ClientBoard board, int framesSinceStart) {
 		if (framesSinceStart == 20 * numMoves || !moved) {
-			System.out.println("Moved was " + moved);
 			board.show(robot);
 			board.removeEffect(playerEffect);
 			return true;
@@ -90,6 +114,3 @@ public class Move implements Action {
 		return false;
 	}
 }
-
-
-

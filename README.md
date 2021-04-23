@@ -149,3 +149,4 @@ To run CheckStyle, use `checkstyleMain`.
 * Game crashes if closing the window directly
 * Game sometimes throws an exception when exiting local multiplayer
 * Rotating conveyor belts are broken in all but the most simple cases (player facing the same way as conveyor belt goes)
+* Robot pushing er buggy generelt, og virker ikke riktig med WASD
