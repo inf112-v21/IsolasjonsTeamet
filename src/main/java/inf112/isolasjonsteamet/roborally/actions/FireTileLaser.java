@@ -7,6 +7,9 @@ import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
+/**
+ * An action which fires tile lasers, damaging the fist player in their way.
+ */
 public class FireTileLaser implements Action {
 
 	private boolean hasRobotInWayOfEmitter(Board board, Coordinate pos) {

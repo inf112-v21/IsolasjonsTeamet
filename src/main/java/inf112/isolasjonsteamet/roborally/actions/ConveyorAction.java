@@ -8,6 +8,9 @@ import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 
+/**
+ * An action for conveyor belts, which moves the player along without pushing anyone else.
+ */
 public class ConveyorAction implements Action {
 
 	private final Orientation dir;
