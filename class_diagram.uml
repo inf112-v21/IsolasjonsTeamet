@@ -3,584 +3,622 @@
   <ID>JAVA</ID>
   <OriginalElement>inf112.isolasjonsteamet.roborally</OriginalElement>
   <nodes>
-    <node x="358.7516198145921" y="345.0">inf112.isolasjonsteamet.roborally.tiles.Tiles</node>
-    <node x="1163.9744072629048" y="525.0">inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl</node>
-    <node x="426.30316091954035" y="1255.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket</node>
-    <node x="736.8533355008665" y="825.0">inf112.isolasjonsteamet.roborally.gui.screens.GameScreen</node>
-    <node x="723.3533355008665" y="710.0">inf112.isolasjonsteamet.roborally.app.RoboRallyGame</node>
-    <node x="6.75" y="525.0">inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel</node>
-    <node x="377.7137421635321" y="0.0">inf112.isolasjonsteamet.roborally.tiles.TileType</node>
-    <node x="1088.52379118314" y="260.0">inf112.isolasjonsteamet.roborally.actions.Action</node>
-    <node x="1529.7076147125517" y="710.0">inf112.isolasjonsteamet.roborally.gui.screens.InstructionsScreen</node>
-    <node x="256.8349531479254" y="440.0">inf112.isolasjonsteamet.roborally.board.BoardImpl</node>
-    <node x="0.0" y="1360.0">inf112.isolasjonsteamet.roborally.network.Client</node>
-    <node x="1100.4744072629048" y="440.0">inf112.isolasjonsteamet.roborally.cards.Cards</node>
-    <node x="443.467816091954" y="1360.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket</node>
-    <node x="1510.5075021675332" y="525.0">inf112.isolasjonsteamet.roborally.gui.ScreenController</node>
-    <node x="1218.525" y="1255.0">inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket</node>
-    <node x="643.4166666666667" y="155.0">inf112.isolasjonsteamet.roborally.board.Board</node>
-    <node x="1155.143545751634" y="710.0">inf112.isolasjonsteamet.roborally.gui.screens.HostMultiplayerScreen</node>
-    <node x="922.0000000000001" y="1160.0">inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket</node>
-    <node x="532.8349531479253" y="525.0">inf112.isolasjonsteamet.roborally.gui.MapRendererWidget</node>
-    <node x="137.46781609195386" y="1360.0">inf112.isolasjonsteamet.roborally.network.ClientPacketListener.ClassClientPacketListener</node>
-    <node x="308.66666666666674" y="525.0">inf112.isolasjonsteamet.roborally.board.BoardClientImpl</node>
-    <node x="1528.0075021675332" y="995.0">inf112.isolasjonsteamet.roborally.app.Main</node>
-    <node x="754.5833333333334" y="1075.0">inf112.isolasjonsteamet.roborally.network.Packet</node>
-    <node x="1112.77379118314" y="345.0">inf112.isolasjonsteamet.roborally.cards.CardType</node>
-    <node x="0.0" y="440.0">inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel.LabelOutputStream</node>
-    <node x="1773.7076147125517" y="710.0">inf112.isolasjonsteamet.roborally.gui.screens.JoinMultiplayerScreen</node>
-    <node x="992.3571245164733" y="155.0">inf112.isolasjonsteamet.roborally.actions.ActionProcessor</node>
-    <node x="494.5849531479254" y="440.0">inf112.isolasjonsteamet.roborally.board.ClientBoard</node>
-    <node x="83.5" y="1475.0">inf112.isolasjonsteamet.roborally.network.ClientPacketListener</node>
-    <node x="783.3000000000001" y="1475.0">inf112.isolasjonsteamet.roborally.network.Server</node>
-    <node x="638.925" y="1590.0">inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer</node>
-    <node x="739.8304088301988" y="0.0">inf112.isolasjonsteamet.roborally.players.Player</node>
-    <node x="1483.0075021675332" y="825.0">inf112.isolasjonsteamet.roborally.gui.screens.MainMenuScreen</node>
-    <node x="1433.5075021675332" y="910.0">inf112.isolasjonsteamet.roborally.gui.RoboRallyScreenController</node>
-    <node x="874.7281609195404" y="1360.0">inf112.isolasjonsteamet.roborally.network.ServerPacketListener</node>
-    <node x="678.3031609195403" y="1255.0">inf112.isolasjonsteamet.roborally.network.ServerPacketListener.ClassServerPacketListener</node>
-    <node x="1028.525" y="1255.0">inf112.isolasjonsteamet.roborally.network.ServerPacketListener.ServerPacket</node>
-    <node x="947.4744072629048" y="440.0">inf112.isolasjonsteamet.roborally.cards.CardDeck</node>
-    <node x="721.1474531479253" y="440.0">inf112.isolasjonsteamet.roborally.players.PlayerImpl</node>
+    <node x="780.0" y="845.0">inf112.isolasjonsteamet.roborally.tiles.Tiles</node>
+    <node x="6956.0" y="510.0">inf112.isolasjonsteamet.roborally.network.impl.ClientHandler</node>
+    <node x="5652.611728395062" y="85.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket</node>
+    <node x="1088.0" y="845.0">inf112.isolasjonsteamet.roborally.cards.Card</node>
+    <node x="1427.75" y="230.0">inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.RequestLobbyInfoPacket</node>
+    <node x="2086.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.Move</node>
+    <node x="4113.0" y="595.0">inf112.isolasjonsteamet.roborally.tiles.ConveyorBeltTile</node>
+    <node x="7187.0" y="510.0">inf112.isolasjonsteamet.roborally.network.ByteBufHelper</node>
+    <node x="1336.5" y="510.0">inf112.isolasjonsteamet.roborally.actions.Action</node>
+    <node x="3511.8617283950616" y="325.0">inf112.isolasjonsteamet.roborally.gui.screens.InstructionsScreen</node>
+    <node x="626.0" y="845.0">inf112.isolasjonsteamet.roborally.cards.Cards</node>
+    <node x="4205.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket</node>
+    <node x="5284.0" y="510.0">inf112.isolasjonsteamet.roborally.effects.Effect</node>
+    <node x="7248.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket</node>
+    <node x="3459.0" y="595.0">inf112.isolasjonsteamet.roborally.gui.CardArea.CardAreaTarget</node>
+    <node x="4416.5" y="510.0">inf112.isolasjonsteamet.roborally.gui.ScreenController</node>
+    <node x="1593.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.CheckPoint</node>
+    <node x="7297.122685185184" y="325.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket.JoinResult</node>
+    <node x="3916.0" y="595.0">inf112.isolasjonsteamet.roborally.tiles.WallTileType</node>
+    <node x="0.0" y="845.0">inf112.isolasjonsteamet.roborally.gui.ToggleButton</node>
+    <node x="3205.0" y="595.0">inf112.isolasjonsteamet.roborally.gui.CardArea.CardUpdateListener</node>
+    <node x="5203.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.GameInfoPacket</node>
+    <node x="3765.8617283950616" y="325.0">inf112.isolasjonsteamet.roborally.gui.screens.HostMultiplayerScreen</node>
+    <node x="668.5" y="325.0">inf112.isolasjonsteamet.roborally.app.RoboRallyClient</node>
+    <node x="1578.1117283950616" y="85.0">inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket</node>
+    <node x="3488.0" y="510.0">inf112.isolasjonsteamet.roborally.gui.CardArea</node>
+    <node x="5419.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket</node>
+    <node x="5900.583333333333" y="325.0">inf112.isolasjonsteamet.roborally.network.ClientPacketListener.ClassClientPacketListener</node>
+    <node x="3228.8617283950616" y="325.0">inf112.isolasjonsteamet.roborally.gui.screens.JoinMultiplayerScreen</node>
+    <node x="0.0" y="325.0">inf112.isolasjonsteamet.roborally.players.ClientPlayer</node>
+    <node x="1957.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.Uturn</node>
+    <node x="4771.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerChatPacket</node>
+    <node x="5944.0" y="510.0">inf112.isolasjonsteamet.roborally.network.impl.ProtocolException</node>
+    <node x="3675.0" y="595.0">inf112.isolasjonsteamet.roborally.gui.CardArea.CardAreaSource</node>
+    <node x="1406.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.PhaseAction</node>
+    <node x="5354.037191358024" y="430.0">inf112.isolasjonsteamet.roborally.gui.screens.LobbyScreen.ClientLobby</node>
+    <node x="462.5" y="230.0">inf112.isolasjonsteamet.roborally.app.RoboRallyShared</node>
+    <node x="5665.0" y="510.0">inf112.isolasjonsteamet.roborally.network.impl.PacketCodecHandler</node>
+    <node x="222.0" y="845.0">inf112.isolasjonsteamet.roborally.players.PlayerInfo</node>
+    <node x="6552.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket</node>
+    <node x="5634.120524691356" y="325.0">inf112.isolasjonsteamet.roborally.network.ClientPacketAdapter</node>
+    <node x="1770.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.RotateRight</node>
+    <node x="2513.75" y="230.0">inf112.isolasjonsteamet.roborally.network.ServerPacketListener</node>
+    <node x="1877.9583333333335" y="325.0">inf112.isolasjonsteamet.roborally.network.ServerPacketListener.ClassServerPacketListener</node>
+    <node x="2974.8617283950616" y="325.0">inf112.isolasjonsteamet.roborally.gui.screens.NotificationScreen</node>
+    <node x="2513.8617283950616" y="325.0">inf112.isolasjonsteamet.roborally.network.ServerPacketListener.ServerPacket</node>
+    <node x="5033.5" y="510.0">inf112.isolasjonsteamet.roborally.cards.CardDeck</node>
+    <node x="273.5" y="430.0">inf112.isolasjonsteamet.roborally.app.RoboRallyServer.ServerStatePlayer</node>
+    <node x="6768.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.LobbyInfoPacket</node>
+    <node x="4990.0" y="595.0">inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl</node>
+    <node x="2278.75" y="230.0">inf112.isolasjonsteamet.roborally.network.c2spackets.ClientChatPacket</node>
+    <node x="1125.75" y="230.0">inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStatePacket</node>
+    <node x="424.0" y="845.0">inf112.isolasjonsteamet.roborally.gui.screens.GameScreen</node>
+    <node x="735.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.RotateLeft</node>
+    <node x="934.0" y="845.0">inf112.isolasjonsteamet.roborally.network.Codec</node>
+    <node x="4725.0" y="510.0">inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel</node>
+    <node x="1014.1226851851848" y="430.0">inf112.isolasjonsteamet.roborally.app.RoboRallyClient.PacketAdapter</node>
+    <node x="4690.872685185184" y="325.0">inf112.isolasjonsteamet.roborally.gui.screens.LobbyScreen</node>
+    <node x="548.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.RepairRobot</node>
+    <node x="6240.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket</node>
+    <node x="197.0" y="325.0">inf112.isolasjonsteamet.roborally.players.ServerPlayer</node>
+    <node x="6725.0" y="510.0">inf112.isolasjonsteamet.roborally.network.impl.ServerHandler</node>
+    <node x="187.0" y="595.0">inf112.isolasjonsteamet.roborally.board.BoardImpl</node>
+    <node x="2558.75" y="510.0">inf112.isolasjonsteamet.roborally.network.Client</node>
+    <node x="411.25" y="325.0">inf112.isolasjonsteamet.roborally.app.RoboRallyServer</node>
+    <node x="832.75" y="230.0">inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket</node>
+    <node x="5916.611728395062" y="85.0">inf112.isolasjonsteamet.roborally.network.impl.PacketRegistration</node>
+    <node x="1219.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.MoveForward</node>
+    <node x="1956.75" y="230.0">inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket</node>
+    <node x="5260.0" y="595.0">inf112.isolasjonsteamet.roborally.effects.RobotEffect</node>
+    <node x="117.75" y="510.0">inf112.isolasjonsteamet.roborally.board.Board</node>
+    <node x="5491.5" y="510.0">inf112.isolasjonsteamet.roborally.players.Robot</node>
+    <node x="5006.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket</node>
+    <node x="1051.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.KillRobot</node>
+    <node x="6214.0" y="510.0">inf112.isolasjonsteamet.roborally.gui.MapRendererWidget</node>
+    <node x="3687.745524691357" y="430.0">inf112.isolasjonsteamet.roborally.gui.screens.LobbyScreen.ServerLobby</node>
+    <node x="69.75" y="680.0">inf112.isolasjonsteamet.roborally.board.BoardClientImpl</node>
+    <node x="808.1226851851848" y="430.0">inf112.isolasjonsteamet.roborally.app.RoboRallyServer.ServerAdapter</node>
+    <node x="2710.8617283950616" y="325.0">inf112.isolasjonsteamet.roborally.network.ServerPacketAdapter</node>
+    <node x="5986.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket</node>
+    <node x="2206.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.Destruction</node>
+    <node x="1721.75" y="230.0">inf112.isolasjonsteamet.roborally.network.c2spackets.KickPlayerPacket</node>
+    <node x="6484.0" y="510.0">inf112.isolasjonsteamet.roborally.network.impl.PacketProtocol</node>
+    <node x="5715.111728395062" y="0.0">inf112.isolasjonsteamet.roborally.network.Packet</node>
+    <node x="4720.0" y="595.0">inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel.LabelOutputStream</node>
+    <node x="5472.0" y="595.0">inf112.isolasjonsteamet.roborally.players.RobotImpl</node>
+    <node x="4469.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket</node>
+    <node x="591.125" y="85.0">inf112.isolasjonsteamet.roborally.actions.ActionProcessor</node>
+    <node x="0.0" y="595.0">inf112.isolasjonsteamet.roborally.board.ClientBoard</node>
+    <node x="912.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.Damage</node>
+    <node x="2955.0" y="595.0">inf112.isolasjonsteamet.roborally.network.impl.NettyServerImpl</node>
+    <node x="5712.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.ClientPacketListener</node>
+    <node x="6994.622685185184" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.GameStartingPacket</node>
+    <node x="2900.25" y="510.0">inf112.isolasjonsteamet.roborally.network.Server</node>
+    <node x="2643.0" y="595.0">inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer</node>
+    <node x="3744.6226851851848" y="230.0">inf112.isolasjonsteamet.roborally.gui.screens.StageScreen</node>
+    <node x="2418.0" y="595.0">inf112.isolasjonsteamet.roborally.network.impl.NettyClientImpl</node>
+    <node x="127.5" y="230.0">inf112.isolasjonsteamet.roborally.players.Player</node>
+    <node x="380.0" y="635.0">inf112.isolasjonsteamet.roborally.actions.PowerDown</node>
+    <node x="4474.872685185184" y="325.0">inf112.isolasjonsteamet.roborally.gui.screens.MainMenuScreen</node>
+    <node x="4373.0" y="595.0">inf112.isolasjonsteamet.roborally.gui.RoboRallyScreenController</node>
+    <node x="93.75" y="765.0">inf112.isolasjonsteamet.roborally.board.BoardClientImpl.BoardRobot</node>
+    <node x="3931.6226851851843" y="230.0">inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket</node>
+    <node x="49.25" y="430.0">inf112.isolasjonsteamet.roborally.players.PlayerImpl</node>
+    <node x="4062.5" y="510.0">inf112.isolasjonsteamet.roborally.tiles.Tile</node>
   </nodes>
   <notes />
   <edges>
-    <edge source="inf112.isolasjonsteamet.roborally.board.BoardImpl" target="inf112.isolasjonsteamet.roborally.tiles.Tiles">
-      <point x="59.16666666666663" y="-17.5" />
-      <point x="387.001619814592" y="420.0" />
-      <point x="376.41828648125875" y="420.0" />
-      <point x="-35.33333333333337" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.players.PlayerImpl" target="inf112.isolasjonsteamet.roborally.board.Board">
-      <point x="-30.200000000000045" y="-17.5" />
-      <point x="766.4474531479252" y="420.0" />
-      <point x="763.7166666666668" y="420.0" />
-      <point x="763.7166666666668" y="240.0" />
-      <point x="717.6166666666668" y="240.0" />
-      <point x="21.200000000000045" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.board.Board" target="inf112.isolasjonsteamet.roborally.tiles.TileType">
-      <point x="-26.5" y="-17.5" />
-      <point x="669.9166666666667" y="95.0" />
-      <point x="469.1512421635321" y="95.0" />
-      <point x="24.9375" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyGame" target="inf112.isolasjonsteamet.roborally.cards.CardType">
-      <point x="20.94117647058829" y="-17.5" />
-      <point x="833.2945119714548" y="600.0" />
-      <point x="936.9744072629048" y="600.0" />
-      <point x="936.9744072629048" y="400.0" />
-      <point x="1122.27379118314" y="400.0" />
-      <point x="-57.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
-      <point x="0.0" y="-17.5" />
-      <point x="559.467816091954" y="1340.0" />
-      <point x="542.3031609195403" y="1340.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.MainMenuScreen" target="inf112.isolasjonsteamet.roborally.gui.screens.JoinMultiplayerScreen">
-      <point x="58.4375" y="-17.5" />
-      <point x="1634.9450021675332" y="795.0" />
-      <point x="1836.2076147125517" y="795.0" />
-      <point x="-62.5" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.MainMenuScreen" target="inf112.isolasjonsteamet.roborally.gui.ScreenController">
-      <point x="35.0625" y="-17.5" />
-      <point x="1611.5700021675332" y="785.0" />
-      <point x="1763.2076147125517" y="785.0" />
-      <point x="1763.2076147125517" y="680.0" />
-      <point x="1635.785279945311" y="680.0" />
-      <point x="22.77777777777783" y="17.5" />
-    </edge>
     <edge source="inf112.isolasjonsteamet.roborally.network.ServerPacketListener" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
       <point x="0.0" y="-17.5" />
-      <point x="995.2281609195404" y="1340.0" />
-      <point x="1018.025" y="1340.0" />
-      <point x="-19.333333333333314" y="17.5" />
+      <point x="2640.75" y="170.0" />
+      <point x="1806.8617283950616" y="170.0" />
+      <point x="106.75" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.MapRendererWidget" target="inf112.isolasjonsteamet.roborally.board.Board">
-      <point x="53.5" y="-17.5" />
-      <point x="693.3349531479253" y="505.0" />
-      <point x="685.1666666666667" y="505.0" />
-      <point x="685.1666666666667" y="240.0" />
-      <point x="696.4166666666667" y="240.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel" target="inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel.LabelOutputStream">
-      <point x="-51.25" y="-17.5" />
-      <point x="58.0" y="505.0" />
-      <point x="53.5" y="505.0" />
-      <point x="-53.5" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.actions.Action" target="inf112.isolasjonsteamet.roborally.actions.ActionProcessor">
-      <point x="-28.75" y="-17.5" />
-      <point x="1117.27379118314" y="210.0" />
-      <point x="1090.3571245164733" y="210.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.ClientPacketListener" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+    <edge source="inf112.isolasjonsteamet.roborally.gui.CardArea.CardUpdateListener" target="inf112.isolasjonsteamet.roborally.gui.CardArea">
       <point x="0.0" y="-17.5" />
-      <point x="204.0" y="1425.0" />
-      <point x="126.96781609195386" y="1425.0" />
-      <point x="126.96781609195386" y="1330.0" />
-      <point x="449.5031609195404" y="1330.0" />
-      <point x="-92.79999999999995" y="17.5" />
+      <point x="3322.0" y="570.0" />
+      <point x="3511.0" y="570.0" />
+      <point x="-46.0" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer" target="inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket">
-      <point x="124.65000000000009" y="-17.5" />
-      <point x="902.075" y="1570.0" />
-      <point x="1361.525" y="1570.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyGame" target="inf112.isolasjonsteamet.roborally.actions.Action">
-      <point x="10.470588235294144" y="-17.5" />
-      <point x="822.8239237361606" y="590.0" />
-      <point x="924.189119814592" y="590.0" />
-      <point x="924.189119814592" y="320.0" />
-      <point x="1107.6904578498068" y="320.0" />
-      <point x="-38.333333333333314" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.ClientPacketListener.ClassClientPacketListener" target="inf112.isolasjonsteamet.roborally.network.ClientPacketListener">
-      <point x="71.50000000000011" y="17.5" />
-      <point x="351.967816091954" y="1455.0" />
-      <point x="300.4000000000001" y="1455.0" />
-      <point x="96.40000000000009" y="-17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.players.PlayerImpl" target="inf112.isolasjonsteamet.roborally.players.Player">
-      <point x="0.0" y="-17.5" />
-      <point x="796.6474531479253" y="420.0" />
-      <point x="815.1468370681605" y="420.0" />
-      <point x="815.1468370681605" y="135.0" />
-      <point x="804.5179088301988" y="135.0" />
-      <point x="7.1875" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
-      <point x="96.95000000000005" y="-17.5" />
-      <point x="874.375" y="1560.0" />
-      <point x="1208.025" y="1560.0" />
-      <point x="1208.025" y="1225.0" />
-      <point x="1096.0" y="1225.0" />
-      <point x="58.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.board.Board" target="inf112.isolasjonsteamet.roborally.players.Player">
-      <point x="26.5" y="-17.5" />
-      <point x="722.9166666666667" y="135.0" />
-      <point x="790.1429088301988" y="135.0" />
-      <point x="-7.1875" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.board.BoardClientImpl" target="inf112.isolasjonsteamet.roborally.tiles.Tiles">
-      <point x="16.33333333333337" y="-17.5" />
-      <point x="423.0000000000001" y="505.0" />
-      <point x="411.7516198145921" y="505.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket" target="inf112.isolasjonsteamet.roborally.network.Packet">
-      <point x="0.0" y="-17.5" />
-      <point x="1038.0" y="1135.0" />
-      <point x="840.8333333333334" y="1135.0" />
-      <point x="28.75" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.Client" target="inf112.isolasjonsteamet.roborally.network.ClientPacketListener">
-      <point x="38.33333333333337" y="17.5" />
-      <point x="95.83333333333337" y="1435.0" />
-      <point x="155.79999999999995" y="1435.0" />
-      <point x="-48.200000000000045" y="-17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.Server" target="inf112.isolasjonsteamet.roborally.network.ServerPacketListener">
-      <point x="28.75" y="-17.5" />
-      <point x="869.5500000000001" y="1455.0" />
-      <point x="914.894827586207" y="1455.0" />
-      <point x="-80.33333333333331" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.MainMenuScreen" target="inf112.isolasjonsteamet.roborally.gui.screens.InstructionsScreen">
-      <point x="-11.6875" y="-17.5" />
-      <point x="1564.8200021675332" y="765.0" />
-      <point x="1585.4576147125517" y="765.0" />
-      <point x="-55.75" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.actions.ActionProcessor" target="inf112.isolasjonsteamet.roborally.actions.Action">
-      <point x="39.19999999999999" y="17.5" />
-      <point x="1129.5571245164733" y="240.0" />
-      <point x="1136.4404578498068" y="240.0" />
-      <point x="-9.583333333333314" y="-17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.RoboRallyScreenController" target="inf112.isolasjonsteamet.roborally.gui.ScreenController">
-      <point x="107.25" y="-17.5" />
-      <point x="1683.7575021675332" y="885.0" />
-      <point x="2034.2076147125517" y="885.0" />
-      <point x="2034.2076147125517" y="650.0" />
-      <point x="1704.1186132786443" y="650.0" />
-      <point x="91.11111111111109" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer" target="inf112.isolasjonsteamet.roborally.network.ServerPacketListener">
-      <point x="41.549999999999955" y="-17.5" />
-      <point x="818.9749999999999" y="1540.0" />
-      <point x="1000.507183908046" y="1540.0" />
-      <point x="1000.507183908046" y="1455.0" />
-      <point x="995.2281609195404" y="1455.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyGame" target="inf112.isolasjonsteamet.roborally.cards.CardDeck">
-      <point x="31.41176470588232" y="-17.5" />
-      <point x="843.7651002067488" y="610.0" />
-      <point x="980.7244072629048" y="610.0" />
-      <point x="-33.25" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.Main" target="inf112.isolasjonsteamet.roborally.gui.RoboRallyScreenController">
+    <edge source="inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel.LabelOutputStream" target="inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel">
       <point x="0.0" y="-17.5" />
       <point x="0.0" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.board.BoardClientImpl" target="inf112.isolasjonsteamet.roborally.tiles.TileType">
-      <point x="-81.66666666666663" y="-17.5" />
-      <point x="325.0000000000001" y="505.0" />
-      <point x="224.5" y="505.0" />
-      <point x="224.5" y="55.0" />
-      <point x="386.0262421635321" y="55.0" />
-      <point x="-58.1875" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyGame" target="inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl">
-      <point x="52.35294117647061" y="-17.5" />
-      <point x="864.7062766773371" y="630.0" />
-      <point x="1270.9744072629048" y="630.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.ServerPacketListener.ServerPacket" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerChatPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
       <point x="0.0" y="-17.5" />
-      <point x="1113.025" y="1235.0" />
-      <point x="1057.3333333333335" y="1235.0" />
-      <point x="19.333333333333314" y="17.5" />
+      <point x="4879.122685185184" y="180.0" />
+      <point x="5709.545061728395" y="180.0" />
+      <point x="-65.0666666666666" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.MapRendererWidget" target="inf112.isolasjonsteamet.roborally.board.ClientBoard">
-      <point x="-53.5" y="-17.5" />
-      <point x="586.3349531479253" y="505.0" />
-      <point x="614.5849531479254" y="505.0" />
-      <point x="40.0" y="17.5" />
+    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyServer.ServerAdapter" target="inf112.isolasjonsteamet.roborally.network.ServerPacketAdapter">
+      <point x="46.5" y="-17.5" />
+      <point x="947.6226851851848" y="390.0" />
+      <point x="2771.8617283950616" y="390.0" />
+      <point x="-61.0" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.RoboRallyScreenController" target="inf112.isolasjonsteamet.roborally.gui.screens.GameScreen">
-      <point x="-107.25" y="-17.5" />
-      <point x="1469.2575021675332" y="885.0" />
-      <point x="812.3533355008665" y="885.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.tiles.TileType" target="inf112.isolasjonsteamet.roborally.actions.Action">
-      <point x="41.5625" y="17.5" />
-      <point x="485.7762421635321" y="85.0" />
-      <point x="1198.8571245164733" y="85.0" />
-      <point x="1198.8571245164733" y="220.0" />
-      <point x="1155.6071245164733" y="220.0" />
-      <point x="9.583333333333314" y="-17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.actions.Action" target="inf112.isolasjonsteamet.roborally.players.Player">
-      <point x="47.916666666666686" y="-17.5" />
-      <point x="1193.9404578498068" y="240.0" />
-      <point x="1220.8571245164733" y="240.0" />
-      <point x="1220.8571245164733" y="65.0" />
-      <point x="833.2679088301988" y="65.0" />
-      <point x="35.9375" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyGame" target="inf112.isolasjonsteamet.roborally.gui.MapRendererWidget">
-      <point x="-41.882352941176464" y="-17.5" />
-      <point x="770.47098255969" y="650.0" />
-      <point x="639.8349531479253" y="650.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.players.PlayerImpl" target="inf112.isolasjonsteamet.roborally.actions.ActionProcessor">
-      <point x="60.39999999999998" y="-17.5" />
-      <point x="857.0474531479254" y="420.0" />
-      <point x="854.6974531479253" y="420.0" />
-      <point x="854.6974531479253" y="240.0" />
-      <point x="1051.1571245164732" y="240.0" />
-      <point x="-39.19999999999999" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.ServerPacketListener.ClassServerPacketListener" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
-      <point x="5.6843418860808015E-14" y="-17.5" />
-      <point x="821.3031609195405" y="1235.0" />
-      <point x="980.0000000000001" y="1235.0" />
-      <point x="-58.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.board.BoardClientImpl" target="inf112.isolasjonsteamet.roborally.players.Player">
-      <point x="49.0" y="-17.5" />
-      <point x="455.66666666666674" y="495.0" />
-      <point x="484.0849531479254" y="495.0" />
-      <point x="484.0849531479254" y="125.0" />
-      <point x="775.7679088301988" y="125.0" />
-      <point x="-21.5625" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer" target="inf112.isolasjonsteamet.roborally.network.ClientPacketListener">
-      <point x="-96.94999999999993" y="-17.5" />
-      <point x="680.475" y="1560.0" />
-      <point x="143.75" y="1560.0" />
-      <point x="-60.25" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.ClientPacketListener" target="inf112.isolasjonsteamet.roborally.network.Client">
-      <point x="-96.39999999999998" y="-17.5" />
-      <point x="107.60000000000002" y="1445.0" />
-      <point x="57.5" y="1445.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.ClientPacketListener.ClassClientPacketListener" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
-      <point x="1.1368683772161603E-13" y="-17.5" />
-      <point x="280.467816091954" y="1340.0" />
-      <point x="495.90316091954026" y="1340.0" />
-      <point x="-46.40000000000009" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.Client" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
+    <edge source="inf112.isolasjonsteamet.roborally.actions.Damage" target="inf112.isolasjonsteamet.roborally.actions.Action">
       <point x="0.0" y="-17.5" />
-      <point x="57.5" y="1225.0" />
-      <point x="941.3333333333335" y="1225.0" />
-      <point x="-96.66666666666669" y="17.5" />
+      <point x="971.5" y="595.0" />
+      <point x="1371.208333333333" y="595.0" />
+      <point x="-24.79166666666697" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.players.PlayerImpl" target="inf112.isolasjonsteamet.roborally.tiles.Tiles">
-      <point x="-60.39999999999998" y="-17.5" />
-      <point x="736.2474531479254" y="420.0" />
-      <point x="447.0849531479255" y="420.0" />
-      <point x="35.33333333333337" y="17.5" />
+    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyServer.ServerStatePlayer" target="inf112.isolasjonsteamet.roborally.players.ServerPlayer">
+      <point x="-56.25" y="-17.5" />
+      <point x="44.25" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket">
-      <point x="-41.549999999999955" y="-17.5" />
-      <point x="735.875" y="1540.0" />
-      <point x="559.467816091954" y="1540.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.board.BoardClientImpl" target="inf112.isolasjonsteamet.roborally.board.BoardImpl">
-      <point x="-16.33333333333337" y="-17.5" />
-      <point x="390.33333333333337" y="505.0" />
-      <point x="363.3349531479254" y="505.0" />
-      <point x="35.5" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.board.BoardImpl" target="inf112.isolasjonsteamet.roborally.board.Board">
-      <point x="35.5" y="-17.5" />
-      <point x="363.3349531479254" y="410.0" />
-      <point x="344.33495314792543" y="410.0" />
-      <point x="344.33495314792543" y="230.0" />
-      <point x="654.0166666666668" y="230.0" />
-      <point x="-42.39999999999998" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.RoboRallyScreenController" target="inf112.isolasjonsteamet.roborally.gui.screens.MainMenuScreen">
-      <point x="-35.75" y="-17.5" />
-      <point x="1540.7575021675332" y="885.0" />
-      <point x="1529.7575021675332" y="885.0" />
-      <point x="-46.75" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.board.BoardImpl" target="inf112.isolasjonsteamet.roborally.players.Player">
-      <point x="11.833333333333371" y="-17.5" />
-      <point x="339.66828648125875" y="420.0" />
-      <point x="333.3349531479255" y="420.0" />
-      <point x="333.3349531479255" y="115.0" />
-      <point x="761.3929088301988" y="115.0" />
-      <point x="-35.9375" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.JoinMultiplayerScreen" target="inf112.isolasjonsteamet.roborally.gui.ScreenController">
-      <point x="-62.5" y="-17.5" />
-      <point x="1836.2076147125517" y="670.0" />
-      <point x="1658.5630577230888" y="670.0" />
-      <point x="45.55555555555566" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.ClientPacketListener" target="inf112.isolasjonsteamet.roborally.network.ClientPacketListener.ClassClientPacketListener">
-      <point x="48.200000000000045" y="-17.5" />
-      <point x="252.20000000000005" y="1415.0" />
-      <point x="208.96781609195386" y="1415.0" />
-      <point x="-71.5" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl" target="inf112.isolasjonsteamet.roborally.cards.CardDeck">
-      <point x="-71.33333333333331" y="-17.5" />
-      <point x="1199.6410739295716" y="505.0" />
-      <point x="1047.2244072629048" y="505.0" />
-      <point x="33.25" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.tiles.Tiles" target="inf112.isolasjonsteamet.roborally.tiles.TileType">
-      <point x="26.5" y="-17.5" />
-      <point x="438.2516198145921" y="320.0" />
-      <point x="425.1666666666668" y="320.0" />
-      <point x="425.1666666666668" y="95.0" />
-      <point x="452.5262421635321" y="95.0" />
-      <point x="8.3125" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer" target="inf112.isolasjonsteamet.roborally.network.Client">
-      <point x="-124.64999999999986" y="-17.5" />
-      <point x="652.7750000000001" y="1570.0" />
-      <point x="73.0" y="1570.0" />
-      <point x="73.0" y="1455.0" />
-      <point x="19.16666666666663" y="1455.0" />
-      <point x="-38.33333333333337" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.MainMenuScreen" target="inf112.isolasjonsteamet.roborally.gui.screens.HostMultiplayerScreen">
-      <point x="-81.8125" y="-17.5" />
-      <point x="1494.6950021675332" y="805.0" />
-      <point x="1217.643545751634" y="805.0" />
-      <point x="-62.5" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.GameScreen" target="inf112.isolasjonsteamet.roborally.app.RoboRallyGame">
-      <point x="-37.75" y="-17.5" />
-      <point x="774.6033355008665" y="805.0" />
-      <point x="767.8533355008665" y="805.0" />
-      <point x="-44.5" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyGame" target="inf112.isolasjonsteamet.roborally.actions.ActionProcessor">
-      <point x="73.29411764705878" y="-17.5" />
-      <point x="885.6474531479253" y="650.0" />
-      <point x="1403.709701380552" y="650.0" />
-      <point x="1403.709701380552" y="210.0" />
-      <point x="1168.7571245164734" y="210.0" />
-      <point x="78.39999999999998" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyGame" target="inf112.isolasjonsteamet.roborally.board.BoardClientImpl">
-      <point x="-62.823529411764696" y="-17.5" />
-      <point x="749.5298060891018" y="670.0" />
-      <point x="357.66666666666674" y="670.0" />
-      <point x="-49.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.actions.Action" target="inf112.isolasjonsteamet.roborally.board.Board">
-      <point x="-47.916666666666686" y="-17.5" />
-      <point x="1098.1071245164733" y="220.0" />
-      <point x="738.8166666666667" y="220.0" />
-      <point x="42.39999999999998" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.board.BoardImpl" target="inf112.isolasjonsteamet.roborally.tiles.TileType">
-      <point x="-35.5" y="-17.5" />
-      <point x="292.3349531479254" y="420.0" />
-      <point x="302.16666666666674" y="420.0" />
-      <point x="302.16666666666674" y="75.0" />
-      <point x="419.2762421635321" y="75.0" />
-      <point x="-24.9375" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.board.ClientBoard" target="inf112.isolasjonsteamet.roborally.board.Board">
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.LobbyInfoPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
       <point x="0.0" y="-17.5" />
-      <point x="574.5849531479254" y="240.0" />
-      <point x="675.2166666666667" y="240.0" />
-      <point x="-21.200000000000045" y="17.5" />
+      <point x="6871.122685185184" y="170.0" />
+      <point x="5839.678395061728" y="170.0" />
+      <point x="65.0666666666666" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
-      <point x="-13.849999999999909" y="-17.5" />
-      <point x="763.575" y="1570.0" />
-      <point x="772.8000000000001" y="1570.0" />
-      <point x="772.8000000000001" y="1340.0" />
-      <point x="588.7031609195404" y="1340.0" />
-      <point x="46.40000000000009" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.actions.ActionProcessor" target="inf112.isolasjonsteamet.roborally.players.Player">
+    <edge source="inf112.isolasjonsteamet.roborally.actions.KillRobot" target="inf112.isolasjonsteamet.roborally.actions.Action">
       <point x="0.0" y="-17.5" />
-      <point x="1090.3571245164733" y="125.0" />
-      <point x="818.8929088301988" y="125.0" />
-      <point x="21.5625" y="17.5" />
+      <point x="1125.0" y="605.0" />
+      <point x="1381.125" y="605.0" />
+      <point x="-14.875" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyServer.ServerAdapter" target="inf112.isolasjonsteamet.roborally.app.RoboRallyServer">
+      <point x="-46.5" y="-17.5" />
+      <point x="854.6226851851848" y="410.0" />
+      <point x="565.0" y="410.0" />
+      <point x="51.25" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.c2spackets.ClientChatPacket" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="2386.25" y="180.0" />
+      <point x="1776.3617283950616" y="180.0" />
+      <point x="76.25" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyClient" target="inf112.isolasjonsteamet.roborally.actions.ActionProcessor">
+      <point x="51.25" y="-17.5" />
+      <point x="822.25" y="210.0" />
+      <point x="744.875" y="210.0" />
+      <point x="51.25" y="17.5" />
     </edge>
     <edge source="inf112.isolasjonsteamet.roborally.network.ServerPacketListener.ClassServerPacketListener" target="inf112.isolasjonsteamet.roborally.network.ServerPacketListener">
-      <point x="71.50000000000006" y="17.5" />
-      <point x="892.8031609195405" y="1310.0" />
-      <point x="947.0281609195404" y="1310.0" />
-      <point x="-48.19999999999999" y="-17.5" />
+      <point x="100.66666666666697" y="-17.5" />
+      <point x="2129.6250000000005" y="295.0" />
+      <point x="2609.0" y="295.0" />
+      <point x="-31.75" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyGame" target="inf112.isolasjonsteamet.roborally.cards.Cards">
-      <point x="41.882352941176464" y="-17.5" />
-      <point x="854.2356884420429" y="620.0" />
-      <point x="1153.4744072629048" y="620.0" />
-      <point x="0.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.ServerPacketListener" target="inf112.isolasjonsteamet.roborally.network.ServerPacketListener.ServerPacket">
-      <point x="48.200000000000045" y="-17.5" />
-      <point x="1043.4281609195405" y="1340.0" />
-      <point x="1070.775" y="1340.0" />
-      <point x="-42.25" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.cards.Cards" target="inf112.isolasjonsteamet.roborally.cards.CardType">
-      <point x="-26.5" y="-17.5" />
-      <point x="1126.9744072629048" y="420.0" />
-      <point x="1160.27379118314" y="420.0" />
-      <point x="-19.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
+    <edge source="inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdatePlayerStatePacket" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
       <point x="0.0" y="-17.5" />
-      <point x="1361.525" y="1215.0" />
-      <point x="1134.6666666666667" y="1215.0" />
-      <point x="96.66666666666669" y="17.5" />
+      <point x="1266.75" y="200.0" />
+      <point x="1623.8617283950616" y="200.0" />
+      <point x="-76.25" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyGame" target="inf112.isolasjonsteamet.roborally.gui.PrintStreamLabel">
-      <point x="-83.76470588235293" y="-17.5" />
-      <point x="728.5886296185136" y="690.0" />
-      <point x="58.0" y="690.0" />
-      <point x="-51.25" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.InstructionsScreen" target="inf112.isolasjonsteamet.roborally.gui.ScreenController">
-      <point x="-55.75" y="-17.5" />
-      <point x="1585.4576147125517" y="690.0" />
-      <point x="1590.2297243897553" y="690.0" />
-      <point x="-22.77777777777783" y="17.5" />
+    <edge source="inf112.isolasjonsteamet.roborally.players.PlayerImpl" target="inf112.isolasjonsteamet.roborally.players.ServerPlayer">
+      <point x="39.25" y="-17.5" />
+      <point x="167.0" y="410.0" />
+      <point x="241.25" y="410.0" />
+      <point x="-44.25" y="17.5" />
     </edge>
     <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket" target="inf112.isolasjonsteamet.roborally.network.Packet">
       <point x="0.0" y="-17.5" />
-      <point x="542.3031609195403" y="1135.0" />
-      <point x="783.3333333333334" y="1135.0" />
-      <point x="-28.75" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.cards.CardDeck" target="inf112.isolasjonsteamet.roborally.cards.CardType">
-      <point x="0.0" y="-17.5" />
-      <point x="1013.9744072629048" y="410.0" />
-      <point x="1141.27379118314" y="410.0" />
-      <point x="-38.0" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.cards.CardType" target="inf112.isolasjonsteamet.roborally.actions.Action">
-      <point x="-33.25" y="-17.5" />
       <point x="0.0" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.HostMultiplayerScreen" target="inf112.isolasjonsteamet.roborally.gui.ScreenController">
-      <point x="-62.5" y="-17.5" />
-      <point x="1217.643545751634" y="670.0" />
-      <point x="1521.896391056422" y="670.0" />
-      <point x="-91.11111111111109" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl" target="inf112.isolasjonsteamet.roborally.cards.CardType">
+    <edge source="inf112.isolasjonsteamet.roborally.actions.RotateRight" target="inf112.isolasjonsteamet.roborally.actions.Action">
       <point x="0.0" y="-17.5" />
-      <point x="1270.9744072629048" y="505.0" />
-      <point x="1300.4404578498068" y="505.0" />
-      <point x="1300.4404578498068" y="420.0" />
-      <point x="1198.27379118314" y="420.0" />
-      <point x="19.0" y="17.5" />
+      <point x="1853.5" y="595.0" />
+      <point x="1420.791666666667" y="595.0" />
+      <point x="24.79166666666697" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer" target="inf112.isolasjonsteamet.roborally.network.Server">
-      <point x="13.850000000000023" y="-17.5" />
-      <point x="791.275" y="1530.0" />
-      <point x="840.8000000000001" y="1530.0" />
-      <point x="0.0" y="17.5" />
+    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.LobbyScreen.ServerLobby" target="inf112.isolasjonsteamet.roborally.network.ServerPacketAdapter">
+      <point x="-41.75" y="-17.5" />
+      <point x="3729.495524691357" y="390.0" />
+      <point x="2893.8617283950616" y="390.0" />
+      <point x="61.0" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.ServerPacketListener" target="inf112.isolasjonsteamet.roborally.network.ServerPacketListener.ClassServerPacketListener">
-      <point x="-96.39999999999998" y="-17.5" />
-      <point x="898.8281609195403" y="1320.0" />
-      <point x="749.8031609195403" y="1320.0" />
-      <point x="-71.5" y="17.5" />
+    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyShared" target="inf112.isolasjonsteamet.roborally.actions.ActionProcessor">
+      <point x="0.0" y="-17.5" />
+      <point x="565.0" y="210.0" />
+      <point x="642.375" y="210.0" />
+      <point x="-51.25" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyGame" target="inf112.isolasjonsteamet.roborally.players.PlayerImpl">
-      <point x="-31.41176470588232" y="-17.5" />
-      <point x="780.9415707949842" y="690.0" />
-      <point x="782.7401960784314" y="690.0" />
-      <point x="782.7401960784314" y="505.0" />
-      <point x="740.0224531479253" y="505.0" />
-      <point x="-56.625" y="17.5" />
-    </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyGame" target="inf112.isolasjonsteamet.roborally.players.Player">
-      <point x="83.76470588235293" y="-17.5" />
-      <point x="896.1180413832194" y="660.0" />
-      <point x="1480.5021266840063" y="660.0" />
-      <point x="1480.5021266840063" y="55.0" />
-      <point x="847.6429088301988" y="55.0" />
-      <point x="50.3125" y="17.5" />
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="7375.622685185184" y="140.0" />
+      <point x="5888.478395061728" y="140.0" />
+      <point x="113.86666666666679" y="17.5" />
     </edge>
     <edge source="inf112.isolasjonsteamet.roborally.board.BoardClientImpl" target="inf112.isolasjonsteamet.roborally.board.ClientBoard">
-      <point x="81.66666666666663" y="-17.5" />
-      <point x="488.33333333333337" y="505.0" />
-      <point x="534.5849531479254" y="505.0" />
-      <point x="-40.0" y="17.5" />
+      <point x="-51.25" y="-17.5" />
+      <point x="121.0" y="655.0" />
+      <point x="83.5" y="655.0" />
+      <point x="0.0" y="17.5" />
     </edge>
-    <edge source="inf112.isolasjonsteamet.roborally.network.Server" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
-      <point x="-28.75" y="-17.5" />
-      <point x="812.0500000000001" y="1330.0" />
-      <point x="635.1031609195403" y="1330.0" />
-      <point x="92.79999999999995" y="17.5" />
+    <edge source="inf112.isolasjonsteamet.roborally.actions.MoveForward" target="inf112.isolasjonsteamet.roborally.actions.Action">
+      <point x="0.0" y="-17.5" />
+      <point x="1302.5" y="615.0" />
+      <point x="1391.041666666667" y="615.0" />
+      <point x="-4.95833333333303" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.players.ServerPlayer" target="inf112.isolasjonsteamet.roborally.players.Player">
+      <point x="0.0" y="-17.5" />
+      <point x="285.5" y="305.0" />
+      <point x="216.75" y="305.0" />
+      <point x="29.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.OtherPlayerKickedPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="-2.2737367544323206E-13" y="-17.5" />
+      <point x="4610.622685185184" y="170.0" />
+      <point x="5693.278395061729" y="170.0" />
+      <point x="-81.33333333333326" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.CardArea.CardAreaSource" target="inf112.isolasjonsteamet.roborally.gui.CardArea">
+      <point x="0.0" y="-17.5" />
+      <point x="3773.0" y="570.0" />
+      <point x="3603.0" y="570.0" />
+      <point x="46.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket" target="inf112.isolasjonsteamet.roborally.network.Packet">
+      <point x="0.0" y="-17.5" />
+      <point x="1700.1117283950616" y="60.0" />
+      <point x="5734.945061728395" y="60.0" />
+      <point x="-39.666666666666515" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.c2spackets.KickPlayerPacket" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="1829.25" y="200.0" />
+      <point x="1715.3617283950616" y="200.0" />
+      <point x="15.25" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.actions.PowerDown" target="inf112.isolasjonsteamet.roborally.actions.Action">
+      <point x="0.0" y="-17.5" />
+      <point x="454.0" y="565.0" />
+      <point x="1341.458333333333" y="565.0" />
+      <point x="-54.54166666666697" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.c2spackets.game.UpdateRoundReadyPacket" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="969.25" y="190.0" />
+      <point x="1593.3617283950616" y="190.0" />
+      <point x="-106.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.actions.RotateLeft" target="inf112.isolasjonsteamet.roborally.actions.Action">
+      <point x="0.0" y="-17.5" />
+      <point x="813.5" y="585.0" />
+      <point x="1361.291666666667" y="585.0" />
+      <point x="-34.70833333333303" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.ClientPacketListener.ClassClientPacketListener" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="100.66666666666652" y="-17.5" />
+      <point x="6152.25" y="305.0" />
+      <point x="6984.122685185184" y="305.0" />
+      <point x="6984.122685185184" y="160.0" />
+      <point x="5855.945061728395" y="160.0" />
+      <point x="81.33333333333348" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.actions.Destruction" target="inf112.isolasjonsteamet.roborally.actions.Action">
+      <point x="0.0" y="-17.5" />
+      <point x="2289.5" y="565.0" />
+      <point x="1450.541666666667" y="565.0" />
+      <point x="54.54166666666697" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.board.ClientBoard" target="inf112.isolasjonsteamet.roborally.board.Board">
+      <point x="0.0" y="-17.5" />
+      <point x="83.5" y="570.0" />
+      <point x="145.0" y="570.0" />
+      <point x="-27.25" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyServer" target="inf112.isolasjonsteamet.roborally.app.RoboRallyShared">
+      <point x="0.0" y="-17.5" />
+      <point x="-51.25" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.c2spackets.ClientDisconnectingPacket" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="2107.75" y="190.0" />
+      <point x="1745.8617283950616" y="190.0" />
+      <point x="45.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.impl.NettyClientImpl" target="inf112.isolasjonsteamet.roborally.network.Client">
+      <point x="0.0" y="-17.5" />
+      <point x="2520.5" y="570.0" />
+      <point x="2588.5" y="570.0" />
+      <point x="-29.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.LobbyScreen.ClientLobby" target="inf112.isolasjonsteamet.roborally.network.ClientPacketAdapter">
+      <point x="41.75" y="-17.5" />
+      <point x="5479.287191358024" y="410.0" />
+      <point x="5817.120524691356" y="410.0" />
+      <point x="61.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.effects.RobotEffect" target="inf112.isolasjonsteamet.roborally.effects.Effect">
+      <point x="0.0" y="-17.5" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.KickedPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="5095.122685185184" y="190.0" />
+      <point x="5725.811728395061" y="190.0" />
+      <point x="-48.799999999999955" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.impl.NettyServerImpl" target="inf112.isolasjonsteamet.roborally.network.Server">
+      <point x="0.0" y="-17.5" />
+      <point x="3057.5" y="570.0" />
+      <point x="2989.5" y="570.0" />
+      <point x="29.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.ServerPacketAdapter" target="inf112.isolasjonsteamet.roborally.network.ServerPacketListener">
+      <point x="0.0" y="-17.5" />
+      <point x="2832.8617283950616" y="305.0" />
+      <point x="2736.0" y="305.0" />
+      <point x="95.25" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyClient.PacketAdapter" target="inf112.isolasjonsteamet.roborally.network.ClientPacketAdapter">
+      <point x="46.5" y="-17.5" />
+      <point x="1153.6226851851848" y="400.0" />
+      <point x="5695.120524691356" y="400.0" />
+      <point x="-61.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.actions.Move" target="inf112.isolasjonsteamet.roborally.actions.Action">
+      <point x="0.0" y="-17.5" />
+      <point x="2136.0" y="575.0" />
+      <point x="1440.625" y="575.0" />
+      <point x="44.625" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.HostMultiplayerScreen" target="inf112.isolasjonsteamet.roborally.gui.screens.StageScreen">
+      <point x="0.0" y="-17.5" />
+      <point x="3897.3617283950616" y="305.0" />
+      <point x="3842.0393518518513" y="305.0" />
+      <point x="13.916666666666515" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.ClientPacketListener.ClassClientPacketListener" target="inf112.isolasjonsteamet.roborally.network.ClientPacketListener">
+      <point x="-100.66666666666669" y="-17.5" />
+      <point x="5950.916666666666" y="305.0" />
+      <point x="5839.622685185184" y="305.0" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.c2spackets.lobby.RequestLobbyInfoPacket" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="1564.25" y="210.0" />
+      <point x="1654.3617283950616" y="210.0" />
+      <point x="-45.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.ServerPacketListener.ServerPacket" target="inf112.isolasjonsteamet.roborally.network.ServerPacketListener">
+      <point x="0.0" y="-17.5" />
+      <point x="2602.3617283950616" y="305.0" />
+      <point x="2672.5" y="305.0" />
+      <point x="31.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerJoinedGamePacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="5556.122685185184" y="210.0" />
+      <point x="5758.345061728394" y="210.0" />
+      <point x="-16.26666666666665" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.RoboRallyScreenController" target="inf112.isolasjonsteamet.roborally.gui.ScreenController">
+      <point x="0.0" y="-17.5" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyServer.ServerStatePlayer" target="inf112.isolasjonsteamet.roborally.app.RoboRallyServer">
+      <point x="56.25" y="-17.5" />
+      <point x="442.25" y="410.0" />
+      <point x="462.5" y="410.0" />
+      <point x="-51.25" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.game.DealNewCardsPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="6103.622685185184" y="200.0" />
+      <point x="5790.878395061729" y="200.0" />
+      <point x="16.26666666666665" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.JoinMultiplayerScreen" target="inf112.isolasjonsteamet.roborally.gui.screens.StageScreen">
+      <point x="0.0" y="-17.5" />
+      <point x="3360.3617283950616" y="295.0" />
+      <point x="3786.3726851851848" y="295.0" />
+      <point x="-41.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.impl.PacketRegistration" target="inf112.isolasjonsteamet.roborally.network.Packet">
+      <point x="0.0" y="-17.5" />
+      <point x="6033.611728395062" y="60.0" />
+      <point x="5814.278395061729" y="60.0" />
+      <point x="39.666666666666515" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.LobbyScreen.ClientLobby" target="inf112.isolasjonsteamet.roborally.gui.screens.LobbyScreen">
+      <point x="-41.75" y="-17.5" />
+      <point x="5395.787191358024" y="390.0" />
+      <point x="4816.122685185184" y="390.0" />
+      <point x="41.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.actions.CheckPoint" target="inf112.isolasjonsteamet.roborally.actions.Action">
+      <point x="-5.6843418860808015E-14" y="-17.5" />
+      <point x="1671.5" y="605.0" />
+      <point x="1410.875" y="605.0" />
+      <point x="14.875" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.cards.DequeCardDeckImpl" target="inf112.isolasjonsteamet.roborally.cards.CardDeck">
+      <point x="0.0" y="-17.5" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer" target="inf112.isolasjonsteamet.roborally.network.Client">
+      <point x="-73.0" y="-17.5" />
+      <point x="2716.0" y="570.0" />
+      <point x="2648.0" y="570.0" />
+      <point x="29.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyClient.PacketAdapter" target="inf112.isolasjonsteamet.roborally.app.RoboRallyClient">
+      <point x="-46.5" y="-17.5" />
+      <point x="1060.6226851851848" y="380.0" />
+      <point x="771.0" y="380.0" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.tiles.ConveyorBeltTile" target="inf112.isolasjonsteamet.roborally.tiles.Tile">
+      <point x="0.0" y="-17.5" />
+      <point x="4220.5" y="570.0" />
+      <point x="4137.5" y="570.0" />
+      <point x="25.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.CardArea.CardAreaTarget" target="inf112.isolasjonsteamet.roborally.gui.CardArea">
+      <point x="0.0" y="-17.5" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.impl.SingleplayerClientServer" target="inf112.isolasjonsteamet.roborally.network.Server">
+      <point x="73.0" y="-17.5" />
+      <point x="2862.0" y="570.0" />
+      <point x="2930.0" y="570.0" />
+      <point x="-29.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.MainMenuScreen" target="inf112.isolasjonsteamet.roborally.gui.screens.StageScreen">
+      <point x="0.0" y="-17.5" />
+      <point x="4572.872685185184" y="295.0" />
+      <point x="3869.8726851851848" y="295.0" />
+      <point x="41.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.ServerClosingPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="4327.622685185184" y="160.0" />
+      <point x="5677.011728395062" y="160.0" />
+      <point x="-97.59999999999991" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.actions.PhaseAction" target="inf112.isolasjonsteamet.roborally.actions.Action">
+      <point x="0.0" y="-17.5" />
+      <point x="1489.5" y="615.0" />
+      <point x="1400.958333333333" y="615.0" />
+      <point x="4.95833333333303" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.players.PlayerImpl" target="inf112.isolasjonsteamet.roborally.players.ClientPlayer">
+      <point x="-39.25" y="-17.5" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.lobby.GameStartingPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="7111.622685185184" y="150.0" />
+      <point x="5872.211728395061" y="150.0" />
+      <point x="97.60000000000014" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.tiles.WallTileType" target="inf112.isolasjonsteamet.roborally.tiles.Tile">
+      <point x="0.0" y="-17.5" />
+      <point x="4004.5" y="570.0" />
+      <point x="4087.5" y="570.0" />
+      <point x="-25.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.ClientPacketListener" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="5839.622685185184" y="210.0" />
+      <point x="5774.611728395062" y="210.0" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.InstructionsScreen" target="inf112.isolasjonsteamet.roborally.gui.screens.StageScreen">
+      <point x="0.0" y="-17.5" />
+      <point x="3628.8617283950616" y="305.0" />
+      <point x="3814.2060185185182" y="305.0" />
+      <point x="-13.916666666666515" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.players.RobotImpl" target="inf112.isolasjonsteamet.roborally.players.Robot">
+      <point x="0.0" y="-17.5" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.board.BoardClientImpl.BoardRobot" target="inf112.isolasjonsteamet.roborally.board.BoardClientImpl">
+      <point x="0.0" y="-17.5" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.app.RoboRallyClient" target="inf112.isolasjonsteamet.roborally.app.RoboRallyShared">
+      <point x="-51.25" y="-17.5" />
+      <point x="719.75" y="305.0" />
+      <point x="616.25" y="305.0" />
+      <point x="51.25" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.GameInfoPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="5301.622685185184" y="200.0" />
+      <point x="5742.078395061728" y="200.0" />
+      <point x="-32.5333333333333" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket.JoinResult" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.GameJoinResultPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.ServerPacketListener.ClassServerPacketListener" target="inf112.isolasjonsteamet.roborally.network.c2spackets.Client2ServerPacket">
+      <point x="-100.66666666666697" y="-17.5" />
+      <point x="1928.2916666666665" y="305.0" />
+      <point x="1711.25" y="305.0" />
+      <point x="1711.25" y="210.0" />
+      <point x="1684.8617283950616" y="210.0" />
+      <point x="-15.25" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.LobbyScreen" target="inf112.isolasjonsteamet.roborally.gui.screens.StageScreen">
+      <point x="0.0" y="-17.5" />
+      <point x="4774.372685185184" y="285.0" />
+      <point x="3897.7060185185182" y="285.0" />
+      <point x="69.58333333333348" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.board.BoardClientImpl" target="inf112.isolasjonsteamet.roborally.board.BoardImpl">
+      <point x="51.25" y="-17.5" />
+      <point x="223.5" y="655.0" />
+      <point x="261.0" y="655.0" />
+      <point x="0.0" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.board.BoardImpl" target="inf112.isolasjonsteamet.roborally.board.Board">
+      <point x="0.0" y="-17.5" />
+      <point x="261.0" y="570.0" />
+      <point x="199.5" y="570.0" />
+      <point x="27.25" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.actions.RepairRobot" target="inf112.isolasjonsteamet.roborally.actions.Action">
+      <point x="0.0" y="-17.5" />
+      <point x="631.5" y="575.0" />
+      <point x="1351.375" y="575.0" />
+      <point x="-44.625" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.game.UpdatePlayerStatesPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="6386.622685185184" y="190.0" />
+      <point x="5807.145061728395" y="190.0" />
+      <point x="32.5333333333333" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.NotificationScreen" target="inf112.isolasjonsteamet.roborally.gui.screens.StageScreen">
+      <point x="0.0" y="-17.5" />
+      <point x="3091.8617283950616" y="285.0" />
+      <point x="3758.5393518518513" y="285.0" />
+      <point x="-69.58333333333348" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.game.RunRoundPacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="6650.622685185184" y="180.0" />
+      <point x="5823.411728395062" y="180.0" />
+      <point x="48.799999999999955" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.ClientPacketAdapter" target="inf112.isolasjonsteamet.roborally.network.ClientPacketListener">
+      <point x="0.0" y="-17.5" />
+      <point x="5756.120524691356" y="305.0" />
+      <point x="5754.956018518518" y="305.0" />
+      <point x="-84.66666666666663" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.network.s2cpackets.PlayerLeftGamePacket" target="inf112.isolasjonsteamet.roborally.network.s2cpackets.Server2ClientPacket">
+      <point x="0.0" y="-17.5" />
+      <point x="4058.6226851851843" y="150.0" />
+      <point x="5660.745061728396" y="150.0" />
+      <point x="-113.86666666666656" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.actions.Uturn" target="inf112.isolasjonsteamet.roborally.actions.Action">
+      <point x="0.0" y="-17.5" />
+      <point x="2011.5" y="585.0" />
+      <point x="1430.708333333333" y="585.0" />
+      <point x="34.70833333333303" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.gui.screens.LobbyScreen.ServerLobby" target="inf112.isolasjonsteamet.roborally.gui.screens.LobbyScreen">
+      <point x="41.75" y="-17.5" />
+      <point x="3812.995524691357" y="390.0" />
+      <point x="4732.622685185184" y="390.0" />
+      <point x="-41.75" y="17.5" />
+    </edge>
+    <edge source="inf112.isolasjonsteamet.roborally.players.ClientPlayer" target="inf112.isolasjonsteamet.roborally.players.Player">
+      <point x="0.0" y="-17.5" />
+      <point x="88.5" y="305.0" />
+      <point x="157.25" y="305.0" />
+      <point x="-29.75" y="17.5" />
     </edge>
   </edges>
-  <settings layout="Hierarchic Group" zoom="0.7000000000000001" x="989.2857142857142" y="995.7142857142857" />
+  <settings layout="Hierarchic Group" zoom="0.4296041952803097" x="1188.0887610079344" y="682.9726509140581" />
   <SelectedNodes />
-  <Categories />
+  <Categories>
+    <Category>Inner Classes</Category>
+  </Categories>
   <SCOPE>All</SCOPE>
   <VISIBILITY>private</VISIBILITY>
 </Diagram>
