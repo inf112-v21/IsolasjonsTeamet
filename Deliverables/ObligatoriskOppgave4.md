@@ -78,6 +78,10 @@ lært oss masse.
 
 ## Deloppgave 3: Produktleveranse og Kodekvalitet
 
+### Class diagram
+![Class diagram 1](./images/delivery4/class_diagram_1.png)
+![Class diagram 2](./images/delivery4/class_diagram_2.png)
+
 ### Bidrag til Kodebasen
 
 Det er forskjellig arbeidsmengde til hver person i gruppen. Dette er rett og slett fordi noen av oss har mer erfaring
