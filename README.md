@@ -146,6 +146,8 @@ To run CheckStyle, use `checkstyleMain`.
 * (Only seen once) On multiplayer, a player can be initialized wrongly, and thus be missing from the board.
 * Multiplayer can be crashy
 * Probably a bunch of race conditions if the ping between players is high enough
-* Game sometimes throws an exception when exiting local multiplayer
 * Rotating conveyor belts are broken in all but the most simple cases (player facing the same way as conveyor belt goes)
-* Robot pushing er buggy generelt, og virker ikke riktig med WASD
+* Robot pushing er buggy i lokal multiplayer.
+* Robot pushing virker ikke med WASD. Dette er et mer fundamentalt problem med hvordan netverksprotokolen vår virker.
+  Ettersom at dette er en debug funksjon, er ikke denne buggen altfor høyt opp på prioritetslisten.
+* Kick player field is moving robot when you are typing WASD
