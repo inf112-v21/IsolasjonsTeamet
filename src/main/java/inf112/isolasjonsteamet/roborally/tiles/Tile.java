@@ -18,4 +18,8 @@ public class Tile {
 	public Tile(Action... actions) {
 		this.actions = ImmutableList.copyOf(actions);
 	}
+
+	public List<Action> getActions() {
+		return actions;
+	}
 }

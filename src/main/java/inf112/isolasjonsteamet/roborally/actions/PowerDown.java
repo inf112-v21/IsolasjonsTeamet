@@ -2,6 +2,7 @@ package inf112.isolasjonsteamet.roborally.actions;
 
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.ClientBoard;
+import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.effects.PowerDownEffect;
 import inf112.isolasjonsteamet.roborally.players.Robot;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
@@ -12,7 +13,7 @@ import inf112.isolasjonsteamet.roborally.util.Coordinate;
 public class PowerDown implements Action {
 
 	@Override
-	public void perform(ActionProcessor processor, Board board, Robot robot) {
+	public void perform(ActionProcessor processor, Board board, Robot robot, Phase phase) {
 
 	}
 

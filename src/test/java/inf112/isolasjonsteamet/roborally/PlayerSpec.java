@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.cards.CardRow;
 import inf112.isolasjonsteamet.roborally.cards.Cards;
+import inf112.isolasjonsteamet.roborally.players.Player;
 import inf112.isolasjonsteamet.roborally.players.PlayerImpl;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
@@ -79,5 +80,4 @@ public class PlayerSpec {
 
 		assertEquals(player.getCards(CardRow.CHOSEN).get(4), Cards.MOVE_TWO);
 	}
-
 }

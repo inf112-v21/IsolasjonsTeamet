@@ -148,3 +148,4 @@ To run CheckStyle, use `checkstyleMain`.
 * Probably a bunch of race conditions if the ping between players is high enough
 * Game crashes if closing the window directly
 * Game sometimes throws an exception when exiting local multiplayer
+* Rotating conveyor belts are broken in all but the most simple cases (player facing the same way as conveyor belt goes)
