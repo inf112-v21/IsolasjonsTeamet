@@ -54,7 +54,7 @@ public class FireTileLaser implements Action {
 		}
 
 		if (!hasRobotInWayOfEmitter(board, robot.getPos())) {
-			processor.scheduleAction(robot, new Damage());
+			processor.scheduleActionFirst(robot, new Damage(), phase);
 		}
 	}
 }

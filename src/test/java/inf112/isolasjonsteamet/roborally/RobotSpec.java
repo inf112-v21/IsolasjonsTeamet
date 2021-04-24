@@ -6,9 +6,12 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import inf112.isolasjonsteamet.roborally.actions.Action;
+import inf112.isolasjonsteamet.roborally.actions.DequeActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateLeft;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
+import inf112.isolasjonsteamet.roborally.actions.ScheduledAction;
+import inf112.isolasjonsteamet.roborally.actions.ServerSideActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.Uturn;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
 import inf112.isolasjonsteamet.roborally.board.BoardImpl;
@@ -20,13 +23,10 @@ import inf112.isolasjonsteamet.roborally.tiles.Tiles;
 import inf112.isolasjonsteamet.roborally.tiles.WallTileType;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Queue;
 import java.util.function.IntFunction;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -36,22 +36,20 @@ import org.junit.jupiter.params.provider.MethodSource;
 /**
  * Class to test robot code, and see if it is successful.
  */
-public class RobotSpec implements ActionProcessor {
+public class RobotSpec {
 
 	private static final String BOARD_GIVEN = "Given a simple 5x5 board with flag at 4,4 and hole at 2,2";
 
 	private BoardImpl board;
 	private Robot activeRobot;
 
-	private boolean performingAction = false;
-	private Phase currentPhase = Phase.CARDS;
-	private final Queue<Entry<Action, Robot>> scheduledActions = new ArrayDeque<>();
+	private final ActionProcessor actionProcessor = new ServerSideActionProcessor(() -> board);
 
 	/**
 	 * Creates a new simple robot for testing.
 	 */
 	private RobotImpl createSimpleRobot(Coordinate coordinate, Orientation orientation) {
-		return new RobotImpl(this, coordinate, orientation);
+		return new RobotImpl(actionProcessor, coordinate, orientation);
 	}
 
 	private RobotImpl createSimpleRobot() {
@@ -130,43 +128,11 @@ public class RobotSpec implements ActionProcessor {
 		assertEquals(robot, board.getRobotAt(coord));
 	}
 
-	@Override
-	public void performActionNow(Robot robot, Action action, Phase phase) {
-		currentPhase = phase;
-
-		boolean hasWork;
-		do {
-			action.initialize(board, robot);
-
-			performingAction = true;
-			action.perform(this, board, robot, phase);
-			performingAction = false;
-
-			board.checkValid();
-
-			Map.Entry<Action, Robot> nextActionEntry = scheduledActions.poll();
-			hasWork = nextActionEntry != null;
-			if (nextActionEntry != null) {
-				robot = nextActionEntry.getValue();
-				action = nextActionEntry.getKey();
-			}
-		} while (hasWork);
-	}
-
-	@Override
-	public void scheduleAction(Robot robot, Action action) {
-		if (scheduledActions.isEmpty() && !performingAction) {
-			performActionNow(robot, action, currentPhase);
-		} else {
-			scheduledActions.add(Map.entry(action, robot));
-		}
-	}
-
 	/**
 	 * Runs an action on our testboard.
 	 */
 	private void runAction(Action action) {
-		performActionNow(activeRobot, action, Phase.CARDS);
+		actionProcessor.performActionNow(activeRobot, action, Phase.CARDS);
 	}
 
 	/**
@@ -413,7 +379,7 @@ public class RobotSpec implements ActionProcessor {
 		createSimpleBoard(player1);
 		board.updateActiveRobots(ImmutableList.of(player1, player2));
 
-		performActionNow(player1, new MoveForward(1), Phase.MISC);
+		actionProcessor.performActionNow(player1, new MoveForward(1), Phase.MISC);
 		assertEquals(new Coordinate(1, 0), player1.getPos());
 		assertEquals(new Coordinate(2, 0), player2.getPos());
 	}

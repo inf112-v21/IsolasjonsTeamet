@@ -11,7 +11,7 @@ import java.util.function.BiConsumer;
 /**
  * Holds common code for the client and server.
  */
-public abstract class RoboRallyShared implements ActionProcessor {
+public abstract class RoboRallyShared {
 
 	/**
 	 * Performs an action for each tile each player is standing on.
@@ -21,17 +21,15 @@ public abstract class RoboRallyShared implements ActionProcessor {
 	/** Access to the board. */
 	protected abstract Board board();
 
-	/** Signals what the current phase is. */
-	protected abstract void setCurrentPhase(Phase phase);
+	protected abstract ActionProcessor actionProcessor();
 
 	/**
 	 * Processes all the tiles the players are standing on with the given phase.
 	 */
 	public void processPlayerTiles(Phase phase) {
-		setCurrentPhase(phase);
 		foreachPlayerTile((player, tile) -> {
 			for (Action action : tile.createActions()) {
-				performActionNow(player.getRobot(), action, phase);
+				actionProcessor().scheduleActionLast(player.getRobot(), action, phase);
 			}
 		});
 	}

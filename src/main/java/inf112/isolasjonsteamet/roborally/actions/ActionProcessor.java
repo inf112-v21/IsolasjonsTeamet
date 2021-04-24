@@ -16,7 +16,14 @@ public interface ActionProcessor {
 	void performActionNow(Robot robot, Action action, Phase phase);
 
 	/**
-	 * Schedule an action to be performed in the phase we are currently in.
+	 * Schedule an action to be performed in the phase we are currently in, before all the other scheduled actions have
+	 * been performed.
 	 */
-	void scheduleAction(Robot robot, Action action);
+	void scheduleActionFirst(Robot robot, Action action, Phase phase);
+
+	/**
+	 * Schedule an action to be performed in the phase we are currently in, after all the other scheduled actions have
+	 * been performed.
+	 */
+	void scheduleActionLast(Robot robot, Action action, Phase phase);
 }

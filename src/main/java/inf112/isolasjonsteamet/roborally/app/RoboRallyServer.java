@@ -2,6 +2,8 @@ package inf112.isolasjonsteamet.roborally.app;
 
 import com.google.common.collect.ImmutableList;
 import inf112.isolasjonsteamet.roborally.actions.Action;
+import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
+import inf112.isolasjonsteamet.roborally.actions.ServerSideActionProcessor;
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.Phase;
 import inf112.isolasjonsteamet.roborally.cards.Card;
@@ -29,11 +31,9 @@ import inf112.isolasjonsteamet.roborally.players.ServerPlayer;
 import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
-import java.util.ArrayDeque;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
@@ -51,10 +51,7 @@ public class RoboRallyServer extends RoboRallyShared {
 	private final String host;
 	private final CardDeck deck;
 	private final Board board;
-
-	private final Queue<Map.Entry<Action, Robot>> scheduledActions = new ArrayDeque<>();
-	private Phase currentPhase;
-	private boolean performingAction = false;
+	private final ActionProcessor actionProcessor;
 
 	/**
 	 * Initializes a new server, and sends a state packet to all players when everything is ready. You still need to
@@ -69,11 +66,12 @@ public class RoboRallyServer extends RoboRallyShared {
 	public RoboRallyServer(Server server, List<PlayerInfo> players, String host, CardDeck deck, Board board) {
 		this.server = server;
 		this.host = host;
+		this.actionProcessor = new ServerSideActionProcessor(() -> board);
 
 		//We need to keep the player order, so we use a tree map
 		var playersMap = new TreeMap<String, ServerStatePlayer>();
 		for (PlayerInfo playerInfo : players) {
-			var player = new PlayerImpl(playerInfo.getName(), this, new Coordinate(0, 0), Orientation.NORTH);
+			var player = new PlayerImpl(playerInfo.getName(), actionProcessor, new Coordinate(0, 0), Orientation.NORTH);
 			playersMap.put(player.getName(), new ServerStatePlayer(player));
 		}
 		board.updateActiveRobots(
@@ -90,38 +88,6 @@ public class RoboRallyServer extends RoboRallyShared {
 
 	public void dispose() {
 		server.close("Disposing");
-	}
-
-	/**
-	 * {@inheritDoc}.
-	 */
-	public void performActionNow(Robot robot, Action action, Phase phase) {
-		boolean hasWork;
-		do {
-			action.initialize(board, robot);
-
-			performingAction = true;
-			action.perform(this, board, robot, phase);
-			performingAction = false;
-
-			board.checkValid();
-
-			Map.Entry<Action, Robot> nextActionEntry = scheduledActions.poll();
-			hasWork = nextActionEntry != null;
-			if (nextActionEntry != null) {
-				robot = nextActionEntry.getValue();
-				action = nextActionEntry.getKey();
-			}
-		} while (hasWork);
-	}
-
-	@Override
-	public void scheduleAction(Robot robot, Action action) {
-		if (scheduledActions.isEmpty() && !performingAction) {
-			performActionNow(robot, action, currentPhase);
-		} else {
-			scheduledActions.add(Map.entry(action, robot));
-		}
 	}
 
 	private void dealCards() {
@@ -172,7 +138,7 @@ public class RoboRallyServer extends RoboRallyShared {
 		}
 
 		for (Action action : card.createActions()) {
-			performActionNow(player.getRobot(), action, Phase.CARDS);
+			actionProcessor.scheduleActionLast(player.getRobot(), action, Phase.CARDS);
 		}
 	}
 
@@ -191,8 +157,8 @@ public class RoboRallyServer extends RoboRallyShared {
 	}
 
 	@Override
-	protected void setCurrentPhase(Phase phase) {
-		currentPhase = phase;
+	protected ActionProcessor actionProcessor() {
+		return actionProcessor;
 	}
 
 	/**
@@ -202,7 +168,6 @@ public class RoboRallyServer extends RoboRallyShared {
 		sendRoundPacket();
 
 		for (int i = 0; i < 5; i++) {
-			currentPhase = Phase.CARDS;
 			for (ServerStatePlayer player : players.values()) {
 				processPlayerCard(player, i);
 			}

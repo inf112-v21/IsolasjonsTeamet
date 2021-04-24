@@ -20,6 +20,7 @@ import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Class for our boards that hold all the client related code (libgdbx).
@@ -39,7 +40,7 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
 	private final List<BoardRobot> boardRobots = new ArrayList<>();
 
-	private final List<Effect> effects = new ArrayList<>();
+	private final List<Map.Entry<Effect, Integer>> effects = new ArrayList<>();
 
 	/**
 	 * Create a new instance of BoardClientImpl.
@@ -258,19 +259,24 @@ public class BoardClientImpl extends BoardImpl implements ClientBoard {
 
 	@Override
 	public void addEffect(Effect effect) {
-		effects.add(effect);
+		effects.add(Map.entry(effect, 0));
 	}
 
 	@Override
 	public void removeEffect(Effect effect) {
-		effects.remove(effect);
+		effects.removeIf(e -> e.getKey().equals(effect));
 	}
 
 	@Override
 	public void renderEffects(Batch batch) {
-		for (Effect effect : effects) {
-			effect.render(batch);
+		var toRemove = new ArrayList<Map.Entry<Effect, Integer>>();
+		for (Map.Entry<Effect, Integer> effect : effects) {
+			effect.getKey().render(batch);
+			if (effect.getValue() > 60 * 30) {
+				toRemove.add(effect);
+			}
 		}
+		effects.removeAll(toRemove);
 	}
 
 	private class BoardRobot {

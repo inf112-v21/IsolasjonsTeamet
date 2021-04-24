@@ -20,7 +20,7 @@ public class Move implements Action {
 	private final boolean push;
 
 	private RobotEffect playerEffect;
-	private boolean moved = false;
+	private int movesMade = 0;
 
 	private Move(Orientation direction, int numMoves, boolean push, boolean encounteredPlayerObstacleBefore) {
 		this.direction = direction;
@@ -44,7 +44,6 @@ public class Move implements Action {
 	public void perform(ActionProcessor processor, Board board, Robot robot, Phase phase) {
 		Coordinate pos = robot.getPos();
 		var directionCoord = direction.toCoord();
-		final var originalPos = pos;
 
 		final Coordinate offset = directionCoord.mult(numMoves);
 		final Coordinate finalDestination = robot.getPos().add(offset);
@@ -53,7 +52,7 @@ public class Move implements Action {
 		var clampedFinalDestination = new Coordinate(clampedDestinationX, clampedDestinationY);
 
 		Robot robotAt = null;
-		int movesMade = 0;
+		movesMade = 0;
 		while (!board.hasWallInDir(pos, direction) && !pos.equals(clampedFinalDestination) && robotAt == null) {
 			var newPos = pos.add(directionCoord);
 
@@ -82,12 +81,10 @@ public class Move implements Action {
 			// We only push the encountered player if this is either the
 			// first time we're encountering them, or we made movement progress
 			if (!encounteredPlayerObstacleBefore || movesMade > 0) {
-				processor.scheduleAction(robotAt, new Move(direction, 1));
-				processor.scheduleAction(robot, new Move(direction, numMoves - movesMade, true, true));
+				processor.scheduleActionFirst(robotAt, new Move(direction, 1), phase);
+				processor.scheduleActionLast(robot, new Move(direction, numMoves - movesMade, true, true), phase);
 			}
 		}
-
-		moved = !originalPos.equals(moveTo);
 	}
 
 	@Override
@@ -99,7 +96,7 @@ public class Move implements Action {
 
 	@Override
 	public boolean show(Robot robot, ClientBoard board, int framesSinceStart) {
-		if (framesSinceStart == 20 * numMoves || !moved) {
+		if (framesSinceStart == 20 * movesMade) {
 			board.show(robot);
 			board.removeEffect(playerEffect);
 			return true;

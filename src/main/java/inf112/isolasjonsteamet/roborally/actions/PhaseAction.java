@@ -21,7 +21,7 @@ public class PhaseAction implements Action {
 	@Override
 	public void perform(ActionProcessor processor, Board board, Robot robot, Phase phase) {
 		if (phase.equals(activeOnPhase)) {
-			processor.performActionNow(robot, actions.get(), phase);
+			processor.scheduleActionFirst(robot, actions.get(), phase);
 		}
 	}
 }

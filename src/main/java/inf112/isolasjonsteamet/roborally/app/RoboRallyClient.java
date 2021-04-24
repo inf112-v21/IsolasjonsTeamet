@@ -18,9 +18,11 @@ import com.badlogic.gdx.utils.Scaling;
 import com.badlogic.gdx.utils.viewport.ScalingViewport;
 import inf112.isolasjonsteamet.roborally.actions.Action;
 import inf112.isolasjonsteamet.roborally.actions.ActionProcessor;
+import inf112.isolasjonsteamet.roborally.actions.DequeActionProcessor;
 import inf112.isolasjonsteamet.roborally.actions.MoveForward;
 import inf112.isolasjonsteamet.roborally.actions.RotateLeft;
 import inf112.isolasjonsteamet.roborally.actions.RotateRight;
+import inf112.isolasjonsteamet.roborally.actions.ScheduledAction;
 import inf112.isolasjonsteamet.roborally.board.Board;
 import inf112.isolasjonsteamet.roborally.board.ClientBoard;
 import inf112.isolasjonsteamet.roborally.board.Phase;
@@ -57,11 +59,9 @@ import inf112.isolasjonsteamet.roborally.tiles.Tile;
 import inf112.isolasjonsteamet.roborally.util.Coordinate;
 import inf112.isolasjonsteamet.roborally.util.Orientation;
 import java.io.PrintStream;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
@@ -70,7 +70,7 @@ import java.util.stream.Collectors;
  */
 public class RoboRallyClient
 		extends RoboRallyShared
-		implements ApplicationListener, DelegatingInputProcessor, ActionProcessor {
+		implements ApplicationListener, DelegatingInputProcessor {
 
 	private final Client client;
 	private final ClientBoard board;
@@ -83,9 +83,43 @@ public class RoboRallyClient
 	private Action showingAction;
 	private Robot showingRobot;
 	private int framesSinceStartedShowingAction = 0;
-	private Phase currentPhase;
-	private final Queue<Map.Entry<Action, Robot>> scheduledActions = new ArrayDeque<>();
+	private final DequeActionProcessor actionProcessor = new DequeActionProcessor() {
+		@Override
+		protected boolean isExecutingAction() {
+			return showingAction != null;
+		}
+
+		@Override
+		public void performActionNow(Robot robot, Action action, Phase phase) {
+			boolean hasWork = false;
+			//This do loop will only every loop if isShown == false
+			do {
+				action.initialize(board, robot);
+				if (isShown) {
+					action.initializeShow(robot, board);
+				}
+
+				showingAction = action;
+				showingRobot = robot;
+				action.perform(this, board, robot, phase);
+
+				if (!isShown) {
+					showingAction = null;
+					showingRobot = null;
+
+					hasWork = hasNext();
+					if (hasWork) {
+						ScheduledAction nextActionEntry = next();
+						robot = nextActionEntry.getRobot();
+						action = nextActionEntry.getAction();
+						phase = nextActionEntry.getPhase();
+					}
+				}
+			} while (hasWork);
+		}
+	};
 	private boolean sendPlayerStateEventually;
+	private boolean isShown;
 
 	private Stage stage;
 	private Skin skin;
@@ -113,7 +147,7 @@ public class RoboRallyClient
 			GameScreen gameScreen) {
 		this.client = client;
 		this.board = board;
-		this.clientPlayer = new PlayerImpl(clientName, this, new Coordinate(0, 0), Orientation.NORTH);
+		this.clientPlayer = new PlayerImpl(clientName, actionProcessor, new Coordinate(0, 0), Orientation.NORTH);
 		this.host = host;
 		this.screenController = screenController;
 		this.gameScreen = gameScreen;
@@ -274,13 +308,12 @@ public class RoboRallyClient
 				showingAction = null;
 				framesSinceStartedShowingAction = 0;
 
-				Map.Entry<Action, Robot> nextAction = scheduledActions.poll();
-				if (nextAction != null) {
-					Action action = nextAction.getKey();
-					Robot robot = nextAction.getValue();
-					performActionNow(robot, action, currentPhase);
+				if (actionProcessor.hasNext()) {
+					ScheduledAction nextAction = actionProcessor.next();
+					actionProcessor.performActionNow(nextAction.getRobot(), nextAction.getAction(), nextAction.getPhase());
 				} else if (sendPlayerStateEventually) {
 					sendPlayerStateToServer();
+					sendPlayerStateEventually = false;
 				}
 			}
 		}
@@ -288,29 +321,8 @@ public class RoboRallyClient
 		stage.draw();
 	}
 
-	@Override
-	public void performActionNow(Robot robot, Action action, Phase phase) {
-		action.initialize(board, robot);
-		action.initializeShow(robot, board);
-
-		showingAction = action;
-		showingRobot = robot;
-
-		action.perform(this, board, robot, phase);
-	}
-
-	@Override
-	public void scheduleAction(Robot robot, Action action) {
-		if (scheduledActions.isEmpty() && showingAction == null) {
-			performActionNow(robot, action, currentPhase);
-			return;
-		}
-
-		scheduledActions.add(Map.entry(action, robot));
-	}
-
 	private void scheduleClientAction(Action action) {
-		scheduleAction(clientPlayer.getRobot(), action);
+		actionProcessor.scheduleActionLast(clientPlayer.getRobot(), action, Phase.MISC);
 	}
 
 	private void scheduleClientRotateToDirection(Orientation dir) {
@@ -340,8 +352,8 @@ public class RoboRallyClient
 	}
 
 	@Override
-	protected void setCurrentPhase(Phase phase) {
-		currentPhase = phase;
+	protected ActionProcessor actionProcessor() {
+		return actionProcessor;
 	}
 
 	@Override
@@ -472,6 +484,7 @@ public class RoboRallyClient
 	 */
 	@Override
 	public void pause() {
+		isShown = false;
 	}
 
 	/**
@@ -479,6 +492,7 @@ public class RoboRallyClient
 	 */
 	@Override
 	public void resume() {
+		isShown = true;
 	}
 
 	private class PacketAdapter extends ClientPacketAdapter {
@@ -516,7 +530,7 @@ public class RoboRallyClient
 					playersChanged = true;
 				} else {
 					players.add(
-							new PlayerImpl(state.getName(), RoboRallyClient.this, state.getPos(), state.getDir())
+							new PlayerImpl(state.getName(), actionProcessor, state.getPos(), state.getDir())
 					);
 					playersChanged = true;
 				}
@@ -540,7 +554,7 @@ public class RoboRallyClient
 			}
 
 			for (Action action : chosenCard.createActions()) {
-				performActionNow(player.getRobot(), action, Phase.CARDS);
+				actionProcessor.scheduleActionLast(player.getRobot(), action, Phase.CARDS);
 			}
 		}
 
@@ -549,7 +563,6 @@ public class RoboRallyClient
 			var cards = packet.getPlayedCards();
 
 			for (int i = 0; i < CardRow.CHOSEN.getSize(); i++) {
-				currentPhase = Phase.CARDS;
 				for (Player player : players) {
 					processPlayerCard(cards, player, i);
 				}

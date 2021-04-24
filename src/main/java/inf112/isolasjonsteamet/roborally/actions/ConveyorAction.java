@@ -76,7 +76,7 @@ public class ConveyorAction implements Action {
 		return false;
 	}
 
-	private void processConveyor(ActionProcessor processor, Board board, Robot robot) {
+	private void processConveyor(ActionProcessor processor, Board board, Robot robot, Phase phase) {
 		var pos = robot.getPos();
 
 		if (!isConveyorMovementBlocked(board, pos, this.dir, expressOnly)) {
@@ -90,7 +90,7 @@ public class ConveyorAction implements Action {
 				}
 			}
 
-			processor.scheduleAction(robot, new Move(this.dir, 1, false));
+			processor.scheduleActionFirst(robot, new Move(this.dir, 1, false), phase);
 		}
 	}
 
@@ -100,7 +100,7 @@ public class ConveyorAction implements Action {
 		boolean processAllBelts = phase.equals(Phase.CONVEYOR_BELTS);
 
 		if (processExpress || processAllBelts) {
-			processConveyor(processor, board, robot);
+			processConveyor(processor, board, robot, phase);
 		}
 	}
 }

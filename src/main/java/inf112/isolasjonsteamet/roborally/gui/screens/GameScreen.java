@@ -65,10 +65,12 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 			);
 
 			game.create();
+			game.pause();
 			games.add(game);
 
 			if (activeGame == null) {
 				activeGame = game;
+				activeGame.resume();
 			}
 		}
 
@@ -126,7 +128,9 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 		LOGGER.info("Switching to player " + playerNum);
 		var triedNewActiveGame = games.get(playerNum - 1);
 		if (triedNewActiveGame != null) {
+			activeGame.pause();
 			activeGame = triedNewActiveGame;
+			activeGame.resume();
 		}
 	}
 
@@ -142,6 +146,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 		int idx = games.indexOf(client);
 		if (idx != -1) {
 			games.set(idx, null);
+			client.pause();
 			client.dispose();
 		}
 
@@ -152,6 +157,7 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 			if (game != null) {
 				if (replaceActiveGame) {
 					activeGame = game;
+					activeGame.resume();
 				}
 
 				hasActiveGame = true;
@@ -190,7 +196,6 @@ public class GameScreen implements Screen, DelegatingInputProcessor {
 
 	@Override
 	public void show() {
-
 	}
 
 	@Override
