@@ -46,16 +46,20 @@ public class Move implements Action {
 		this(direction, numMoves, true);
 	}
 
+	private static Coordinate clampCoord(Board board, Coordinate coord) {
+		var clampedX = MathUtils.clamp(coord.getX(), 0, board.getWidth() - 1);
+		var clampedY = MathUtils.clamp(coord.getY(), 0, board.getWidth() - 1);
+		return new Coordinate(clampedX, clampedY);
+	}
+
 	@Override
 	public void perform(ActionProcessor processor, Board board, Robot robot, Phase phase) {
 		Coordinate pos = robot.getPos();
 		var directionCoord = direction.toCoord();
 
-		final Coordinate offset = directionCoord.mult(numMoves);
-		final Coordinate finalDestination = robot.getPos().add(offset);
-		var clampedDestinationX = MathUtils.clamp(finalDestination.getX(), 0, board.getWidth() - 1);
-		var clampedDestinationY = MathUtils.clamp(finalDestination.getY(), 0, board.getWidth() - 1);
-		var clampedFinalDestination = new Coordinate(clampedDestinationX, clampedDestinationY);
+		var offset = directionCoord.mult(numMoves);
+		var finalDestination = robot.getPos().add(offset);
+		var clampedFinalDestination = clampCoord(board, finalDestination);
 
 		Robot robotAt = null;
 		movesMade = 0;
@@ -72,10 +76,7 @@ public class Move implements Action {
 			}
 		}
 
-		int clampedX = MathUtils.clamp(pos.getX(), 0, board.getWidth() - 1);
-		int clampedY = MathUtils.clamp(pos.getY(), 0, board.getHeight() - 1);
-
-		var moveTo = new Coordinate(clampedX, clampedY); //absolute coordinate
+		var moveTo = clampCoord(board, pos); //absolute coordinate
 		var clampedOffset = moveTo.sub(robot.getPos()); //relative coordinate
 
 		robot.move(clampedOffset);
