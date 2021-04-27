@@ -23,14 +23,20 @@ public class Move implements Action {
 	private int movesMade = 0;
 
 	private Move(Orientation direction, int numMoves, boolean push, boolean encounteredPlayerObstacleBefore) {
-		this.direction = direction;
-		this.numMoves = numMoves;
+		if (numMoves < 0) {
+			this.direction = direction.getOpposingDir();
+			this.numMoves = numMoves * -1;
+		} else {
+			this.direction = direction;
+			this.numMoves = numMoves;
+		}
+
 		this.encounteredPlayerObstacleBefore = encounteredPlayerObstacleBefore;
 		this.push = push;
 	}
 
 	/**
-	 * Constructs a move action with the option if disabling pushing other robots.
+	 * Constructs a move action with the option of disabling pushing other robots.
 	 */
 	public Move(Orientation direction, int numMoves, boolean push) {
 		this(direction, numMoves, push, false);

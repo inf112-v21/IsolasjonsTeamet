@@ -149,6 +149,17 @@ public class RobotSpec {
 		assertRobotPos(robot, new Coordinate(1, 0));
 	}
 
+	@DisplayName(BOARD_GIVEN + ", given a robot at 0,0 facing WEST. Moving forward -1 should move the robot")
+	@Test
+	public void moveMinus1() {
+		var robot = createSimpleActiveRobot(coord(0, 0), Orientation.WEST);
+		createSimpleBoard(robot);
+
+		runAction(new MoveForward(-1));
+
+		assertRobotPos(robot, new Coordinate(1, 0));
+	}
+
 	/**
 	 * Test method to check if a robot is unable to move out of bounds.
 	 */
